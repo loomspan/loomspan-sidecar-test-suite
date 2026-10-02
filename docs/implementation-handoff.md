@@ -1,6 +1,48 @@
 # First-delivery implementation handoff
 
-**Latest Muse verification (2026-10-02):** both paths completed and published on
+**Current checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
+baseline and continuity-priority offline workflows through both applications.
+Each pair passes 34 evidence checks and eight workflow assertions; 39 focused
+offline tests pass. Approved scope is deterministic assessment replay only.
+Provider access is disabled; zero paid calls in this phase. Exact quotes, USD cents,
+asset/approval context and original assessments are preserved. First delivery remains
+incomplete; see [status](implementation-status.md) and [approval record](../fixtures/replay/business-reviewed-v1-approval.json).
+
+**Earlier checkpoint (2026-10-02):** the five business-output fixes and follow-up
+assessment-preservation refinements are verified. Thirty-four focused offline tests
+pass; both real comparison corrections pass 28 evidence checks. Reviewed Muse/medium
+baseline and priority outputs are suitable sources for replay curation on each path,
+with distinct captured configuration provenance. The latest Java priority passes
+31 mechanical checks and four scoped assertions. No shared replay or first-delivery
+acceptance is approved. Provider access is enabled under the user's Muse authorization.
+See [status](implementation-status.md) and
+[latest review](../evidence/review-live-20261002-102148/summary.md).
+Next: curate versioned strict offline replay from the reviewed sources, then verify
+remaining accepted scenarios. Historical rejected captures remain regression evidence.
+
+**Earlier checkpoint — deployed offline verification (2026-10-02):** revised
+applications/configuration are deployed on the same installed PR 14/15 bytes.
+Both complete authored/captured workflow diagnostics; 32 evidence checks and 30
+offline tests pass. Actual selection-schema correction and preservation through
+both parent synthesis inputs are verified. A replay-ordering defect exposed by
+Java was repaired; the failed first attempt remains. All 134 original evidence
+hashes match. No paid calls or business capture approval. See
+[review](../evidence/review-business-workflow-offline-20261002-075008/summary.md).
+The fixture provider credential is disabled via `compose.offline.yaml`.
+Next evidence gap is real-model adherence to the deployed business wording fixes;
+perform a specifically scoped live verification only in a later paid-call phase.
+Full-mission recovery, changed-priority and remaining business acceptance are open.
+
+**Earlier offline-only checkpoint (2026-10-02):** the five documented business-output issues
+now have prompt/contract fixes and explicitly hand-edited diagnostic examples.
+27 focused offline pytest checks and 10 Java local publication checks pass;
+offline Java compilation succeeds. No paid calls, deployment or capture approval.
+See [current status](implementation-status.md) and
+[evidence](../evidence/business-output-offline-20261002/summary.md). Resume with
+review/verification of these revised contracts, not an unchanged paid workflow.
+The examples are not real correction responses or approved acceptance replay.
+
+**Earlier Muse verification (2026-10-02):** both paths completed and published on
 installed Framework `4313a7f` (PR 14/15), with Muse/medium. Eight capture assertions
 and 53 mechanical checks pass. Java's real schema correction succeeds; neither
 path exercises PR 14 step-action correction in that full run. The subsequent

@@ -9,6 +9,17 @@ cases={}; gates={}; lock=asyncio.Lock()
 def journal(event, **data):
     with (DATA/'journal.ndjson').open('a',encoding='utf-8') as f:
         f.write(json.dumps({'timeNs':time.time_ns(),'event':event,**data})+'\n')
+
+def mission_input_matches(body, step):
+    if 'missionInputEquals' not in step:
+        return True
+    try:
+        message=next(m['content'] for m in body.get('messages',[]) if m.get('role')=='user'
+                     and m.get('content','').startswith('Mission objective:'))
+        actual=json.JSONDecoder().raw_decode(message.split('Canonical mission input:\n',1)[1].lstrip())[0]
+        return actual == step['missionInputEquals']
+    except (StopIteration, KeyError, IndexError, ValueError):
+        return False
 def control(key):
     if not key or key != os.environ['CONTROL_KEY']: raise HTTPException(403)
 @app.get('/health')
@@ -73,7 +84,8 @@ async def model(path:str,request:Request):
                 if (all(t in serialized for t in item['contains']) and all(t not in serialized for t in item.get('excludes',[]))
                     and all(t in system for t in item.get('systemContains',[]))
                     and all(t not in system for t in item.get('systemExcludes',[]))
-                    and all(d in case['used'] for d in item.get('after',[]))):candidates.append((n,item))
+                    and all(d in case['used'] for d in item.get('after',[]))
+                    and mission_input_matches(body,item)):candidates.append((n,item))
             if len(candidates)!=1:
                 journal('model-rejected',path=path,caseId=case_id,requestId=request_id,reason='unexpected or ambiguous stage',candidates=[n for n,_ in candidates])
                 raise HTTPException(409,'unexpected or ambiguous replay stage')

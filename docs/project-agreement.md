@@ -2,6 +2,78 @@
 
 Last updated: 2026-10-02.
 
+### Accepted reviewed offline replay curation — 2026-10-02
+
+The user authorized turning existing reviewed Muse responses into versioned strict
+replay fixtures and exercising both actual Framework paths without calling Muse.
+Retain per-path source/configuration provenance, normalize execution-specific case
+IDs only, and label deliberate mutations separately. Baseline and continuity-priority
+assessment fixtures may be accepted after offline fidelity/workflow checks pass;
+this is scoped replay acceptance, not new model judgment or first-delivery completion.
+
+### Accepted Muse call discretion — 2026-10-02
+
+The user confirmed that Muse cost is not a constraint and authorized as many Muse
+calls as useful for this work without further spending confirmation. This supersedes
+the prior phase's no-paid-call restriction for continuing live verification. Keep
+OpenRouter `meta/muse-spark-1.3-contributor` with medium reasoning on both paths.
+Use calls to resolve evidence gaps, review actual outputs and iterate on observed
+issues; authorization does not approve incomplete/incorrect captures, change business
+criteria or justify needless duplicates. Preserve journals, actual Framework traces,
+source/artifact provenance and uncommitted work; never print the provider key.
+
+Implementation setting during this authorized continuation: a full Java priority
+workflow recovered spontaneous malformed model output, then exceeded Framework's
+default 200,000 session usage-unit quota (206,892 observed). The supported
+`loomspan.session.quotas.max-usage-units` setting is now 400,000 equally on both
+hosts, retaining the existing model-call/provider-attempt/time limits. This provides
+room for long evidence and correction within the user's cost discretion; it is not
+a monetary approval or business-cap change. Record the configured root limit in
+actual traces and manifests. The original failed execution remains incomplete and
+unapproved; source/artifact bytes and neighboring checkouts stay unchanged.
+
+### Accepted deployed offline verification — 2026-10-02
+
+The user requested proceeding with the plan to archive current runtime evidence,
+deploy the revised prompts/application guards and verify both real integration paths
+using labeled offline replay. This phase makes no paid calls and grants no capture
+approval. Captured stages retain original provenance; edited comparison and matching
+parent final responses, injected quote-ID selection and synthetic correction are
+explicitly authored diagnostics. Independent branches may arrive in either order;
+replay dependencies follow the captured plan graph rather than captured arrival order.
+Keep authoritative evidence and quote/cent equality, actual Framework traces and
+independent records. Passing scripted workflows does not verify new model judgment.
+
+### Accepted evidence housekeeping — 2026-10-02
+
+The user requested ongoing deletion of material without useful value to avoid
+accumulation and confusion. Remove reproducible scratch output and verified
+unneeded duplicates. Retain unique captures that reproduce bugs or support
+regression/provenance, actual Framework traces, journals, business records and
+review outcomes. Make historical/rejected versus current evidence explicit through
+the [evidence index](../evidence/README.md); a fix does not approve its source
+capture. Keep existing source work and recovery artifacts unless their redundancy
+has been established. Cleanup does not authorize paid calls or change acceptance.
+
+### Accepted offline business-output continuation — 2026-10-02
+
+The user requested offline fixes for the full Muse pair's potential work beyond
+18:00, approved-request submission before expiry, commercial citations,
+diagnosis/travel wording and consistent selectedOption representation. No paid
+calls in this phase. Preserve quote equality, authoritative asset/approval context,
+integer USD cents, uncommitted work, journals and actual Framework traces. Reuse
+evidence only with explicit provenance; neither the full captures nor isolated
+step-action recovery approves a complete business baseline.
+
+Implementation convention within this authorized fix: selectedOption uses stable
+names `expedited`, `standard`, `loaner`, `replacement`, `defer` or `undecided`;
+quote IDs remain in quotes and explicit approval. Combined strategies belong in
+rationale/alternatives. This distinguishes recommendation from service selection
+for commitment; it neither forces expedited advice nor authorizes procurement.
+Hand-edited diagnostic examples retain original Muse provenance separately from
+every authored change and remain unapproved. Offline checks do not establish
+model adherence to revised prompts or complete workflow acceptance.
+
 ### Accepted isolated controlled step-action fault — 2026-10-02
 
 The user accepted injecting the preserved extra-closing-brace action into an actual

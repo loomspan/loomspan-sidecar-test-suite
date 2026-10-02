@@ -19,10 +19,15 @@ def main():
     sidecar_settings=overlay['services']['sidecar']['environment']
     assert sidecar_settings['LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT']==str(request_timeout)+'s'
     assert sidecar_settings.get('LOOMSPAN_SESSION_MISSIONTIMEOUT','600s')==str(mission_timeout)+'s'
+    usage_limits = [yaml.safe_load((ROOT/'config'/(name+'.yaml')).read_text(encoding='utf-8'))
+                    ['loomspan']['session'].get('quotas', {}).get('max-usage-units', 200000)
+                    for name in ['java', 'sidecar']]
+    assert usage_limits[0] == usage_limits[1], 'Equivalent hosts must use the same usage quota'
     result={'framework':VERSION,'frameworkCommit':subprocess.check_output(['git','-C',str(ROOT.parent/'loomspan-framework'),'rev-parse','HEAD'],text=True).strip(),
             'sidecar':'1.0.0-beta.2 source with local Framework snapshot',
             'sidecarCommit':'da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7','buildMode':'local snapshot; not published Sidecar binary',
             'providerRequestTimeoutSeconds':request_timeout,'missionTimeoutSeconds':mission_timeout,
+            'sessionMaxUsageUnits':usage_limits[0],
             'installedFrameworkSha256':digest,'artifacts':{},'configurationSha256':{}}
     result['suiteCommit']=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     result['sourceWorktreeStatus']={name:subprocess.check_output(

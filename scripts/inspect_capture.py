@@ -27,7 +27,25 @@ def completed(request):
     return json.JSONDecoder().raw_decode(block[block.index('['):])[0]
 
 
-def inspect(directory):
+def preserves_applicability(request, source):
+    """Check the actual child mission, not sibling evidence available to its parent."""
+    messages = [m.get('content', '') for m in request.get('messages', [])
+                if m.get('role') == 'user' and m.get('content', '').startswith('Mission objective:')]
+    try:
+        text = next(t for t in messages if 'Canonical mission input:\n' in t)
+        body = json.JSONDecoder().raw_decode(text.split('Canonical mission input:\n', 1)[1].lstrip())[0]
+    except (StopIteration, ValueError):
+        return False
+    def contains(node):
+        if isinstance(node, dict):
+            if node.get('id') == source['id'] and node.get('applicability') == source['applicability']:
+                return True
+            return any(contains(v) for v in node.values())
+        return isinstance(node, list) and any(contains(v) for v in node)
+    return contains(body)
+
+
+def inspect(directory, paths=('java', 'sidecar')):
     directory=Path(directory).resolve()
     checks=[]; hashes={}
     def check(name,passed,path=None):
@@ -48,6 +66,7 @@ def inspect(directory):
     check('explicit selected live model and reasoning',manifest.get('mode')=='live' and
           manifest.get('model') in {'openai/gpt-6.1-sol','meta/muse-spark-1.3-contributor'} and manifest.get('reasoning')=='medium')
     for path,storage in [('java','java'),('sidecar','python')]:
+        if path not in paths: continue
         selected=[r for r in manifest.get('results',[]) if r.get('path')==path]
         check('one identified execution',len(selected)==1,path)
         if len(selected)!=1: continue
@@ -63,6 +82,10 @@ def inspect(directory):
               len(set(request_ids))==len(request_ids) and sorted(request_ids)==sorted(response_ids,key=str),path)
         check('responses recorded from real provider',responses and all(e.get('provenance')=='live OpenRouter'
               and e.get('status')==200 for e in responses),path)
+        check('no provider error completion hidden inside HTTP 200', responses and all(
+              not e['response'].get('error') and e['response'].get('choices') and all(
+                  c.get('finish_reason') != 'error' and not c.get('error')
+                  for c in e['response']['choices']) for e in responses), path)
         check('every request uses selected model/reasoning',requests and all(e['request'].get('model')==manifest.get('model')
               and e['request'].get('reasoning_effort')=='medium' for e in requests),path)
         for skill in ['assessEquipment','compareOptions']:
@@ -78,6 +101,11 @@ def inspect(directory):
             if skill=='assessEquipment':
                 check('history and guidance markers reach equipment assessment',all(marker in text for marker in
                       ['WO-0820','NOTE-0916','SB-2','20-minute','42 minutes']),path)
+                sources = [item for e in local if e.get('event') == 'returned' and
+                           e.get('kind') == 'referenceEvidence' for item in e['result']['data']
+                           if item.get('id') == 'SB-2']
+                check('complete bulletin applicability reaches actual assessment child',
+                      sources and calls and all(preserves_applicability(e['request'], sources[0]) for e in calls), path)
         finals={}
         for event in requests:
             if 'All required plan tasks are already COMPLETE.' not in system(event['request']): continue
@@ -92,6 +120,14 @@ def inspect(directory):
               terminal.get('assessmentVersion') and selected[0].get('status')=='COMPLETED',path)
         try: value=json.loads(terminal.get('result','{}'))
         except (TypeError,ValueError): value={}
+        equipment_calls = [e['requestId'] for e in requests if mission(e['request'], 'assessEquipment')]
+        equipment_replies = [e for e in responses if equipment_calls and e['requestId'] == equipment_calls[-1]]
+        try:
+            assessed = json.loads(equipment_replies[0]['response']['choices'][0]['message']['content']) if len(equipment_replies) == 1 else None
+        except (KeyError, TypeError, ValueError):
+            assessed = None
+        check('published equipment assessment preserves actual child response',
+              assessed and value.get('equipmentAssessment') == assessed, path)
         check('case and asset retained',value.get('caseId')==case and value.get('assetId')=='NB-P240-017',path)
         check('parent completion preserves comparison',bool(finals) and all(v==value for v in finals.values()),path)
         check('required decision evidence populated',all(value.get(k) for k in
@@ -119,8 +155,14 @@ def inspect(directory):
             raw=file.read_bytes(); digest=hashlib.sha256(raw).hexdigest(); hashes[trace['file']]=digest
             check('trace bytes match recorded checksum',digest==trace.get('sha256'),path)
             check('Framework trace reports success',trace.get('outcome')=='SUCCEEDED',path)
+            if 'sessionMaxUsageUnits' in manifest:
+                frames = [json.loads(line) for line in raw.decode('utf-8').splitlines() if line]
+                started = [f for f in frames if f.get('recordType') == 'TRACE_STARTED']
+                check('actual root usage quota matches recorded configuration', len(started) == 1 and
+                      started[0].get('metadata', {}).get('configuredLimits', {}).get('maxUsageUnits') == manifest['sessionMaxUsageUnits'], path)
     return {'status':'REJECTED_FOR_REPLAY' if any(not c['passed'] for c in checks) else 'NEEDS_SEMANTIC_REVIEW',
             'capture':str(directory),'checks':checks,'sourceSha256':hashes,
+            'reviewedPaths':list(paths),'fullPairReviewed':set(paths)=={'java','sidecar'},
             'remainingReview':['Evidence fidelity and chronology; no invented diagnosis or coverage.',
               'Defensible alternatives, access, 11:00 continuity decision and restoration uncertainty.',
               'Changed-priority responsiveness on both paths; approved scripted baseline selection.',
@@ -131,10 +173,11 @@ def inspect(directory):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('capture',type=Path); parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--path', choices=['java', 'sidecar', 'both'], default='both', help='Explicit review scope; a one-path report never approves the full pair')
     args=parser.parse_args()
     if args.output.resolve().is_relative_to(args.capture.resolve()):
         parser.error('output must be outside the preserved source capture')
-    report=inspect(args.capture)
+    report=inspect(args.capture, ('java','sidecar') if args.path == 'both' else (args.path,))
     args.output.parent.mkdir(parents=True,exist_ok=True)
     with args.output.open('x',encoding='utf-8') as out: json.dump(report,out,indent=2)
     print(report['status']+'; no replay approval granted')

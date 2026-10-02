@@ -1,0 +1,33 @@
+{
+  "formatVersion": 1,
+  "fixture": "business-reviewed-v1.json",
+  "fixtureSha256": "068c99ab2bbb2b5e43064f9b457dff10d9b13f1eceb279463b9b1e56952e2c2a",
+  "status": "APPROVED_FOR_SCOPED_OFFLINE_REPLAY",
+  "scope": "Baseline and continuity-priority assessment workflows through Java and Sidecar; no commitments",
+  "paidCalls": 0,
+  "normalization": "caseId only",
+  "mutations": [],
+  "verifications": [
+    {
+      "scenario": "baseline",
+      "capture": "evidence/business-reviewed-baseline-20261002-112945",
+      "review": "evidence/review-business-reviewed-baseline-20261002-112945/review.json",
+      "reviewSha256": "65c5600f8b135df656dd1caeff4317f13bb738c8bc7f202427a63dee576e51ff",
+      "evidenceChecks": 34,
+      "workflowAssertions": 8
+    },
+    {
+      "scenario": "priority",
+      "capture": "evidence/business-reviewed-priority-20261002-113035",
+      "review": "evidence/review-business-reviewed-priority-20261002-113035/review.json",
+      "reviewSha256": "8e41d11677127e688e27ed40af6f066e2b394acb6e1268208d5cde7b8f709aea",
+      "evidenceChecks": 34,
+      "workflowAssertions": 8
+    }
+  ],
+  "focusedOfflineTests": 39,
+  "limitations": [
+    "Responses originate from distinct recorded configuration generations.",
+    "Deterministic replay verifies integration, not new model judgment or complete first-delivery acceptance."
+  ]
+}

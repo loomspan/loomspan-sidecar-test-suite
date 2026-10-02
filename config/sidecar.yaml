@@ -32,6 +32,8 @@ loomspan:
     locations: [file:/config/skills/*.yaml, file:/config/rest-skills/*.yaml]
   session:
     mission-timeout: 600s
+    quotas:
+      max-usage-units: 400000
   execution-trace:
     persistence: ALWAYS
   observability:

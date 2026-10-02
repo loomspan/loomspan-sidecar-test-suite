@@ -19,8 +19,12 @@ input_schema:
   - caseId
   - assetId
   - context
-prompt: 'Assess the supplied incident with history and manufacturer evidence. Explain
-  hypotheses with supporting and contrary evidence, uncertainties and discriminating
+prompt: 'Assess the supplied incident with history and manufacturer evidence. Determine
+  bulletin applicability from registered model, hardware revision and inclusive serial
+  range supplied with the full reference objects; do not label eligibility unknown
+  when these establish it. Applicability and matching symptoms are reasons to investigate,
+  not proof of a cause. If metadata is genuinely absent, identify that specific gap.
+  Explain hypotheses with supporting and contrary evidence, uncertainties and discriminating
   questions. No commercial decision. Preserve caseId and assetId in every child input
   and result. Pass full relevant upstream evidence in context, including authoritative
   assetContext, using resolved references when appropriate. Never infer identity or

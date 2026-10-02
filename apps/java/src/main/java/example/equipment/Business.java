@@ -77,6 +77,7 @@ public class Business {
     String saveAssessment(String execution,String result) throws Exception {
         var value=read(result);scoped((String)value.get("assetId"));
         for(String key:List.of("uncertainty","quotes","selectedOption","acceptedRisk","nextDecision","citations","equipmentAssessment"))if(!value.containsKey(key))throw new IllegalArgumentException("Incomplete assessment");
+        if(!List.of("expedited","standard","loaner","replacement","defer","undecided").contains(value.get("selectedOption")))throw new IllegalArgumentException("selectedOption must be an option name, not a quote ID");
         var quotes=(List<Map<String,Object>>)value.get("quotes");if(quotes.isEmpty())throw new IllegalArgumentException("Missing quotes");
         var expected=Set.of(value.get("caseId")+"-expedited-v1",value.get("caseId")+"-standard-v1");
         if(quotes.size()!=2 || !new HashSet<>(quotes.stream().map(q->q.get("quoteId")).toList()).equals(expected))throw new IllegalArgumentException("Missing, duplicate or foreign-case quote");

@@ -1,7 +1,19 @@
 """A partial/corrupt capture must never become replay provenance."""
 import json
 
-from inspect_capture import inspect, mission
+from inspect_capture import inspect, mission, preserves_applicability
+
+
+def test_applicability_must_reach_actual_child_not_only_parent_evidence():
+    source = {'id': 'SB-2', 'applicability': {'model': 'P240', 'hardwareRevision': 'B',
+              'serialRangeInclusive': ['AP24B-0400', 'AP24B-0799']}}
+    def request(body):
+        return {'messages': [{'role': 'system', 'content': json.dumps(source)},
+                {'role': 'user', 'content': 'Mission objective:\nAssessment\nCanonical mission input:\n' + json.dumps(body)}]}
+    assert preserves_applicability(request({'context': {'referenceEvidence': [source]}}), source)
+    assert not preserves_applicability(request({'context': {'referenceEvidence': [{'id': 'SB-2'}]}}), source)
+    altered = {**source, 'applicability': {**source['applicability'], 'hardwareRevision': 'A'}}
+    assert not preserves_applicability(request({'context': [altered]}), source)
 
 
 def test_skill_identity_comes_from_framework_mission_not_embedded_evidence():

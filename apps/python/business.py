@@ -46,6 +46,8 @@ def save_assessment(execution,result,who):
     parsed=json.loads(result); scoped(who,parsed['assetId'])
     required=['uncertainty','quotes','selectedOption','acceptedRisk','nextDecision','citations','equipmentAssessment']
     if any(k not in parsed for k in required): raise HTTPException(502,'incomplete assessment')
+    if parsed['selectedOption'] not in ['expedited','standard','loaner','replacement','defer','undecided']:
+        raise HTTPException(502,'selectedOption must be an option name, not a quote ID')
     version=execution+'-v1'
     with db() as c:
         expected={parsed['caseId']+'-'+option+'-v1' for option in ['expedited','standard']}

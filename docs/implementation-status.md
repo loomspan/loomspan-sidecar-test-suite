@@ -1,5 +1,291 @@
 # Implementation and observed status — 2026-10-02
 
+## Reviewed deterministic assessment replay — verified 2026-10-02
+
+Versioned [business-reviewed-v1.json](../fixtures/replay/business-reviewed-v1.json)
+is approved for the baseline and continuity-priority **assessment replay scope**
+through both applications. Its [approval record](../fixtures/replay/business-reviewed-v1-approval.json)
+binds the exact fixture hash to external evidence reviews. All four workflows complete
+with provider access disabled: baseline and priority each pass 34 evidence checks
+and eight workflow assertions. Thirty-nine focused offline tests pass.
+
+The fixtures preserve unedited Muse responses, native final envelopes and complete
+asset/approval/quote context. Only execution-specific case IDs, including nested
+quote IDs, are normalized; no fault mutations or synthetic corrections are included.
+Each source's original configuration/Framework/model identity, journal/trace hashes,
+semantic review and response provenance remain explicit. Different source generations
+are not described as one live pair. Exact canonical input matching, skill/stage
+matching and plan dependencies reject altered input, replay exhaustion and unexpected
+stages without a provider fallback. Independent branch order may vary.
+
+[Baseline evidence](../evidence/review-business-reviewed-baseline-20261002-112945/summary.md)
+and [priority evidence](../evidence/review-business-reviewed-priority-20261002-113035/summary.md)
+verify unchanged actual child assessments and parent results, exact authoritative
+quotes/integer USD cents, existing records and zero service commitments. Runtime
+traces and fixture journal were preserved before fixture recreation. No paid calls
+were made; `compose.offline.yaml` is active and disables the provider credential.
+
+Cleanup removed 33 regenerated cache files and seven empty directories. All134
+protected original hashes and all finalized new evidence checksums match; fixture
+and approval/report hashes match. Journals and actual Framework traces are retained.
+See [integrity report](../evidence/review-business-reviewed-priority-20261002-113035/cleanup-integrity.json).
+
+This completes replay curation, not first-delivery acceptance. Valid approval and
+service-request creation, full-mission injected recovery and remaining accepted
+isolation/update/load scenarios still need their scoped demonstrations. Earlier
+rejected/hand-edited captures retain their original dispositions.
+
+## Earlier verified business-fix checkpoint
+
+The latest [Java priority verification](../evidence/review-live-20261002-102148/summary.md)
+completes and passes all31 mechanical checks and four scoped assertions. Manual
+review finds correct commercial wording and exact original assessment preservation,
+including citation order. Thirty-four focused offline tests pass on the deployed
+root-copy instruction. No Framework/application package change was needed.
+
+Suitable sources for **curation**, with original manifests/configuration retained:
+
+| Scenario | Java source | Sidecar source |
+| --- | --- | --- |
+| Baseline | [093632](../evidence/review-live-20261002-093632/summary.md) | [092503](../evidence/review-live-20261002-092503/summary.md) |
+| Continuity priority | [102148](../evidence/review-live-20261002-102148/summary.md) | [095046](../evidence/review-live-20261002-095046/summary.md) |
+
+Cleanup removed 33 disposable files and seven empty cache directories. All134
+protected original source files and the finalized live capture checksums still
+match. Source journals and actual Framework traces remain intact. See
+[cleanup/integrity report](../evidence/review-live-20261002-102148/cleanup.json).
+
+These were captured on different configuration generations; their manifests are
+mandatory provenance. Rejected intermediate outputs remain rejected. Next work is
+versioned strict offline replay curation and validation, followed by remaining
+accepted first-delivery scenarios. No shared replay approval, measured reliability,
+full-mission injected recovery or first-delivery completion is claimed.
+
+## Muse business verification and refinements — 2026-10-02
+
+The user authorized useful Muse calls without further spending confirmation.
+Fixture provider access was restored without the offline overlay. The unchanged
+installed PR 14/15 Framework and Muse/medium remain selected; authorization does
+not approve captures or alter business criteria.
+
+Fresh [baseline](../evidence/review-live-20261002-085034/summary.md) and
+[continuity-priority](../evidence/review-live-20261002-085100/summary.md) pairs each
+completed both paths. All 74 responses are HTTP 200 and exactly match actual
+Framework trace content. Eight capture assertions pass per pair. The outputs
+address the five earlier wording findings and urgently escalate loaner approval
+when continuity is prioritized, but both pairs remain **REJECTED_FOR_REPLAY**.
+Manual review found known bulletin eligibility labeled unknown, premium/total-cap
+ambiguity, elapsed-work/repair-cap conflation, unnecessary reapproval on coverage
+change, overbroad warranty review and unsupported standard after-hours wording.
+Initial mechanical checks missed Java baseline's dropped bulletin metadata;
+strengthened actual-child review now detects it. Original captures are unchanged.
+
+Revised prompts require forwarding complete applicability objects, evaluating the
+inclusive registered serial range separately from diagnosis, preserving known
+commercial facts in every field, avoiding premium double-counting and respecting
+routine item-level coverage within an approved scope/cap. Generator regeneration
+preserves all four model contracts. **34 focused offline tests pass**. Eight active
+actual traces were archived before YAML-only host recreation; package bytes were
+identified without creating a redundant JAR archive. All five services became ready.
+
+The controlled [offline comparison rehearsal](../evidence/review-comparison-correction-offline-20261002-090841/summary.md)
+and [real Muse correction](../evidence/review-comparison-correction-live-20261002-090917/summary.md)
+each pass **28 evidence checks**. The harness reuses complete real comparison
+content with case-ID-only normalization and deliberately removes `nextDecision`.
+Both actual Framework paths reject it and accept the missing-field correction;
+quotes/equipment assessments remain identical and no assessment/request is created.
+Real mode uses exactly one Muse/medium HTTP 200 call per path, combined reported
+cost 0.005049. The real correction retains unrelated source wording defects: it
+proves schema recovery and fidelity, not semantic repair or approved business replay.
+The rehearsal response is explicitly synthetic. No parent/final envelopes are used
+in this direct comparison diagnostic; it does not establish full-mission recovery.
+
+The subsequent [baseline](../evidence/review-live-20261002-090948/summary.md)
+and [priority](../evidence/review-live-20261002-091031/summary.md) full pairs also
+complete. All mechanical checks, including actual-child applicability and exact
+published equipment-assessment fidelity, pass; eight capture assertions pass per
+pair. Prior pricing/coverage/elapsed-work defects improve. Conservative shared
+replay review still rejects omissions/ambiguities in separate loaner after-hours
+handoff and the temporal relationship between loaner expiry and later diagnostic
+results. The final prompt requires both access arrangements in nextDecision,
+verified Priya approval when loaner is pursued, decision before expiry/attendance,
+and newly checked offers for later restoration failure. Thirty-four offline checks
+pass after that change. Current runtime packages/Framework are unchanged; active
+traces were preserved before YAML-only recreation. A preparatory priority launch
+failed PKCE callback before creating a case or calling the provider; authentication
+was retried after baseline submission, without concurrent callback-port use.
+
+The next [baseline pair](../evidence/review-live-20261002-092503/summary.md) completes
+both paths, but Java adds a disputed-coverage re-quote contradiction and malformed
+date. The [priority pair](../evidence/review-live-20261002-092554/summary.md) completes
+Sidecar and fails Java on Framework MAX_USAGE_UNITS: 206,892 exceeds 200,000. All 19
+Java provider responses are HTTP 200 and match actual traces; seven assertions pass
+and one fails on completion. Java recovers spontaneous assessment INVALID_JSON and
+an extra-brace step action: rejection 313, real correction response 348, entitlement
+start 357/completion 364. The later quota failure prevents a successful full-mission
+recovery claim and publishes no assessment. Sidecar's baseline output passes manual review and is suitable for replay curation.
+The priority output's commercial wording improves, but its unchanged-assessment
+check rejects shortening in planResolution's compareOptions assignment. The initial
+commercial review overstated full readiness; the corrected disposition is recorded
+without rewriting the source capture. Neither pair approves shared replay.
+
+Supported session quota is now 400,000 equally on both hosts (documented Framework
+property); other safety/time limits remain. Business caps remain USD cents as before.
+The prompt also forbids automatically re-quoting disputed findings within unchanged
+scope/cap and requires copying complete authoritative expiry dates. Thirty-four
+offline checks pass; active traces are preserved before recreation. Java-only
+baseline/priority follow-ups address these remaining gaps, without repeating the
+already suitable Sidecar cases. One-path review reports explicitly disclose scope
+and verify the actual root quota against the recorded baseline.
+
+The Java-only [baseline](../evidence/review-live-20261002-093632/summary.md) and
+[priority](../evidence/review-live-20261002-093706/summary.md) follow-ups both complete;
+four Java capture assertions pass per run, with four Sidecar assertions intentionally
+deselected. Actual root trace quota 400000 matches the recorded manifest; full
+assessment and quote fidelity pass. The baseline is suitable for replay curation;
+priority remains rejected for ambiguous risk wording about approval failure and
+excluded diagnosis. The latest prompt clarifies contingent loaner cost and keeps
+unknown diagnosis distinct from item-level warranty coverage, with diagnosis/travel
+included even if coverage is denied.
+
+The Sidecar priority preservation finding was localized: the root passed the full
+assessment to planResolution, which then shortened questions, uncertainty,
+hypotheses and citations before compareOptions. PlanResolution now explicitly
+requires copying every assessment field unchanged, and forbids invented task-result
+`$ref` retrieval (the Framework docs support no such task-reference mechanism).
+Thirty-four focused offline checks pass after these refinements; current Framework
+and application package bytes remain unchanged. Only the priority pair is rerun to
+verify the remaining findings; complete baseline captures remain preserved.
+
+The [priority preservation verification](../evidence/review-live-20261002-095046/summary.md)
+completes Sidecar with exact assessment preservation and suitable business wording;
+Java fails on an OpenRouter HTTP 200 error completion (choice 502, provider_unavailable)
+at assessEquipment. Partial content is not accepted. Six assertions pass and two
+fail on Java completion/final synthesis. Mechanical review now detects provider
+error completions inside HTTP 200, independently of transport status.
+
+The Java-only [retry](../evidence/review-live-20261002-100123/summary.md) completes and
+passes four scoped assertions, with correct commercial wording. Its exact-child
+check still rejects one added MAN-4.4 citation. Localization shows the change occurs
+in resolveEquipment's planResolution assignment; nested forwarding now preserves
+its received object correctly. Root instructions now explicitly copy every original
+assessment field and array in order, placing extra evidence beside it. All 34 focused
+offline checks pass; no application/Framework package change. Only Java priority
+is rerun on the new root instruction. Both current baseline candidates and complete
+Sidecar priority are retained with explicit original provenance. No shared replay
+baseline or first-delivery completion is approved yet.
+
+## Earlier deployed offline workflow verification — 2026-10-02
+
+Revised Java/Python publication guards and all three decision contracts are deployed.
+`author_workflow.py` now regenerates the same fixed contracts rather than erasing
+them; its regression passes. Java clean packaging succeeded offline on the unchanged
+installed Framework `4313a7f`, SHA-256
+`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
+Unchanged Sidecar beta.2/snapshot package bytes are verified against the recorded
+baseline; Sidecar was recreated to load revised YAML. Deployed Python/fixture source
+hashes match authored files. All five services are ready. `compose.offline.yaml`
+explicitly disables the fixture provider credential; every diagnostic case uses
+strict replay registration without live stages or provider fallback.
+
+[Predeployment preservation](../evidence/pre-business-diagnostic-20261002-074427/manifest.json)
+retains prior package, logs, identities, records, baseline and fixture journal.
+The active trace APIs returned zero items before recreation; historical actual traces
+remain in their preserved captures. Mounted configuration copies reflect authored
+files, not a claim about the old loaded generation; prior baseline hashes and old
+trace prompts identify that history. No neighboring source checkout was modified.
+
+The first [offline attempt](../evidence/review-business-workflow-offline-20261002-074647/summary.md)
+completed Sidecar but failed Java because replay incorrectly required the captured
+arrival order of independent parallel actions. Framework offered serviceHistory/
+serviceTerms before the captured referenceEvidence action; strict fixture rejection
+returned 409. This was a harness ordering defect. Registration dependencies now
+follow the captured task graph, with reversed independent action order tested offline.
+The deployed hosts were not changed for the rerun.
+
+The [corrected pair](../evidence/review-business-workflow-offline-20261002-075008/summary.md)
+completes both full workflows: Java 19 model requests/4.065 seconds; Sidecar 18
+requests/4.256 seconds. These are calls to the local scripted fixture, **not paid
+Muse calls**. Thirty focused offline pytest checks and **32 evidence checks pass**.
+Both paths reject the intentional quote-ID selectedOption, issue real schema feedback
+and accept the synthetic option-name correction. Actual trace sequences are Java
+488 rejection/512 acceptance and Sidecar 443/467. The real parent synthesis inputs
+retain the complete corrected comparison, including commercial citations, explicit
+submission before expiry, work/access uncertainty, quote equality and cent amounts.
+Every response content matches reassembled actual Framework trace content.
+
+Each corrected diagnostic persists one immutable, case-labeled assessment and exactly
+two authoritative quotes, with no invalid intermediate publication. All prior records
+remain intact, and no service-request records change. Case names explicitly identify
+diagnostic data. This is actual Framework execution using captured stages and
+hand-edited comparison/final responses, **not approved business replay or new model
+judgment**. Original full captures remain REJECTED_FOR_REPLAY; all **134 preserved
+source-evidence hashes match**. No paid calls, model substitution or capture approval.
+
+Revised deployed schema correction and evidence preservation are now verified for
+these scripted responses. Remaining gaps include real-model adherence to the wording
+fixes, full-mission recovery, comparison-output real correction, changed-priority
+responsiveness, approved replay and creation/recovery/authorization/isolation
+acceptance. First delivery remains incomplete. A later specifically scoped live phase
+must explicitly restore provider access; this phase leaves it disabled.
+
+Housekeeping: the [evidence index](../evidence/README.md) separates current offline
+checks from historical rejected full captures and the isolated correction diagnostic.
+Cleanup is now verified: disposable checker classes, temporary test databases and
+Python/pytest caches are absent. Broad automated deletion was initially blocked;
+explicit file deletions succeeded and the user completed directory cleanup.
+[Verification](../evidence/business-output-offline-20261002/cleanup.json) confirms
+all eight scratch paths are absent and all 134 preserved source-evidence hashes
+match. Captures, journals, actual traces and source work remain intact.
+
+## Offline business-output fixes — 2026-10-02
+
+No paid calls were made. Revised `compareOptions` separates arrival from completion:
+16:00 arrival plus the 2–4 hour estimate may reach 20:00, requiring dispatch/Luis
+later-access arrangements or a work limitation. The two chargeable repair hours
+remain a scope cap. The prompt requires explicit approved-request submission before
+quote expiry (S-5), keeps the separate loaner deadline, cites applicable commercial
+clauses alongside technical sources, and states diagnosis/travel remain included
+even if unresolved (S-3), with the expedited premium payable on attendance (S-4).
+Parent prompts preserve these details and unchanged comparison output.
+
+All three decision schemas and both application publication guards now require
+option names (`expedited`, `standard`, `loaner`, `replacement`, `defer`, `undecided`),
+rejecting quote IDs without silently normalizing selection. Exact authoritative
+quote guards, asset/approval authority and integer USD-cent values are preserved.
+No old database records or capture bytes were rewritten.
+
+[Versioned offline examples](../fixtures/replay/business-output-diagnostic-v1.json)
+reuse the actual comparisons from `live-20261002-000544`, with paired request IDs,
+Muse/medium identity, original content/request hashes and source-file hashes.
+Every hand-authored field change records before/after/reason. Original quotes,
+equipment assessments and case/asset identifiers remain identical. These are
+**OFFLINE_HAND_EDITED_DIAGNOSTIC**, `approved: false`; not model correction answers,
+Framework executions, complete replay scripts or acceptance evidence. Original
+full captures remain **REJECTED_FOR_REPLAY**. The isolated recovery diagnostic
+retains its distinct limited claim, including optional-context omission.
+
+[Focused evidence](../evidence/business-output-offline-20261002/summary.md):
+**27 pytest checks pass**, including six noncanonical-selection publication
+rejections, five damaged-quote publication cases, diagnostic/provenance preservation
+and existing capture-review/fixture tests. **10 Java local publication checks pass**
+against newly compiled application classes using temporary databases and a scripted
+caller: selection/altered-quote rejection plus a local positive control for each
+source example. These do not test token enforcement, HTTP boundaries or Framework
+orchestration. Offline Maven compilation on beta.8-SNAPSHOT succeeds (tests skipped;
+no Maven test-success claim). Initial two example-wording assertion failures and
+the PowerShell Maven argument-parsing failure are retained beside passing results.
+SHA-256 integrity of all **134 preserved evidence files** was checked after the work,
+including both full/controlled capture journals and actual traces plus prior failures.
+Previous compiled Java classes were archived before compilation.
+
+At that earlier offline-only checkpoint, no service restart, deployment, neighboring
+checkout change or packaged-JAR rewrite had occurred. Running hosts then used the
+pre-fix configuration/application bytes. Revised prompt
+adherence, deployed Framework schema correction, full-mission recovery,
+comparison-output controlled mutation, changed-priority responsiveness, approved
+replay and remaining business acceptance are unverified. First delivery is incomplete.
+
 **Latest Muse verification (2026-10-02):** both paths COMPLETED on the installed
 PR 14/15 Framework snapshot, Muse/medium. Both actual traces SUCCEEDED; authoritative
 quotes, asset/approval context and monetary checks pass. Java exercised ordinary

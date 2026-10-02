@@ -1,6 +1,41 @@
 # Loomspan reference applications and acceptance suite
 
-**Latest Muse verification (2026-10-02):** both paths complete with Muse/medium on
+**Current checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
+baseline and continuity-priority offline workflows through both applications.
+Each pair passes 34 evidence checks and eight workflow assertions; 39 focused
+offline tests pass. Approved scope is deterministic assessment replay only.
+Provider access is disabled; zero paid calls in this phase. Exact quotes, USD cents,
+asset/approval context and original assessments are preserved. First delivery remains
+incomplete; see [status](docs/implementation-status.md) and [approval record](fixtures/replay/business-reviewed-v1-approval.json).
+
+**Earlier checkpoint (2026-10-02):** the five business-output fixes and follow-up
+assessment-preservation refinements are verified. Thirty-four focused offline tests
+pass; both real comparison corrections pass 28 evidence checks. Reviewed Muse/medium
+baseline and priority outputs are suitable sources for replay curation on each path,
+with distinct captured configuration provenance. The latest Java priority passes
+31 mechanical checks and four scoped assertions. No shared replay or first-delivery
+acceptance is approved. Provider access is enabled under the user's Muse authorization.
+See [status](docs/implementation-status.md) and
+[latest review](evidence/review-live-20261002-102148/summary.md).
+Next: curate versioned strict offline replay from the reviewed sources, then verify
+remaining accepted scenarios. Historical rejected captures remain regression evidence.
+
+**Earlier deployed offline verification (2026-10-02):** both full diagnostic workflows
+complete on the revised Java/Sidecar configuration. All 32 evidence checks pass,
+including actual selection-schema rejection/correction, parent preservation and
+zero service commitments. Thirty focused offline tests pass. Responses are captured
+or explicitly authored; no new Muse judgment or replay approval. Provider access is
+disabled in the fixture. See [review](evidence/review-business-workflow-offline-20261002-075008/summary.md).
+
+**Earlier offline-only checkpoint (2026-10-02):** revised decision prompts, shared
+option-name schemas and both publication guards; 27 offline pytest checks and
+10 Java local publication checks pass. Java compiles offline on the installed
+snapshot. Explicitly hand-edited Muse-derived examples remain unapproved; originals,
+journals and traces are preserved. No paid calls or deployment in this phase.
+See [status](docs/implementation-status.md) and
+[offline evidence](evidence/business-output-offline-20261002/summary.md).
+
+**Earlier Muse verification (2026-10-02):** both paths complete with Muse/medium on
 the installed PR 14/15 snapshot. Eight workflow assertions and 53 mechanical checks
 pass. Java exercises ordinary schema recovery. A subsequent
 [isolated injected-fault diagnostic](evidence/review-controlled-step-live-20261002-004937/summary.md)

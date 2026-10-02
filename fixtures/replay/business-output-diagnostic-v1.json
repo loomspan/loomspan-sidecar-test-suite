@@ -1,0 +1,1026 @@
+{
+  "formatVersion": 1,
+  "approved": false,
+  "status": "OFFLINE_HAND_EDITED_DIAGNOSTIC",
+  "purpose": "Review examples and contract regression only; not model correction, Framework execution or approved replay",
+  "sourceCapture": "live-20261002-000544",
+  "sourceDisposition": "REJECTED_FOR_REPLAY",
+  "normalization": "None; original case IDs, quotes and equipment assessments retained",
+  "sourceSha256": {
+    "manifest.json": "8e69845e3e087dd14c349f336f8cf2fe5edaa339feb5770b913c259d26bb4e6e",
+    "journal.json": "91441f1bb00f68c1af70645b05149f0184a0a13e9d67d173f8a2dd4e6c4003e0",
+    "trace-index.json": "85d685a7c0e905231c2441756138d8710e683c7eb7a9b762ee1eee314d78059d",
+    "java-assessment.json": "a081ee1b03f5806af90481706f062732263afabcd1c8db561efd70b29be4cbbe",
+    "sidecar-assessment.json": "195d75289edbb3a1c489ff939a2037595dbdabb03f291be557eb8ca15c8a2a5d",
+    "java-business-records.json": "99c3bec0458084f0d06c2da4757b51195c27cb9a1e6c8bb71015370ea6d9591c",
+    "python-business-records.json": "83443e11d7c3c2bc82037b073d90fe13e81f101bfdba6ec912cf712dbde17674"
+  },
+  "samples": {
+    "java": {
+      "provenance": {
+        "sourceCapture": "live-20261002-000544",
+        "sourcePath": "java",
+        "caseId": "case-java-a591218d479e47e4afc4fbb61a526c5f",
+        "requestId": "7dd8ab98a1844fb88f827363e2f07607",
+        "provider": "live OpenRouter",
+        "model": "meta/muse-spark-1.3-contributor",
+        "reasoning": "medium",
+        "originalContentSha256": "2580bf69371868ffa6554246a6fbc799a00262c4728f5aa7441174ddb34c622e",
+        "originalRequestSha256": "b38982a6f2ce4c60d6f2efa123b19bd35eb6f7afde39222020553a2a6713272e"
+      },
+      "original": {
+        "caseId": "case-java-a591218d479e47e4afc4fbb61a526c5f",
+        "assetId": "NB-P240-017",
+        "disposition": "AWAITING_APPROVAL",
+        "selectedOption": "case-java-a591218d479e47e4afc4fbb61a526c5f-expedited-v1",
+        "rationale": "Recommend expedited diagnostic attendance (arrival 2026-09-29T14:00-16:00, max exposure USD 780.00, fullyCoveredScopeMaximum USD 300.00 if scope qualifies, coverage PENDING, no reservation, restoration not guaranteed) over standard (arrival 2026-09-30T10:00-12:00, max exposure USD 480.00) because standard attendance is after productionStart 2026-09-30T06:00 and cannot preserve the 2-hour recoverable window for a threatened shipment, while expedited fits site access 08:00-18:00 and allows same-day qualified investigation of harness/sensor/optical causes. Both quotes expire 2026-09-29T11:00 and continuity loaner/replacement also expires 11:00, so the loaner decision must be made before diagnostic findings are known. Restoration is uncertain for either option: attendance does not guarantee diagnosis, parts, repair or restored production, no confirmed defect is recorded, and coverage remains PENDING pending technician documentation. Risk preference is unspecified, so no risk tolerance is assumed; expedited preserves earliest chance for 09-30 production with higher premium that is payable even if unresolved and is not covered by warranty. Authority limits commitment not recommendation: Maya Chen may not commit, Luis Romero limit is USD 1000.00 which covers both service quotes but not loaner USD 2400.00 for 3 days or replacement USD 12500.00 which require separately verified Priya Shah approval. Loaner arrival 20:00-22:00 is outside standard access and must be arranged with Luis. No booking, approval, or reservation is made by this recommendation.",
+        "alternatives": [
+          "Standard attendance quote case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1: arrival 2026-09-30T10:00-12:00, max exposure USD 480.00, coverage PENDING, no reservation, restoration not guaranteed. Lower cost and within Luis USD 1000.00 limit but arrives after 06:00 production start, does not protect threatened shipment, still pays diagnosis/travel included and repair only if justified.",
+          "Loaner LOAN-017 offer (not a quote, not in quotes array): compatible P240-B capacity 20/min meets 18/min minimum, price USD 2400.00 for delivery/setup plus 3-day use plus return, arrival 2026-09-29T20:00-22:00, expires 2026-09-29T11:00, not reserved. Requires Priya Shah approval as exceeds Luis limit and requires Luis access arrangement for late arrival. To be decided by 11:00 before diagnostic outcome; useful only if restoration uncertain and continuity matters.",
+          "Replacement REPLACE-017 offer (not a quote): compatible P240 HW B price USD 12500.00, 10 business days lead, installation not quoted, expires 11:00. Requires Priya Shah approval, does not solve 2026-09-30T06:00 need, longer lead than temporary unit."
+        ],
+        "quotes": [
+          {
+            "quoteId": "case-java-a591218d479e47e4afc4fbb61a526c5f-expedited-v1",
+            "option": "expedited",
+            "currency": "USD",
+            "maxExposure": 78000,
+            "fullyCoveredScopeMaximum": 30000,
+            "coverage": "PENDING",
+            "attendance": "2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          },
+          {
+            "quoteId": "case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1",
+            "option": "standard",
+            "currency": "USD",
+            "maxExposure": 48000,
+            "fullyCoveredScopeMaximum": 0,
+            "coverage": "PENDING",
+            "attendance": "2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          }
+        ],
+        "citations": [
+          "MAN-2.3",
+          "MAN-3.2",
+          "MAN-3.3",
+          "MAN-5.2",
+          "MAN-5.3",
+          "MAN-4.2",
+          "MAN-4.3",
+          "SB-1",
+          "SB-2",
+          "SB-3",
+          "W-2",
+          "W-5",
+          "W-7",
+          "S-2",
+          "S-3",
+          "S-4",
+          "S-5",
+          "WO-0820",
+          "NOTE-0916",
+          "MAINT-0928"
+        ],
+        "uncertainty": [
+          "No confirmed defect; technician must document defect and relationship per W-2, pending review per W-7",
+          "Whether E17 recurred as same code each time and E08 interlock absent",
+          "Exact warm-up 35-50 min breakdown, cooling/restart durations, and three recurrence details",
+          "Cleaning procedure details and window condition at each event",
+          "Controller event record and systematic temperature-linked reproduction data",
+          "Coverage remains PENDING; expedited premium excluded from warranty and payable even if unresolved",
+          "Restoration not guaranteed; attendance does not guarantee parts, repair or production by a time",
+          "Parts stock and dispatch confirmation not reserved; approved request preserves prices only if before expiry",
+          "Loaner compatibility/capacity meets minimum but delivery/setup/return and late-access arrangement unconfirmed"
+        ],
+        "acceptedRisk": "Accepting that expedited attendance costs an uncovered premium payable even if unresolved and may still not restore production by 06:00; accepting that loaner vs repair trade-off must be decided by 11:00 without diagnostic findings given unspecified risk preference. No diagnosis, coverage outcome, or restoration is assumed.",
+        "changeConditions": [
+          "Stated restoration risk preference for continuity vs cost would revise weighting of loaner vs expedited vs standard",
+          "Qualified technician findings confirming defect, harness condition, or optical/alignment cause would revise scope and coverage",
+          "Warranty/coverage determination changing from PENDING would revise exposure",
+          "Loss of expedited slot, parts availability, or inability to arrange late access with Luis would revise feasibility",
+          "Extension of 11:00 expiry or verified Priya Shah approval for loaner/replacement would revise continuity choice",
+          "Evidence of smoke, odor, exposed wiring, guard damage or E08 interlock would trigger stop-use escalation"
+        ],
+        "nextDecision": "By 2026-09-29T11:00: decide on loaner LOAN-017 (requires Priya Shah approval, Luis late-access arrangement) and approve one service quote (Luis can commit within limit) via authorized workflow; no booking or reservation made here. Route to Luis Romero for access/scope and Priya Shah for spend above USD 1000.00.",
+        "responsibleParty": "Luis Romero for service scope/access decision; Priya Shah for spend above USD 1000.00 (loaner/replacement); Maya Chen may not commit",
+        "equipmentAssessment": {
+          "caseId": "case-java-a591218d479e47e4afc4fbb61a526c5f",
+          "assetId": "NB-P240-017",
+          "chronology": [
+            "2025-02-10: asset NB-P240-017 commissioned, model P240 hardware revision B serial AP24B-0517",
+            "2026-07-10 MAINT-0710: scheduled inspection complete by Jo Ellis, no open exceptions",
+            "2026-08-20 WO-0820: S17-B replaced after E17, suspected sensor fault, 20-minute test without recurrence by Jo Ellis, authorized technician",
+            "2026-09-16 NOTE-0916: E17 after 42 minutes, restart temporarily effective, linked to WO-0820, reported by Maya Chen",
+            "2026-09-28 MAINT-0928: operator condition/cleaning complete, no visible window obstruction, by Maya Chen",
+            "Current incident at businessNow 2026-09-29T09:05:00-07:00: E17 stops after 35-50 minutes warm-up, restarts after cooling, permitted cleaning did not resolve three recurrences, no smoke, unusual odor or damaged guard reported"
+          ],
+          "hypotheses": [
+            {
+              "explanation": "Obstructed viewing path / external contamination causing expected carton-passage signal to be missed resulting in E17 stopped cycle",
+              "supporting": [
+                "MAN-2.3 lists obstructed viewing path as possible explanation for E17",
+                "Operator cleaning of externally accessible sensor window is a permitted operator action subject to site instructions"
+              ],
+              "contrary": [
+                "MAINT-0928 records no visible window obstruction after operator condition/cleaning",
+                "Recurrence after documented cleaning weakens that explanation per MAN-3.3, with three recurrences reported in current incident",
+                "35-50 minute warm-up with resumption after cooling is reported, which alone does not fit a static obstruction"
+              ]
+            },
+            {
+              "explanation": "Intermittent sensor-harness connection causing loss of carton-passage signal after warm-up with recovery after cooling",
+              "supporting": [
+                "MAN-2.3 lists intermittent connection as possible explanation for E17",
+                "SB-1 states repeated E17 incidents after warm-up have sometimes been associated with intermittent sensor-harness connections",
+                "Asset serial AP24B-0517 is within SB-1 and SB-2 serial range AP24B-0400 to AP24B-0799 providing reason to investigate",
+                "Current incident reports E17 stops after 35-50 minutes warm-up and restarts after cooling with three recurrences after permitted cleaning"
+              ],
+              "contrary": [
+                "SB-1 states affected serial eligibility and matching symptom are reasons to investigate, not proof of the condition",
+                "SB-3 states bulletin is not a recall, blanket replacement authorization, or warranty extension",
+                "No technician inspection findings of harness connection reported; inspection findings are required before recording a specific confirmed defect"
+              ]
+            },
+            {
+              "explanation": "Residual optical or alignment cause other than simple external obstruction persisting after permitted cleaning",
+              "supporting": [
+                "MAN-3.3 states recurrence after documented cleaning weakens external obstruction explanation but does not eliminate all optical or alignment causes",
+                "MAN-2.3 lists E17 as expected carton-passage signal not received with multiple possible explanations requiring investigation"
+              ],
+              "contrary": [
+                "MAINT-0928 records operator condition/cleaning complete with no visible window obstruction",
+                "Temperature-linked pattern of 35-50 minute warm-up and resumption after cooling may justify considering a connection or component issue per MAN-3.3",
+                "No technician inspection findings reported to confirm optical or alignment defect"
+              ]
+            },
+            {
+              "explanation": "Sensor S17-B problem persisting despite recent replacement",
+              "supporting": [
+                "MAN-2.3 lists sensor problem as possible explanation for E17",
+                "WO-0820 suspected sensor fault and replaced S17-B for E17, with subsequent E17 recurrences in NOTE-0916 and current incident"
+              ],
+              "contrary": [
+                "Recurrence after sensor replacement weakens assumption that replacement resolved cause; MAN-3.2 states do not assume most recently replaced component failed again",
+                "SB-2 advises avoid ordering another sensor solely because E17 appears when E17 recurs after sensor replacement or cleaning",
+                "Inspection findings are required before recording a specific confirmed defect per MAN-3.3; no such finding reported",
+                "20-minute test without recurrence in WO-0820 did not address 42-minute and 35-50 minute intermittent intervals"
+              ]
+            }
+          ],
+          "uncertainty": [
+            "Exact dates, times since startup, and durations for each of the three current recurrences and restoration periods after restart/cooling",
+            "Confirmation that displayed event code was E17 on each recurrence and absence of E08 protective-interlock condition",
+            "Carton type, recent changes, visible condition of the externally accessible sensor window at each event, and actions already performed per data collection guidance",
+            "Details of permitted cleaning: site-approved procedure followed, shutdown requirements, by whom, and whether symptom recurred after each cleaning",
+            "Controller event record, asset label, hardware revision, and manufacturer serial verification for support request",
+            "Qualified technician inspection findings for sensor, alignment, optical path, and harness connection; no confirmed defect recorded",
+            "Adequacy of WO-0820 20-minute test relative to 42-minute and 35-50 minute recurrence intervals and work-order closeout test conditions",
+            "Completeness of operator daily entries and 90-day qualified inspections; missing entries investigation status",
+            "Whether temperature-linked warm-up/cooling intervals have been recorded systematically for technician reproduction"
+          ],
+          "questions": [
+            "What was the displayed event code, time since startup, and repeatability for each of the three recurrences?",
+            "What were the measured warm-up durations to stop (35-50 minute range breakdown) and cooling durations to restart?",
+            "What permitted external cleaning was completed, by whom, under what shutdown procedure, and did E17 recur after each?",
+            "What was the visible condition of the externally accessible sensor window at each event?",
+            "Were there changes in carton type, line setup, or other recent changes before recurrence?",
+            "How long did restart appear to restore operation each time?",
+            "Is the controller event record available with asset identifier, serial AP24B-0517, hardware revision B, and site?",
+            "Has an authorized technician investigated internal faults including harness connection since sensor replacement and cleaning?",
+            "What are the test conditions, duration, observed events, and responsible technician records linked to WO-0820 and any subsequent work?",
+            "Are there reports of smoke, burning odor, exposed wiring, damaged guard, or active protective interlock requiring stop-use escalation?"
+          ],
+          "citations": [
+            "MAN-1.1",
+            "MAN-2.1",
+            "MAN-2.2",
+            "MAN-2.3",
+            "MAN-2.4",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-3.4",
+            "MAN-4.1",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "ASSET-017",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928"
+          ]
+        }
+      },
+      "candidate": {
+        "caseId": "case-java-a591218d479e47e4afc4fbb61a526c5f",
+        "assetId": "NB-P240-017",
+        "disposition": "AWAITING_APPROVAL",
+        "selectedOption": "expedited",
+        "rationale": "Recommend expedited diagnostic attendance (arrival 2026-09-29T14:00-16:00, max exposure USD 780.00, fullyCoveredScopeMaximum USD 300.00 if scope qualifies, coverage PENDING, no reservation, restoration not guaranteed) over standard (arrival 2026-09-30T10:00-12:00, max exposure USD 480.00) because standard attendance is after productionStart 2026-09-30T06:00 and cannot preserve the 2-hour recoverable window for a threatened shipment, while expedited arrival fits site access 08:00-18:00 but work may extend beyond it and allows same-day qualified investigation of harness/sensor/optical causes. Both quotes expire 2026-09-29T11:00 and continuity loaner/replacement also expires 11:00, so the loaner decision must be made before diagnostic findings are known. Restoration is uncertain for either option: attendance does not guarantee diagnosis, parts, repair or restored production, no confirmed defect is recorded, and coverage remains PENDING pending technician documentation. Risk preference is unspecified, so no risk tolerance is assumed; expedited preserves earliest chance for 09-30 production with higher premium that is payable even if unresolved and is not covered by warranty. Authority limits commitment not recommendation: Maya Chen may not commit, Luis Romero limit is USD 1000.00 which covers both service quotes but not loaner USD 2400.00 for 3 days or replacement USD 12500.00 which require separately verified Priya Shah approval. Loaner arrival 20:00-22:00 is outside standard access and must be arranged with Luis. No booking, approval, or reservation is made by this recommendation. Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017).",
+        "alternatives": [
+          "Standard attendance quote case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1: arrival 2026-09-30T10:00-12:00, max exposure USD 480.00, coverage PENDING, no reservation, restoration not guaranteed. Lower cost and within Luis USD 1000.00 limit but arrives after 06:00 production start, does not protect threatened shipment, diagnosis and travel remain included even if unresolved (S-3); only actual authorized repair labor and installed parts are chargeable, subject to warranty and the cap.",
+          "Loaner LOAN-017 offer (not a quote, not in quotes array): compatible P240-B capacity 20/min meets 18/min minimum, price USD 2400.00 for delivery/setup plus 3-day use plus return, arrival 2026-09-29T20:00-22:00, expires 2026-09-29T11:00, not reserved. Requires Priya Shah approval as exceeds Luis limit and requires Luis access arrangement for late arrival. To be decided by 11:00 before diagnostic outcome; useful only if restoration uncertain and continuity matters.",
+          "Replacement REPLACE-017 offer (not a quote): compatible P240 HW B price USD 12500.00, 10 business days lead, installation not quoted, expires 11:00. Requires Priya Shah approval, does not solve 2026-09-30T06:00 need, longer lead than temporary unit."
+        ],
+        "quotes": [
+          {
+            "quoteId": "case-java-a591218d479e47e4afc4fbb61a526c5f-expedited-v1",
+            "option": "expedited",
+            "currency": "USD",
+            "maxExposure": 78000,
+            "fullyCoveredScopeMaximum": 30000,
+            "coverage": "PENDING",
+            "attendance": "2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          },
+          {
+            "quoteId": "case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1",
+            "option": "standard",
+            "currency": "USD",
+            "maxExposure": 48000,
+            "fullyCoveredScopeMaximum": 0,
+            "coverage": "PENDING",
+            "attendance": "2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          }
+        ],
+        "citations": [
+          "MAN-2.3",
+          "MAN-3.2",
+          "MAN-3.3",
+          "MAN-5.2",
+          "MAN-5.3",
+          "MAN-4.2",
+          "MAN-4.3",
+          "SB-1",
+          "SB-2",
+          "SB-3",
+          "W-2",
+          "W-5",
+          "W-7",
+          "S-2",
+          "S-3",
+          "S-4",
+          "S-5",
+          "WO-0820",
+          "NOTE-0916",
+          "MAINT-0928",
+          "SITE-WEST",
+          "RESOURCES-017",
+          "AUTH-NB",
+          "LOAN-017"
+        ],
+        "uncertainty": [
+          "No confirmed defect; technician must document defect and relationship per W-2, pending review per W-7",
+          "Whether E17 recurred as same code each time and E08 interlock absent",
+          "Exact warm-up 35-50 min breakdown, cooling/restart durations, and three recurrence details",
+          "Cleaning procedure details and window condition at each event",
+          "Controller event record and systematic temperature-linked reproduction data",
+          "Coverage remains PENDING; expedited premium excluded from warranty and payable even if unresolved",
+          "Restoration not guaranteed; attendance does not guarantee parts, repair or production by a time",
+          "Parts stock and dispatch confirmation not reserved; approved request preserves prices only if before expiry",
+          "Loaner compatibility/capacity meets minimum but delivery/setup/return and late-access arrangement unconfirmed",
+          "Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017)."
+        ],
+        "acceptedRisk": "Accepting that expedited attendance costs an uncovered premium payable even if unresolved and may still not restore production by 06:00; accepting that loaner vs repair trade-off must be decided by 11:00 without diagnostic findings given unspecified risk preference. No diagnosis, coverage outcome, or restoration is assumed.",
+        "changeConditions": [
+          "Stated restoration risk preference for continuity vs cost would revise weighting of loaner vs expedited vs standard",
+          "Qualified technician findings confirming defect, harness condition, or optical/alignment cause would revise scope and coverage",
+          "Warranty/coverage determination changing from PENDING would revise exposure",
+          "Loss of expedited slot, parts availability, or inability to arrange late access with Luis would revise feasibility",
+          "Extension of 11:00 expiry or verified Priya Shah approval for loaner/replacement would revise continuity choice",
+          "Evidence of smoke, odor, exposed wiring, guard damage or E08 interlock would trigger stop-use escalation"
+        ],
+        "nextDecision": "Luis Romero must approve and submit the approved expedited service request before 2026-09-29T11:00:00-07:00 to preserve quoted prices for the approved scope (S-5). Approval alone does not preserve prices; submission does not reserve stock or confirm attendance. Changes to attendance, repair scope or cap require renewed approval; matching dispatch confirmation or later quote expiry alone does not. Separately decide on the USD 2400.00 LOAN-017 offer before its 11:00 expiry, with separately verified Priya Shah approval above Luis USD 1000.00 ceiling and Luis access arrangements for 20:00-22:00 delivery. Service submission does not extend the loaner offer. Dispatch must also arrange potential expedited work beyond 18:00 with Luis. No approval or commitment is made here.",
+        "responsibleParty": "Luis Romero for service scope/access decision; Priya Shah for spend above USD 1000.00 (loaner/replacement); Maya Chen may not commit",
+        "equipmentAssessment": {
+          "caseId": "case-java-a591218d479e47e4afc4fbb61a526c5f",
+          "assetId": "NB-P240-017",
+          "chronology": [
+            "2025-02-10: asset NB-P240-017 commissioned, model P240 hardware revision B serial AP24B-0517",
+            "2026-07-10 MAINT-0710: scheduled inspection complete by Jo Ellis, no open exceptions",
+            "2026-08-20 WO-0820: S17-B replaced after E17, suspected sensor fault, 20-minute test without recurrence by Jo Ellis, authorized technician",
+            "2026-09-16 NOTE-0916: E17 after 42 minutes, restart temporarily effective, linked to WO-0820, reported by Maya Chen",
+            "2026-09-28 MAINT-0928: operator condition/cleaning complete, no visible window obstruction, by Maya Chen",
+            "Current incident at businessNow 2026-09-29T09:05:00-07:00: E17 stops after 35-50 minutes warm-up, restarts after cooling, permitted cleaning did not resolve three recurrences, no smoke, unusual odor or damaged guard reported"
+          ],
+          "hypotheses": [
+            {
+              "explanation": "Obstructed viewing path / external contamination causing expected carton-passage signal to be missed resulting in E17 stopped cycle",
+              "supporting": [
+                "MAN-2.3 lists obstructed viewing path as possible explanation for E17",
+                "Operator cleaning of externally accessible sensor window is a permitted operator action subject to site instructions"
+              ],
+              "contrary": [
+                "MAINT-0928 records no visible window obstruction after operator condition/cleaning",
+                "Recurrence after documented cleaning weakens that explanation per MAN-3.3, with three recurrences reported in current incident",
+                "35-50 minute warm-up with resumption after cooling is reported, which alone does not fit a static obstruction"
+              ]
+            },
+            {
+              "explanation": "Intermittent sensor-harness connection causing loss of carton-passage signal after warm-up with recovery after cooling",
+              "supporting": [
+                "MAN-2.3 lists intermittent connection as possible explanation for E17",
+                "SB-1 states repeated E17 incidents after warm-up have sometimes been associated with intermittent sensor-harness connections",
+                "Asset serial AP24B-0517 is within SB-1 and SB-2 serial range AP24B-0400 to AP24B-0799 providing reason to investigate",
+                "Current incident reports E17 stops after 35-50 minutes warm-up and restarts after cooling with three recurrences after permitted cleaning"
+              ],
+              "contrary": [
+                "SB-1 states affected serial eligibility and matching symptom are reasons to investigate, not proof of the condition",
+                "SB-3 states bulletin is not a recall, blanket replacement authorization, or warranty extension",
+                "No technician inspection findings of harness connection reported; inspection findings are required before recording a specific confirmed defect"
+              ]
+            },
+            {
+              "explanation": "Residual optical or alignment cause other than simple external obstruction persisting after permitted cleaning",
+              "supporting": [
+                "MAN-3.3 states recurrence after documented cleaning weakens external obstruction explanation but does not eliminate all optical or alignment causes",
+                "MAN-2.3 lists E17 as expected carton-passage signal not received with multiple possible explanations requiring investigation"
+              ],
+              "contrary": [
+                "MAINT-0928 records operator condition/cleaning complete with no visible window obstruction",
+                "Temperature-linked pattern of 35-50 minute warm-up and resumption after cooling may justify considering a connection or component issue per MAN-3.3",
+                "No technician inspection findings reported to confirm optical or alignment defect"
+              ]
+            },
+            {
+              "explanation": "Sensor S17-B problem persisting despite recent replacement",
+              "supporting": [
+                "MAN-2.3 lists sensor problem as possible explanation for E17",
+                "WO-0820 suspected sensor fault and replaced S17-B for E17, with subsequent E17 recurrences in NOTE-0916 and current incident"
+              ],
+              "contrary": [
+                "Recurrence after sensor replacement weakens assumption that replacement resolved cause; MAN-3.2 states do not assume most recently replaced component failed again",
+                "SB-2 advises avoid ordering another sensor solely because E17 appears when E17 recurs after sensor replacement or cleaning",
+                "Inspection findings are required before recording a specific confirmed defect per MAN-3.3; no such finding reported",
+                "20-minute test without recurrence in WO-0820 did not address 42-minute and 35-50 minute intermittent intervals"
+              ]
+            }
+          ],
+          "uncertainty": [
+            "Exact dates, times since startup, and durations for each of the three current recurrences and restoration periods after restart/cooling",
+            "Confirmation that displayed event code was E17 on each recurrence and absence of E08 protective-interlock condition",
+            "Carton type, recent changes, visible condition of the externally accessible sensor window at each event, and actions already performed per data collection guidance",
+            "Details of permitted cleaning: site-approved procedure followed, shutdown requirements, by whom, and whether symptom recurred after each cleaning",
+            "Controller event record, asset label, hardware revision, and manufacturer serial verification for support request",
+            "Qualified technician inspection findings for sensor, alignment, optical path, and harness connection; no confirmed defect recorded",
+            "Adequacy of WO-0820 20-minute test relative to 42-minute and 35-50 minute recurrence intervals and work-order closeout test conditions",
+            "Completeness of operator daily entries and 90-day qualified inspections; missing entries investigation status",
+            "Whether temperature-linked warm-up/cooling intervals have been recorded systematically for technician reproduction"
+          ],
+          "questions": [
+            "What was the displayed event code, time since startup, and repeatability for each of the three recurrences?",
+            "What were the measured warm-up durations to stop (35-50 minute range breakdown) and cooling durations to restart?",
+            "What permitted external cleaning was completed, by whom, under what shutdown procedure, and did E17 recur after each?",
+            "What was the visible condition of the externally accessible sensor window at each event?",
+            "Were there changes in carton type, line setup, or other recent changes before recurrence?",
+            "How long did restart appear to restore operation each time?",
+            "Is the controller event record available with asset identifier, serial AP24B-0517, hardware revision B, and site?",
+            "Has an authorized technician investigated internal faults including harness connection since sensor replacement and cleaning?",
+            "What are the test conditions, duration, observed events, and responsible technician records linked to WO-0820 and any subsequent work?",
+            "Are there reports of smoke, burning odor, exposed wiring, damaged guard, or active protective interlock requiring stop-use escalation?"
+          ],
+          "citations": [
+            "MAN-1.1",
+            "MAN-2.1",
+            "MAN-2.2",
+            "MAN-2.3",
+            "MAN-2.4",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-3.4",
+            "MAN-4.1",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "ASSET-017",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928"
+          ]
+        }
+      },
+      "edits": [
+        {
+          "field": "alternatives",
+          "before": [
+            "Standard attendance quote case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1: arrival 2026-09-30T10:00-12:00, max exposure USD 480.00, coverage PENDING, no reservation, restoration not guaranteed. Lower cost and within Luis USD 1000.00 limit but arrives after 06:00 production start, does not protect threatened shipment, still pays diagnosis/travel included and repair only if justified.",
+            "Loaner LOAN-017 offer (not a quote, not in quotes array): compatible P240-B capacity 20/min meets 18/min minimum, price USD 2400.00 for delivery/setup plus 3-day use plus return, arrival 2026-09-29T20:00-22:00, expires 2026-09-29T11:00, not reserved. Requires Priya Shah approval as exceeds Luis limit and requires Luis access arrangement for late arrival. To be decided by 11:00 before diagnostic outcome; useful only if restoration uncertain and continuity matters.",
+            "Replacement REPLACE-017 offer (not a quote): compatible P240 HW B price USD 12500.00, 10 business days lead, installation not quoted, expires 11:00. Requires Priya Shah approval, does not solve 2026-09-30T06:00 need, longer lead than temporary unit."
+          ],
+          "after": [
+            "Standard attendance quote case-java-a591218d479e47e4afc4fbb61a526c5f-standard-v1: arrival 2026-09-30T10:00-12:00, max exposure USD 480.00, coverage PENDING, no reservation, restoration not guaranteed. Lower cost and within Luis USD 1000.00 limit but arrives after 06:00 production start, does not protect threatened shipment, diagnosis and travel remain included even if unresolved (S-3); only actual authorized repair labor and installed parts are chargeable, subject to warranty and the cap.",
+            "Loaner LOAN-017 offer (not a quote, not in quotes array): compatible P240-B capacity 20/min meets 18/min minimum, price USD 2400.00 for delivery/setup plus 3-day use plus return, arrival 2026-09-29T20:00-22:00, expires 2026-09-29T11:00, not reserved. Requires Priya Shah approval as exceeds Luis limit and requires Luis access arrangement for late arrival. To be decided by 11:00 before diagnostic outcome; useful only if restoration uncertain and continuity matters.",
+            "Replacement REPLACE-017 offer (not a quote): compatible P240 HW B price USD 12500.00, 10 business days lead, installation not quoted, expires 11:00. Requires Priya Shah approval, does not solve 2026-09-30T06:00 need, longer lead than temporary unit."
+          ],
+          "reason": "Clarify S-3 without introducing diagnosis/travel charges"
+        },
+        {
+          "field": "rationale",
+          "before": "Recommend expedited diagnostic attendance (arrival 2026-09-29T14:00-16:00, max exposure USD 780.00, fullyCoveredScopeMaximum USD 300.00 if scope qualifies, coverage PENDING, no reservation, restoration not guaranteed) over standard (arrival 2026-09-30T10:00-12:00, max exposure USD 480.00) because standard attendance is after productionStart 2026-09-30T06:00 and cannot preserve the 2-hour recoverable window for a threatened shipment, while expedited fits site access 08:00-18:00 and allows same-day qualified investigation of harness/sensor/optical causes. Both quotes expire 2026-09-29T11:00 and continuity loaner/replacement also expires 11:00, so the loaner decision must be made before diagnostic findings are known. Restoration is uncertain for either option: attendance does not guarantee diagnosis, parts, repair or restored production, no confirmed defect is recorded, and coverage remains PENDING pending technician documentation. Risk preference is unspecified, so no risk tolerance is assumed; expedited preserves earliest chance for 09-30 production with higher premium that is payable even if unresolved and is not covered by warranty. Authority limits commitment not recommendation: Maya Chen may not commit, Luis Romero limit is USD 1000.00 which covers both service quotes but not loaner USD 2400.00 for 3 days or replacement USD 12500.00 which require separately verified Priya Shah approval. Loaner arrival 20:00-22:00 is outside standard access and must be arranged with Luis. No booking, approval, or reservation is made by this recommendation.",
+          "after": "Recommend expedited diagnostic attendance (arrival 2026-09-29T14:00-16:00, max exposure USD 780.00, fullyCoveredScopeMaximum USD 300.00 if scope qualifies, coverage PENDING, no reservation, restoration not guaranteed) over standard (arrival 2026-09-30T10:00-12:00, max exposure USD 480.00) because standard attendance is after productionStart 2026-09-30T06:00 and cannot preserve the 2-hour recoverable window for a threatened shipment, while expedited arrival fits site access 08:00-18:00 but work may extend beyond it and allows same-day qualified investigation of harness/sensor/optical causes. Both quotes expire 2026-09-29T11:00 and continuity loaner/replacement also expires 11:00, so the loaner decision must be made before diagnostic findings are known. Restoration is uncertain for either option: attendance does not guarantee diagnosis, parts, repair or restored production, no confirmed defect is recorded, and coverage remains PENDING pending technician documentation. Risk preference is unspecified, so no risk tolerance is assumed; expedited preserves earliest chance for 09-30 production with higher premium that is payable even if unresolved and is not covered by warranty. Authority limits commitment not recommendation: Maya Chen may not commit, Luis Romero limit is USD 1000.00 which covers both service quotes but not loaner USD 2400.00 for 3 days or replacement USD 12500.00 which require separately verified Priya Shah approval. Loaner arrival 20:00-22:00 is outside standard access and must be arranged with Luis. No booking, approval, or reservation is made by this recommendation. Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017).",
+          "reason": "Separate attendance from work completion"
+        },
+        {
+          "field": "uncertainty",
+          "before": [
+            "No confirmed defect; technician must document defect and relationship per W-2, pending review per W-7",
+            "Whether E17 recurred as same code each time and E08 interlock absent",
+            "Exact warm-up 35-50 min breakdown, cooling/restart durations, and three recurrence details",
+            "Cleaning procedure details and window condition at each event",
+            "Controller event record and systematic temperature-linked reproduction data",
+            "Coverage remains PENDING; expedited premium excluded from warranty and payable even if unresolved",
+            "Restoration not guaranteed; attendance does not guarantee parts, repair or production by a time",
+            "Parts stock and dispatch confirmation not reserved; approved request preserves prices only if before expiry",
+            "Loaner compatibility/capacity meets minimum but delivery/setup/return and late-access arrangement unconfirmed"
+          ],
+          "after": [
+            "No confirmed defect; technician must document defect and relationship per W-2, pending review per W-7",
+            "Whether E17 recurred as same code each time and E08 interlock absent",
+            "Exact warm-up 35-50 min breakdown, cooling/restart durations, and three recurrence details",
+            "Cleaning procedure details and window condition at each event",
+            "Controller event record and systematic temperature-linked reproduction data",
+            "Coverage remains PENDING; expedited premium excluded from warranty and payable even if unresolved",
+            "Restoration not guaranteed; attendance does not guarantee parts, repair or production by a time",
+            "Parts stock and dispatch confirmation not reserved; approved request preserves prices only if before expiry",
+            "Loaner compatibility/capacity meets minimum but delivery/setup/return and late-access arrangement unconfirmed",
+            "Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017)."
+          ],
+          "reason": "Remove unconditional access claim and retain explicit uncertainty"
+        },
+        {
+          "field": "selectedOption",
+          "before": "case-java-a591218d479e47e4afc4fbb61a526c5f-expedited-v1",
+          "after": "expedited",
+          "reason": "Canonical option name; no silent quote-ID normalization"
+        },
+        {
+          "field": "nextDecision",
+          "before": "By 2026-09-29T11:00: decide on loaner LOAN-017 (requires Priya Shah approval, Luis late-access arrangement) and approve one service quote (Luis can commit within limit) via authorized workflow; no booking or reservation made here. Route to Luis Romero for access/scope and Priya Shah for spend above USD 1000.00.",
+          "after": "Luis Romero must approve and submit the approved expedited service request before 2026-09-29T11:00:00-07:00 to preserve quoted prices for the approved scope (S-5). Approval alone does not preserve prices; submission does not reserve stock or confirm attendance. Changes to attendance, repair scope or cap require renewed approval; matching dispatch confirmation or later quote expiry alone does not. Separately decide on the USD 2400.00 LOAN-017 offer before its 11:00 expiry, with separately verified Priya Shah approval above Luis USD 1000.00 ceiling and Luis access arrangements for 20:00-22:00 delivery. Service submission does not extend the loaner offer. Dispatch must also arrange potential expedited work beyond 18:00 with Luis. No approval or commitment is made here.",
+          "reason": "Explicit approved-request submission and separate continuity/access handoff"
+        },
+        {
+          "field": "citations",
+          "before": [
+            "MAN-2.3",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-5.2",
+            "MAN-5.3",
+            "MAN-4.2",
+            "MAN-4.3",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "W-2",
+            "W-5",
+            "W-7",
+            "S-2",
+            "S-3",
+            "S-4",
+            "S-5",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0928"
+          ],
+          "after": [
+            "MAN-2.3",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-5.2",
+            "MAN-5.3",
+            "MAN-4.2",
+            "MAN-4.3",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "W-2",
+            "W-5",
+            "W-7",
+            "S-2",
+            "S-3",
+            "S-4",
+            "S-5",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0928",
+            "SITE-WEST",
+            "RESOURCES-017",
+            "AUTH-NB",
+            "LOAN-017"
+          ],
+          "reason": "Retain technical sources and add applicable commercial/context sources"
+        }
+      ]
+    },
+    "sidecar": {
+      "provenance": {
+        "sourceCapture": "live-20261002-000544",
+        "sourcePath": "sidecar",
+        "caseId": "case-sidecar-4b5111380c924c9eb9df88426128d696",
+        "requestId": "d6324d5a75b04d5f91806e11d21b1871",
+        "provider": "live OpenRouter",
+        "model": "meta/muse-spark-1.3-contributor",
+        "reasoning": "medium",
+        "originalContentSha256": "6e2af240a2e68d2741c6b4bceaeee717ea4b6a4c082d1eadf40bd3dad4c59849",
+        "originalRequestSha256": "53073c24a906ff470217320cac580d31e78803849e86f0d5d53f2b01caf26089"
+      },
+      "original": {
+        "caseId": "case-sidecar-4b5111380c924c9eb9df88426128d696",
+        "assetId": "NB-P240-017",
+        "disposition": "AWAITING_APPROVAL",
+        "selectedOption": "expedited",
+        "rationale": "Recommend expedited diagnostic attendance on 2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00 over standard on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00 because production starts 2026-09-30T06:00:00-07:00 with only 2 recoverable delay hours and lost morning shift threatens shipment. Standard arrival 10:00-12:00 is after production start and cannot preserve the morning shift. Expedited occurs within site access 08:00-18:00 without after-hours arrangement, while loaner arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 would require arrangement with Luis and standard also fits access but misses production. Both service quotes expire at 2026-09-29T11:00:00-07:00, same time as continuityOptions expiry, so the loaner decision for LOAN-017 at $2400.00 must be made before diagnostic attendance at 14:00-16:00 without knowing technician findings. Restoration is not guaranteed for either quote (restorationGuaranteed false), coverage is PENDING, scope is 2 repair hours with parts S17-B and H17-B onlyIfJustifiedByTechnician, and intermittent warm-up pattern after prior S17-B replacement and cleaning leaves diagnosis unresolved. Restoration risk preference is unspecified, so no risk tolerance is assumed; the recommendation favors earliest information to protect shipment while preserving separate continuity choice. Authority limits commitment, not recommendation: Maya Chen cannot commit, Luis Romero maximum exposure is $1000.00, larger commitments require separately verified approval from Priya Shah. Expedited maximum exposure $780.00 with fully covered scope maximum $300.00 if qualifying versus standard $480.00 with $0.00 reflects $300.00 expedited premium payable even if unresolved and not covered by warranty/service agreement. No booking, approval, reservation, or coverage determination is made by this comparison.",
+        "alternatives": [
+          "Standard diagnostic on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00: maximum exposure $480.00, fully covered scope maximum $0.00, coverage PENDING, same 2-hour S17-B/H17-B onlyIfJustifiedByTechnician scope, no reservation, restoration not guaranteed. Fits 08:00-18:00 access but arrives 4 hours after 06:00 production start, exceeding 2-hour recoverable delay and risking threatened shipment. Requires approved service request before 11:00 expiry; within Luis $1000.00 ceiling but still needs verified approval, Maya cannot commit.",
+          "Loaner LOAN-017 continuity option: compatible P240-B at 20 per minute meeting 18 minimum, arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 for 3-day use including delivery/setup and return at $2400.00, expires 2026-09-29T11:00:00-07:00, not reserved. Arrival outside 08:00-18:00 requires arrangement with Luis. Price exceeds Luis $1000.00 ceiling and requires separately verified approval from Priya Shah. Not in quotes array; decision must be separate from diagnostic and made before technician findings are known.",
+          "Replacement REPLACE-017: compatible P240 Rev B at $12500.00, 10 business-day lead, installation not quoted. Exceeds Luis ceiling, requires Priya approval, cannot meet 2026-09-30 production start. Not in quotes array; described only for completeness.",
+          "Defer both service and continuity past 11:00 expiry: preserves no prices or resources, risks loss of expedited slot with Jo Ellis and loaner availability, and leaves 06:00 production without diagnostic information. No approval committed."
+        ],
+        "quotes": [
+          {
+            "quoteId": "case-sidecar-4b5111380c924c9eb9df88426128d696-expedited-v1",
+            "option": "expedited",
+            "currency": "USD",
+            "maxExposure": 78000,
+            "fullyCoveredScopeMaximum": 30000,
+            "coverage": "PENDING",
+            "attendance": "2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          },
+          {
+            "quoteId": "case-sidecar-4b5111380c924c9eb9df88426128d696-standard-v1",
+            "option": "standard",
+            "currency": "USD",
+            "maxExposure": 48000,
+            "fullyCoveredScopeMaximum": 0,
+            "coverage": "PENDING",
+            "attendance": "2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          }
+        ],
+        "citations": [
+          "MAN-1.1",
+          "MAN-2.3",
+          "MAN-3.2",
+          "SB-1",
+          "SB-2",
+          "SB-3",
+          "WO-0820",
+          "NOTE-0916",
+          "MAINT-0710",
+          "MAINT-0928"
+        ],
+        "uncertainty": [
+          "Whether expedited 2-hour scope will achieve restoration before 06:00 production; restorationGuaranteed false and workEstimate 2-4 hours.",
+          "Whether quoted scope qualifies for coverage; determination PENDING, diagnosis/travel included but expedited premium and loaner excluded, repair labor/parts subject to technician documentation.",
+          "Exact timing and conditions of three current recurrences versus 42-minute event on 2026-09-16 for technician assessment.",
+          "Confirmed defect unknown; harness versus sensor versus viewing path requires qualified internal inspection, serial eligibility alone is not proof.",
+          "Loaner need unknown until diagnostic; loaner decision expires 11:00 before 14:00 attendance.",
+          "Site access for loaner arrival 20:00-22:00 requires arrangement with Luis; expedited and standard fit 08:00-18:00.",
+          "Production impact if morning shift lost and whether 2-hour recoverable delay can be preserved without continuity."
+        ],
+        "acceptedRisk": "Accepting expedited recommendation means accepting $780.00 maximum exposure with only $300.00 maximum if fully covered scope qualifies, $300.00 premium payable even if unresolved, pending coverage, no guarantee of restoration before production, and making an 11:00 loaner decision at $2400.00 without diagnostic findings. Risk preference is unspecified so this does not assume risk tolerance; it prioritizes earliest diagnostic information to protect threatened shipment while leaving continuity choice to approver.",
+        "changeConditions": [
+          "Stated restoration risk preference for or against paying premium/loaner to protect shipment.",
+          "Verified coverage determination or technician findings confirming defect and required parts/labor.",
+          "Change to production start, recoverable delay, shipment risk, or site access/Luis availability.",
+          "Loss of expedited slot, parts availability, or loaner expiry/availability change.",
+          "Verified approval or spending ceiling change from Priya Shah or Luis Romero.",
+          "New controller event record, carton/change information, or cleaning/inspection details altering investigation scope."
+        ],
+        "nextDecision": "By 2026-09-29T11:00:00-07:00, approver must decide: (1) approve or decline expedited service request preserving quoted prices for approved scope without reserving stock or booking appointment, and (2) separately approve or decline LOAN-017 loaner at $2400.00 requiring Priya Shah approval over $1000.00 ceiling plus Luis arrangement for 20:00-22:00 arrival. No booking or approval is made here; dispatch confirmation, renewed approval for scope/cap changes, and technician justification for parts still required.",
+        "responsibleParty": "Priya Shah",
+        "equipmentAssessment": {
+          "caseId": "case-sidecar-4b5111380c924c9eb9df88426128d696",
+          "assetId": "NB-P240-017",
+          "chronology": [
+            "2025-02-10: Asset NB-P240-017 (P240 Rev B, serial AP24B-0517) commissioned.",
+            "2026-07-10 MAINT-0710: Scheduled inspection complete, no open exceptions (Jo Ellis).",
+            "2026-08-20 WO-0820: Replaced S17-B after E17; suspected sensor fault; 20-minute test without recurrence (Jo Ellis, authorized technician).",
+            "2026-09-16 NOTE-0916: E17 after 42 minutes; restart temporarily effective; linked to WO-0820 (Maya Chen).",
+            "2026-09-28 MAINT-0928: Operator condition/cleaning complete, no visible window obstruction (Maya Chen).",
+            "2026-09-29T09:05:00-07:00 current report: E17 stops after 35-50 minutes warm-up, restarts after cooling; permitted cleaning did not resolve three recurrences; no smoke, unusual odor or damaged guard reported."
+          ],
+          "hypotheses": [
+            {
+              "explanation": "Obstructed viewing path / external contamination causing missing carton-passage signal: E17 means the expected carton-passage signal was not received and one possible explanation is an obstructed viewing path.",
+              "supporting": [
+                "E17 is defined as expected carton-passage signal not received with obstructed viewing path as a possible explanation.",
+                "Operator cleaning procedure for externally accessible sensor window exists as a permitted operator action."
+              ],
+              "contrary": [
+                "MAINT-0928 on 2026-09-28 records operator condition/cleaning complete with no visible window obstruction, yet recurrences are reported after that.",
+                "Current incident states permitted cleaning did not resolve three recurrences; recurrence after documented cleaning weakens but does not eliminate optical or alignment causes."
+              ]
+            },
+            {
+              "explanation": "Sensor S17-B problem causing missing carton-passage signal: E17 lists a sensor problem as a possible explanation, and WO-0820 previously suspected sensor fault.",
+              "supporting": [
+                "E17 lists sensor problem among possible explanations.",
+                "WO-0820 on 2026-08-20 replaced S17-B after E17 for suspected sensor fault."
+              ],
+              "contrary": [
+                "E17 recurred after sensor replacement (NOTE-0916 on 2026-09-16 linked to WO-0820, plus current three recurrences).",
+                "Guidance warns not to assume the most recently replaced component has failed again and to avoid ordering another sensor solely because E17 appears.",
+                "WO-0820 20-minute test was shorter than reported 35-50 minute warm-up and 42-minute recurrence, limiting its verification of an intermittent symptom."
+              ]
+            },
+            {
+              "explanation": "Intermittent sensor-harness connection with temperature-linked pattern causing missing carton-passage signal: E17 lists intermittent connection as possible, and repeated warm-up-related E17 has sometimes been associated with harness connections.",
+              "supporting": [
+                "Incident reports stops after 35-50 minutes warm-up and restart after cooling; resumption after cooling is relevant to an intermittent fault.",
+                "Serial AP24B-0517 falls within SB-1/SB-2 serial range AP24B-0400 to AP24B-0799.",
+                "Recurrence after sensor replacement and after permitted external cleaning matches the condition to include harness connection in technician investigation.",
+                "Temperature-linked pattern may justify considering a connection or component issue."
+              ],
+              "contrary": [
+                "Affected serial eligibility and matching symptom are reasons to investigate, not proof of the condition.",
+                "Inspection findings are required before recording a specific confirmed defect; no internal inspection findings are provided.",
+                "A stopped cycle and an event code do not identify the failed component and must not be converted directly into a confirmed failed-part diagnosis."
+              ]
+            }
+          ],
+          "uncertainty": [
+            "Exact dates, times since startup, cooling durations, and restoration durations for the three current recurrences versus the single 42-minute event on 2026-09-16.",
+            "Controller event record, displayed event details, carton type, recent changes, and visible condition of externally accessible sensor window at each recurrence.",
+            "Who performed permitted cleaning, under which site-approved instruction and shutdown requirement, and what was observed before/after.",
+            "Work-order closeout completeness for WO-0820: test conditions, duration rationale, installed part identifiers, remaining limitations, and responsible technician qualification beyond the 20-minute test note.",
+            "Whether SB-1/SB-2 eligibility is confirmed by assetContext only or requires additional catalog or supersession verification and technician inspection.",
+            "Whether daily operator condition entries and 90-day qualified inspections are complete; absence alone does not prove omission or causation.",
+            "Authority for return-to-service and next investigation scope; operators perform only site-approved actions while internal fault confirmation belongs to qualified personnel.",
+            "Warranty and service-agreement coverage, conditional charges, and site access/production constraints for any technician investigation."
+          ],
+          "questions": [
+            "What are the exact date, time since startup, cooling time before restart, and operating duration after restart for each of the three recurrences and for NOTE-0916?",
+            "What carton type was running, were there recent changes to cartons, line, environment, or components, and what was the visible condition of the sensor window at each event?",
+            "Who completed the permitted cleaning referenced in the current incident and MAINT-0928, under which approved maintenance instruction, and did symptoms recur immediately or after a warm-up interval?",
+            "What is the controller event record and asset label/hardware revision confirmation to provide when requesting support?",
+            "Has any internal access, harness inspection, or additional test beyond WO-0820 20-minute test and operator cleaning been performed, and by whom?",
+            "Are operator daily entries and qualified 90-day inspections up to date, and are there missing entries to investigate?",
+            "What are the site contact, access restrictions, production deadline, and authorized scope to include for technician assessment, including unresolved items above?"
+          ],
+          "citations": [
+            "MAN-1.1",
+            "MAN-1.2",
+            "MAN-1.3",
+            "MAN-1.4",
+            "MAN-2.1",
+            "MAN-2.2",
+            "MAN-2.3",
+            "MAN-2.4",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-3.4",
+            "MAN-4.1",
+            "MAN-4.2",
+            "MAN-4.3",
+            "MAN-4.4",
+            "MAN-5.1",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928"
+          ]
+        }
+      },
+      "candidate": {
+        "caseId": "case-sidecar-4b5111380c924c9eb9df88426128d696",
+        "assetId": "NB-P240-017",
+        "disposition": "AWAITING_APPROVAL",
+        "selectedOption": "expedited",
+        "rationale": "Recommend expedited diagnostic attendance on 2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00 over standard on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00 because production starts 2026-09-30T06:00:00-07:00 with only 2 recoverable delay hours and lost morning shift threatens shipment. Standard arrival 10:00-12:00 is after production start and cannot preserve the morning shift. Expedited arrival occurs within site access 08:00-18:00, but completion may require later access, while loaner arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 would require arrangement with Luis and standard also fits access but misses production. Both service quotes expire at 2026-09-29T11:00:00-07:00, same time as continuityOptions expiry, so the loaner decision for LOAN-017 at $2400.00 must be made before diagnostic attendance at 14:00-16:00 without knowing technician findings. Restoration is not guaranteed for either quote (restorationGuaranteed false), coverage is PENDING, scope is 2 repair hours with parts S17-B and H17-B onlyIfJustifiedByTechnician, and intermittent warm-up pattern after prior S17-B replacement and cleaning leaves diagnosis unresolved. Restoration risk preference is unspecified, so no risk tolerance is assumed; the recommendation favors earliest information to protect shipment while preserving separate continuity choice. Authority limits commitment, not recommendation: Maya Chen cannot commit, Luis Romero maximum exposure is $1000.00, larger commitments require separately verified approval from Priya Shah. Expedited maximum exposure $780.00 with fully covered scope maximum $300.00 if qualifying versus standard $480.00 with $0.00 reflects $300.00 expedited premium payable even if unresolved and not covered by warranty/service agreement. No booking, approval, reservation, or coverage determination is made by this comparison. Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017).",
+        "alternatives": [
+          "Standard diagnostic on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00: maximum exposure $480.00, fully covered scope maximum $0.00, coverage PENDING, same 2-hour S17-B/H17-B onlyIfJustifiedByTechnician scope, no reservation, restoration not guaranteed. Fits 08:00-18:00 access but arrives 4 hours after 06:00 production start, exceeding 2-hour recoverable delay and risking threatened shipment. Requires approved service request before 11:00 expiry; within Luis $1000.00 ceiling but still needs verified approval, Maya cannot commit.",
+          "Loaner LOAN-017 continuity option: compatible P240-B at 20 per minute meeting 18 minimum, arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 for 3-day use including delivery/setup and return at $2400.00, expires 2026-09-29T11:00:00-07:00, not reserved. Arrival outside 08:00-18:00 requires arrangement with Luis. Price exceeds Luis $1000.00 ceiling and requires separately verified approval from Priya Shah. Not in quotes array; decision must be separate from diagnostic and made before technician findings are known.",
+          "Replacement REPLACE-017: compatible P240 Rev B at $12500.00, 10 business-day lead, installation not quoted. Exceeds Luis ceiling, requires Priya approval, cannot meet 2026-09-30 production start. Not in quotes array; described only for completeness.",
+          "Defer both service and continuity past 11:00 expiry: preserves no prices or resources, risks loss of expedited slot with Jo Ellis and loaner availability, and leaves 06:00 production without diagnostic information. No approval committed."
+        ],
+        "quotes": [
+          {
+            "quoteId": "case-sidecar-4b5111380c924c9eb9df88426128d696-expedited-v1",
+            "option": "expedited",
+            "currency": "USD",
+            "maxExposure": 78000,
+            "fullyCoveredScopeMaximum": 30000,
+            "coverage": "PENDING",
+            "attendance": "2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          },
+          {
+            "quoteId": "case-sidecar-4b5111380c924c9eb9df88426128d696-standard-v1",
+            "option": "standard",
+            "currency": "USD",
+            "maxExposure": 48000,
+            "fullyCoveredScopeMaximum": 0,
+            "coverage": "PENDING",
+            "attendance": "2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00",
+            "scope": {
+              "repairHours": 2,
+              "parts": [
+                "S17-B",
+                "H17-B"
+              ],
+              "onlyIfJustifiedByTechnician": true
+            },
+            "expiresAt": "2026-09-29T11:00:00-07:00",
+            "reservation": false,
+            "restorationGuaranteed": false
+          }
+        ],
+        "citations": [
+          "MAN-1.1",
+          "MAN-2.3",
+          "MAN-3.2",
+          "SB-1",
+          "SB-2",
+          "SB-3",
+          "WO-0820",
+          "NOTE-0916",
+          "MAINT-0710",
+          "MAINT-0928",
+          "W-2",
+          "W-5",
+          "S-3",
+          "S-4",
+          "S-5",
+          "SITE-WEST",
+          "RESOURCES-017",
+          "AUTH-NB",
+          "LOAN-017"
+        ],
+        "uncertainty": [
+          "Whether expedited 2-hour scope will achieve restoration before 06:00 production; restorationGuaranteed false and workEstimate 2-4 hours.",
+          "Whether quoted scope qualifies for coverage; determination PENDING, diagnosis/travel included but expedited premium and loaner excluded, repair labor/parts subject to technician documentation.",
+          "Exact timing and conditions of three current recurrences versus 42-minute event on 2026-09-16 for technician assessment.",
+          "Confirmed defect unknown; harness versus sensor versus viewing path requires qualified internal inspection, serial eligibility alone is not proof.",
+          "Loaner need unknown until diagnostic; loaner decision expires 11:00 before 14:00 attendance.",
+          "Production impact if morning shift lost and whether 2-hour recoverable delay can be preserved without continuity.",
+          "Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017)."
+        ],
+        "acceptedRisk": "Accepting expedited recommendation means accepting $780.00 maximum exposure with only $300.00 maximum if fully covered scope qualifies, $300.00 premium payable even if unresolved, pending coverage, no guarantee of restoration before production, and making an 11:00 loaner decision at $2400.00 without diagnostic findings. Risk preference is unspecified so this does not assume risk tolerance; it prioritizes earliest diagnostic information to protect threatened shipment while leaving continuity choice to approver.",
+        "changeConditions": [
+          "Stated restoration risk preference for or against paying premium/loaner to protect shipment.",
+          "Verified coverage determination or technician findings confirming defect and required parts/labor.",
+          "Change to production start, recoverable delay, shipment risk, or site access/Luis availability.",
+          "Loss of expedited slot, parts availability, or loaner expiry/availability change.",
+          "Verified approval or spending ceiling change from Priya Shah or Luis Romero.",
+          "New controller event record, carton/change information, or cleaning/inspection details altering investigation scope."
+        ],
+        "nextDecision": "Luis Romero must approve and submit the approved expedited service request before 2026-09-29T11:00:00-07:00 to preserve quoted prices for the approved scope (S-5). Approval alone does not preserve prices; submission does not reserve stock or confirm attendance. Changes to attendance, repair scope or cap require renewed approval; matching dispatch confirmation or later quote expiry alone does not. Separately decide on the USD 2400.00 LOAN-017 offer before its 11:00 expiry, with separately verified Priya Shah approval above Luis USD 1000.00 ceiling and Luis access arrangements for 20:00-22:00 delivery. Service submission does not extend the loaner offer. Dispatch must also arrange potential expedited work beyond 18:00 with Luis. No approval or commitment is made here.",
+        "responsibleParty": "Luis Romero for service submission and access; Priya Shah for separately verified loaner approval above Luis ceiling; Maya may not commit",
+        "equipmentAssessment": {
+          "caseId": "case-sidecar-4b5111380c924c9eb9df88426128d696",
+          "assetId": "NB-P240-017",
+          "chronology": [
+            "2025-02-10: Asset NB-P240-017 (P240 Rev B, serial AP24B-0517) commissioned.",
+            "2026-07-10 MAINT-0710: Scheduled inspection complete, no open exceptions (Jo Ellis).",
+            "2026-08-20 WO-0820: Replaced S17-B after E17; suspected sensor fault; 20-minute test without recurrence (Jo Ellis, authorized technician).",
+            "2026-09-16 NOTE-0916: E17 after 42 minutes; restart temporarily effective; linked to WO-0820 (Maya Chen).",
+            "2026-09-28 MAINT-0928: Operator condition/cleaning complete, no visible window obstruction (Maya Chen).",
+            "2026-09-29T09:05:00-07:00 current report: E17 stops after 35-50 minutes warm-up, restarts after cooling; permitted cleaning did not resolve three recurrences; no smoke, unusual odor or damaged guard reported."
+          ],
+          "hypotheses": [
+            {
+              "explanation": "Obstructed viewing path / external contamination causing missing carton-passage signal: E17 means the expected carton-passage signal was not received and one possible explanation is an obstructed viewing path.",
+              "supporting": [
+                "E17 is defined as expected carton-passage signal not received with obstructed viewing path as a possible explanation.",
+                "Operator cleaning procedure for externally accessible sensor window exists as a permitted operator action."
+              ],
+              "contrary": [
+                "MAINT-0928 on 2026-09-28 records operator condition/cleaning complete with no visible window obstruction, yet recurrences are reported after that.",
+                "Current incident states permitted cleaning did not resolve three recurrences; recurrence after documented cleaning weakens but does not eliminate optical or alignment causes."
+              ]
+            },
+            {
+              "explanation": "Sensor S17-B problem causing missing carton-passage signal: E17 lists a sensor problem as a possible explanation, and WO-0820 previously suspected sensor fault.",
+              "supporting": [
+                "E17 lists sensor problem among possible explanations.",
+                "WO-0820 on 2026-08-20 replaced S17-B after E17 for suspected sensor fault."
+              ],
+              "contrary": [
+                "E17 recurred after sensor replacement (NOTE-0916 on 2026-09-16 linked to WO-0820, plus current three recurrences).",
+                "Guidance warns not to assume the most recently replaced component has failed again and to avoid ordering another sensor solely because E17 appears.",
+                "WO-0820 20-minute test was shorter than reported 35-50 minute warm-up and 42-minute recurrence, limiting its verification of an intermittent symptom."
+              ]
+            },
+            {
+              "explanation": "Intermittent sensor-harness connection with temperature-linked pattern causing missing carton-passage signal: E17 lists intermittent connection as possible, and repeated warm-up-related E17 has sometimes been associated with harness connections.",
+              "supporting": [
+                "Incident reports stops after 35-50 minutes warm-up and restart after cooling; resumption after cooling is relevant to an intermittent fault.",
+                "Serial AP24B-0517 falls within SB-1/SB-2 serial range AP24B-0400 to AP24B-0799.",
+                "Recurrence after sensor replacement and after permitted external cleaning matches the condition to include harness connection in technician investigation.",
+                "Temperature-linked pattern may justify considering a connection or component issue."
+              ],
+              "contrary": [
+                "Affected serial eligibility and matching symptom are reasons to investigate, not proof of the condition.",
+                "Inspection findings are required before recording a specific confirmed defect; no internal inspection findings are provided.",
+                "A stopped cycle and an event code do not identify the failed component and must not be converted directly into a confirmed failed-part diagnosis."
+              ]
+            }
+          ],
+          "uncertainty": [
+            "Exact dates, times since startup, cooling durations, and restoration durations for the three current recurrences versus the single 42-minute event on 2026-09-16.",
+            "Controller event record, displayed event details, carton type, recent changes, and visible condition of externally accessible sensor window at each recurrence.",
+            "Who performed permitted cleaning, under which site-approved instruction and shutdown requirement, and what was observed before/after.",
+            "Work-order closeout completeness for WO-0820: test conditions, duration rationale, installed part identifiers, remaining limitations, and responsible technician qualification beyond the 20-minute test note.",
+            "Whether SB-1/SB-2 eligibility is confirmed by assetContext only or requires additional catalog or supersession verification and technician inspection.",
+            "Whether daily operator condition entries and 90-day qualified inspections are complete; absence alone does not prove omission or causation.",
+            "Authority for return-to-service and next investigation scope; operators perform only site-approved actions while internal fault confirmation belongs to qualified personnel.",
+            "Warranty and service-agreement coverage, conditional charges, and site access/production constraints for any technician investigation."
+          ],
+          "questions": [
+            "What are the exact date, time since startup, cooling time before restart, and operating duration after restart for each of the three recurrences and for NOTE-0916?",
+            "What carton type was running, were there recent changes to cartons, line, environment, or components, and what was the visible condition of the sensor window at each event?",
+            "Who completed the permitted cleaning referenced in the current incident and MAINT-0928, under which approved maintenance instruction, and did symptoms recur immediately or after a warm-up interval?",
+            "What is the controller event record and asset label/hardware revision confirmation to provide when requesting support?",
+            "Has any internal access, harness inspection, or additional test beyond WO-0820 20-minute test and operator cleaning been performed, and by whom?",
+            "Are operator daily entries and qualified 90-day inspections up to date, and are there missing entries to investigate?",
+            "What are the site contact, access restrictions, production deadline, and authorized scope to include for technician assessment, including unresolved items above?"
+          ],
+          "citations": [
+            "MAN-1.1",
+            "MAN-1.2",
+            "MAN-1.3",
+            "MAN-1.4",
+            "MAN-2.1",
+            "MAN-2.2",
+            "MAN-2.3",
+            "MAN-2.4",
+            "MAN-3.2",
+            "MAN-3.3",
+            "MAN-3.4",
+            "MAN-4.1",
+            "MAN-4.2",
+            "MAN-4.3",
+            "MAN-4.4",
+            "MAN-5.1",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928"
+          ]
+        }
+      },
+      "edits": [
+        {
+          "field": "rationale",
+          "before": "Recommend expedited diagnostic attendance on 2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00 over standard on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00 because production starts 2026-09-30T06:00:00-07:00 with only 2 recoverable delay hours and lost morning shift threatens shipment. Standard arrival 10:00-12:00 is after production start and cannot preserve the morning shift. Expedited occurs within site access 08:00-18:00 without after-hours arrangement, while loaner arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 would require arrangement with Luis and standard also fits access but misses production. Both service quotes expire at 2026-09-29T11:00:00-07:00, same time as continuityOptions expiry, so the loaner decision for LOAN-017 at $2400.00 must be made before diagnostic attendance at 14:00-16:00 without knowing technician findings. Restoration is not guaranteed for either quote (restorationGuaranteed false), coverage is PENDING, scope is 2 repair hours with parts S17-B and H17-B onlyIfJustifiedByTechnician, and intermittent warm-up pattern after prior S17-B replacement and cleaning leaves diagnosis unresolved. Restoration risk preference is unspecified, so no risk tolerance is assumed; the recommendation favors earliest information to protect shipment while preserving separate continuity choice. Authority limits commitment, not recommendation: Maya Chen cannot commit, Luis Romero maximum exposure is $1000.00, larger commitments require separately verified approval from Priya Shah. Expedited maximum exposure $780.00 with fully covered scope maximum $300.00 if qualifying versus standard $480.00 with $0.00 reflects $300.00 expedited premium payable even if unresolved and not covered by warranty/service agreement. No booking, approval, reservation, or coverage determination is made by this comparison.",
+          "after": "Recommend expedited diagnostic attendance on 2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00 over standard on 2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00 because production starts 2026-09-30T06:00:00-07:00 with only 2 recoverable delay hours and lost morning shift threatens shipment. Standard arrival 10:00-12:00 is after production start and cannot preserve the morning shift. Expedited arrival occurs within site access 08:00-18:00, but completion may require later access, while loaner arrival 2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00 would require arrangement with Luis and standard also fits access but misses production. Both service quotes expire at 2026-09-29T11:00:00-07:00, same time as continuityOptions expiry, so the loaner decision for LOAN-017 at $2400.00 must be made before diagnostic attendance at 14:00-16:00 without knowing technician findings. Restoration is not guaranteed for either quote (restorationGuaranteed false), coverage is PENDING, scope is 2 repair hours with parts S17-B and H17-B onlyIfJustifiedByTechnician, and intermittent warm-up pattern after prior S17-B replacement and cleaning leaves diagnosis unresolved. Restoration risk preference is unspecified, so no risk tolerance is assumed; the recommendation favors earliest information to protect shipment while preserving separate continuity choice. Authority limits commitment, not recommendation: Maya Chen cannot commit, Luis Romero maximum exposure is $1000.00, larger commitments require separately verified approval from Priya Shah. Expedited maximum exposure $780.00 with fully covered scope maximum $300.00 if qualifying versus standard $480.00 with $0.00 reflects $300.00 expedited premium payable even if unresolved and not covered by warranty/service agreement. No booking, approval, reservation, or coverage determination is made by this comparison. Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017).",
+          "reason": "Separate attendance from work completion"
+        },
+        {
+          "field": "uncertainty",
+          "before": [
+            "Whether expedited 2-hour scope will achieve restoration before 06:00 production; restorationGuaranteed false and workEstimate 2-4 hours.",
+            "Whether quoted scope qualifies for coverage; determination PENDING, diagnosis/travel included but expedited premium and loaner excluded, repair labor/parts subject to technician documentation.",
+            "Exact timing and conditions of three current recurrences versus 42-minute event on 2026-09-16 for technician assessment.",
+            "Confirmed defect unknown; harness versus sensor versus viewing path requires qualified internal inspection, serial eligibility alone is not proof.",
+            "Loaner need unknown until diagnostic; loaner decision expires 11:00 before 14:00 attendance.",
+            "Site access for loaner arrival 20:00-22:00 requires arrangement with Luis; expedited and standard fit 08:00-18:00.",
+            "Production impact if morning shift lost and whether 2-hour recoverable delay can be preserved without continuity."
+          ],
+          "after": [
+            "Whether expedited 2-hour scope will achieve restoration before 06:00 production; restorationGuaranteed false and workEstimate 2-4 hours.",
+            "Whether quoted scope qualifies for coverage; determination PENDING, diagnosis/travel included but expedited premium and loaner excluded, repair labor/parts subject to technician documentation.",
+            "Exact timing and conditions of three current recurrences versus 42-minute event on 2026-09-16 for technician assessment.",
+            "Confirmed defect unknown; harness versus sensor versus viewing path requires qualified internal inspection, serial eligibility alone is not proof.",
+            "Loaner need unknown until diagnostic; loaner decision expires 11:00 before 14:00 attendance.",
+            "Production impact if morning shift lost and whether 2-hour recoverable delay can be preserved without continuity.",
+            "Expedited arrival is within 08:00-18:00, but the 2-4 hour work estimate can extend a 16:00 arrival to 20:00, beyond 18:00 access. Dispatch must arrange later access with Luis Romero or limit work to permitted hours; later access and restoration are unconfirmed. The two authorized chargeable repair hours are a scope cap, not the total elapsed work estimate (SITE-WEST, RESOURCES-017)."
+          ],
+          "reason": "Remove unconditional access claim and retain explicit uncertainty"
+        },
+        {
+          "field": "nextDecision",
+          "before": "By 2026-09-29T11:00:00-07:00, approver must decide: (1) approve or decline expedited service request preserving quoted prices for approved scope without reserving stock or booking appointment, and (2) separately approve or decline LOAN-017 loaner at $2400.00 requiring Priya Shah approval over $1000.00 ceiling plus Luis arrangement for 20:00-22:00 arrival. No booking or approval is made here; dispatch confirmation, renewed approval for scope/cap changes, and technician justification for parts still required.",
+          "after": "Luis Romero must approve and submit the approved expedited service request before 2026-09-29T11:00:00-07:00 to preserve quoted prices for the approved scope (S-5). Approval alone does not preserve prices; submission does not reserve stock or confirm attendance. Changes to attendance, repair scope or cap require renewed approval; matching dispatch confirmation or later quote expiry alone does not. Separately decide on the USD 2400.00 LOAN-017 offer before its 11:00 expiry, with separately verified Priya Shah approval above Luis USD 1000.00 ceiling and Luis access arrangements for 20:00-22:00 delivery. Service submission does not extend the loaner offer. Dispatch must also arrange potential expedited work beyond 18:00 with Luis. No approval or commitment is made here.",
+          "reason": "Explicit approved-request submission and separate continuity/access handoff"
+        },
+        {
+          "field": "citations",
+          "before": [
+            "MAN-1.1",
+            "MAN-2.3",
+            "MAN-3.2",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928"
+          ],
+          "after": [
+            "MAN-1.1",
+            "MAN-2.3",
+            "MAN-3.2",
+            "SB-1",
+            "SB-2",
+            "SB-3",
+            "WO-0820",
+            "NOTE-0916",
+            "MAINT-0710",
+            "MAINT-0928",
+            "W-2",
+            "W-5",
+            "S-3",
+            "S-4",
+            "S-5",
+            "SITE-WEST",
+            "RESOURCES-017",
+            "AUTH-NB",
+            "LOAN-017"
+          ],
+          "reason": "Retain technical sources and add applicable commercial/context sources"
+        },
+        {
+          "field": "responsibleParty",
+          "before": "Priya Shah",
+          "after": "Luis Romero for service submission and access; Priya Shah for separately verified loaner approval above Luis ceiling; Maya may not commit",
+          "reason": "Distinguish service authority from procurement routing"
+        }
+      ]
+    }
+  }
+}

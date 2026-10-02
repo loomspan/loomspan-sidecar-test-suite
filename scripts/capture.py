@@ -44,6 +44,7 @@ def main():
             case='case-'+path+'-'+uuid.uuid4().hex; cases.append(case)
             body=json.loads((ROOT/'fixtures/base-case.json').read_text());body['caseId']=case
             if args.priority:body['context']['restorationRiskPreference']='Prioritize continuity despite higher cost; urgently escalate loaner approval while retaining diagnosis as needed.'
+            (out/(path+'-input.json')).write_text(json.dumps(body,indent=2))
             r=client.post('http://127.0.0.1:18090/control/cases/'+case,json={'mode':'live','path':path},headers={'X-Control-Key':s['control']});r.raise_for_status()
             api=f'http://127.0.0.1:{port}';r=client.post(api+'/assessments',json=body,headers={'Authorization':'Bearer '+maya});r.raise_for_status();execution=r.json()['id']
             print(path,'submitted',execution,flush=True)

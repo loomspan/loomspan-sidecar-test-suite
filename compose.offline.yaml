@@ -1,0 +1,5 @@
+# Explicit provider-free diagnostic phase. Replay still uses both real Frameworks.
+services:
+  fixtures:
+    environment:
+      OPENROUTER_API_KEY: ""

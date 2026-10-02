@@ -1,5 +1,124 @@
 # Local build and evidence
 
+## Reviewed offline assessment replay
+
+Current approved fixture: `fixtures/replay/business-reviewed-v1.json`, bound by
+`business-reviewed-v1-approval.json`. Source captures and semantic reviews remain
+required local provenance inputs; the runner rejects missing/changed sources or
+fixture content. Do not substitute historical rejected or authored diagnostic data.
+
+Preserve runtime evidence before recreating fixtures, then disable provider access:
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --no-deps --force-recreate fixtures
+.venv/Scripts/python.exe scripts/capture_reviewed_replay.py --scenario baseline
+.venv/Scripts/python.exe scripts/capture_reviewed_replay.py --scenario priority
+```
+
+Run the two commands sequentially (shared PKCE callback port). Each prints a new
+capture directory. Review it with `scripts/review_reviewed_replay.py CAPTURE --output
+REVIEW/review.json`, writing outside the capture. Then run the eight assertions in
+`tests/test_delivery_evidence.py` and `tests/test_planner_evidence.py` with
+`CAPTURE_DIRECTORY` pointing to it. Review accepts only unchanged source output,
+exact canonical inputs, actual trace response equality and zero business commitments.
+Source provider usage/cost metadata remains historical; these runs make no paid calls.
+
+Regenerate candidates explicitly with `scripts/curate_business_replay.py` only when
+reviewed source selection changes; a changed fixture hash invalidates the separate
+approval record and requires renewed offline verification. Fault diagnostics are
+separate fixtures. This replay scope does not approve remaining first-delivery scenarios.
+
+## Muse verification and comparison correction
+
+The user authorized useful Muse calls without a spending-confirmation step on
+2026-10-02. Keep Muse/medium and the installed PR 14/15 snapshot. Provider access
+was restored by recreating fixtures without `compose.offline.yaml`; applying that
+overlay disables it again. Preserve runtime evidence before host recreation. For
+YAML-only changes, `scripts/preserve_runtime.py --no-package-copy` records package
+identities without creating a redundant package archive. Re-record the snapshot
+baseline and recreate Java/Sidecar to load changed skill YAML; no package rebuild
+is needed when application/dependency bytes are unchanged.
+
+```powershell
+# Full baseline or priority pair, followed by independent review:
+.venv/Scripts/python.exe scripts/capture.py --parallel
+.venv/Scripts/python.exe scripts/capture.py --parallel --priority
+.venv/Scripts/python.exe scripts/inspect_capture.py evidence/live-RUN --output evidence/review-live-RUN/mechanical-review.json
+.venv/Scripts/python.exe scripts/review_correction_capture.py evidence/live-RUN --output evidence/review-live-RUN/trace-correlated-inventory.json
+# Comparison-only controlled missing-field fault using a complete real source:
+.venv/Scripts/python.exe scripts/capture_comparison_correction.py evidence/live-SOURCE --offline
+.venv/Scripts/python.exe scripts/capture_comparison_correction.py evidence/live-SOURCE
+.venv/Scripts/python.exe scripts/review_comparison_correction.py evidence/comparison-correction-live-RUN --output evidence/review-comparison-correction-live-RUN/review.json
+```
+
+Wait for each command to finish authentication/submission before launching another
+capture process: the browser login helper uses one local PKCE callback port. Path
+execution within each `--parallel` command remains concurrent. The correction
+harness uses captured content with case-ID normalization and deliberate removal of
+`nextDecision`; only the one correction stage per path can call the provider, and
+unexpected attempts fail without fallback. Quotes are reissued and checked exactly.
+The rehearsal correction is synthetic; live correction is new Muse output. Neither
+approves its source capture, a full business baseline or full-mission recovery.
+Mechanical review now checks bulletin applicability in the actual assessment
+child input, not only complete sibling results available to the parent.
+
+The current runtime has `loomspan.session.quotas.max-usage-units: 400000` on both
+paths; request timeout remains 240s and snapshot mission timeout 1200s. A preserved
+Java priority run exhausted the previous 200000 limit after successful local
+corrections. This supported runtime setting changes no business approval cap.
+`record_snapshot_build.py` records the shared quota; mechanical review verifies it
+against the actual root trace's configuredLimits. For intentionally one-path follow-up
+captures, pass `inspect_capture.py --path java` (or `--path sidecar`) and run capture
+assertions with the matching pytest `-k` filter. The report explicitly marks its
+single-path scope; missing paths are not silently treated as verified.
+
+## Deployed offline business workflow diagnostic
+
+This exercises both actual Framework paths with preserved captured stages, authored
+business comparisons/parent finals, intentional selectedOption fault and synthetic
+correction. It makes no paid calls, does not approve the source captures and does
+not establish real-model adherence. Independent actions match by their task-graph
+dependencies, allowing either arrival order. The provider credential is disabled in
+the fixture while this overlay is active.
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py
+mvn -o -B -ntp -f apps/java/pom.xml '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -DskipTests clean package
+.venv/Scripts/python.exe scripts/record_snapshot_build.py
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --build java python fixtures
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --force-recreate --no-deps sidecar
+.venv/Scripts/python.exe scripts/readiness.py
+.venv/Scripts/python.exe -u scripts/capture_business_diagnostic.py
+# Substitute the returned capture path and a NEW external review filename:
+.venv/Scripts/python.exe scripts/review_business_diagnostic.py evidence/business-workflow-offline-RUN --output evidence/review-business-workflow-offline-RUN/review.json
+```
+
+No Sidecar package rebuild is needed when its installed dependency/package is
+unchanged and passes the byte check. Preserve runtime evidence before any host
+recreation. A later explicitly selected provider phase must recreate fixtures
+without the offline overlay; do not silently restore provider access in this phase.
+
+## Offline business-output checks (no provider calls)
+
+The hand-edited examples in `fixtures/replay/business-output-diagnostic-v1.json`
+retain Muse source provenance and every authored mutation. They are unapproved and
+are not registered as complete replay scripts. Run the focused local checks without
+the live `harness` fixture or a service restart:
+
+```powershell
+.venv/Scripts/python.exe -m pytest tests/test_business_output.py tests/test_quote_publication.py tests/test_capture_review.py tests/test_fixture_replay.py tests/test_fixture_proxy.py -q
+mvn -o -f apps/java/pom.xml '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -DskipTests compile
+```
+
+Archive existing compiled classes before compiling if they must be retained. The
+compile command leaves packaged JARs intact. `tests/offline/BusinessOutputCheck.java`
+checks Java publication against both example payloads, using a scripted caller and
+fresh temporary SQLite databases. Compile/run it with the application classes and
+packaged dependency JARs on the classpath; see the retained evidence summary for
+the exact commands used. This does not establish authentication or Framework
+acceptance. No revised configuration has been deployed by these checks.
+
 **Latest Muse verification (2026-10-02):** both paths complete on the installed
 PR 14/15 snapshot; eight capture assertions and 53 mechanical checks pass. Java
 schema recovery succeeds, but PR 14 step-action recovery is not exercised in that full run.
