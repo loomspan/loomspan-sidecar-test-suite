@@ -1,6 +1,21 @@
 # First-delivery implementation handoff
 
-**Current checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
+**Current checkpoint (2026-10-02):** valid-approval nested authorization passes on
+both applications: 32 evidence checks, eight assessment assertions and46 focused
+offline tests. Maya cannot invoke creation; Luis reaches the same real restricted
+leaf once and its matching durable receipt survives both parent completions.
+No paid calls. Normal configuration restored; first delivery remains incomplete.
+See [status](implementation-status.md) and [review](../evidence/review-nested-authorization-offline-20261002-115456/summary.md).
+
+**Earlier checkpoint (2026-10-02):** approved service-request creation/recovery
+passes on Java and Sidecar: 53 evidence checks, eight assessment assertions and
+44 focused offline tests. Exact quote/scope/USD-cent approval creates one durable
+request; denial, conflicting retry and new creation at expiry cannot add requests.
+A lost completed-result response is recovered at expiry without duplication.
+No paid calls or creation model calls. First delivery remains incomplete; see
+[status](implementation-status.md) and [review](../evidence/review-service-requests-offline-20261002-114412/summary.md).
+
+**Earlier checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
 baseline and continuity-priority offline workflows through both applications.
 Each pair passes 34 evidence checks and eight workflow assertions; 39 focused
 offline tests pass. Approved scope is deterministic assessment replay only.
@@ -100,7 +115,7 @@ Continue in this order, doing independent implementation work while an external 
 4. Complete shared acceptance: base assessment; Luis approval/creation/idempotency and recovery after response loss/quote expiry; otherwise-valid Maya direct denial; controlled nested denial and Luis positive control; gated overlap and two-case isolation.
 5. Retain per-run manifests, independent journals/business records, logs, JUnit/results and actual Framework traces from both paths. Finish reproducible local live/replay instructions and report precisely what passed, failed or remains blocked.
 
-Workspace continuity: implementation files are currently uncommitted/untracked; preserve them. `.runtime`, `.build`, `.venv` and generated `evidence` directories are ignored local state and will not follow a Git-only handoff. Use this same workspace for a fresh context. Never copy `.runtime/secrets.json` into reports. The provider credential is in `LOOMSPAN_OPENROUTER_API_KEY`; do not print it. The stack was last left healthy/running, but verify readiness on resume. Fixture registrations are in memory and reset on fixture restart; use fresh case IDs. `scripts/review_capture.py` is a historical beta.6 rejection review, not a generic approval tool for new captures.
+Workspace continuity: checkpoint source is committed; preserve any later uncommitted work. `.runtime`, `.build`, `.venv` and generated `evidence` directories are ignored local state and will not follow a Git-only handoff. Use this same workspace for a fresh context. Never copy `.runtime/secrets.json` into reports. The provider credential is in `LOOMSPAN_OPENROUTER_API_KEY`; do not print it. The stack was last left healthy/running, but verify readiness on resume. Fixture registrations are in memory and reset on fixture restart; use fresh case IDs. `scripts/review_capture.py` is a historical beta.6 rejection review, not a generic approval tool for new captures.
 
 ## Fixed baseline
 
@@ -193,4 +208,41 @@ Publication under load, fifty-execution experiments, restart, overload, shutdown
 
 ## Suggested prompt for the fresh context
 
-> Continue the authorized first delivery in this existing workspace. Read AGENTS.md, README.md and docs/project-agreement.md first, then docs/implementation-handoff.md, docs/implementation-status.md, docs/local-run.md and the linked design/source/claims documents. Resume the implementation; preserve uncommitted files and local evidence. Framework beta.7 / Sidecar beta.2 are installed, dependent-evidence checks pass on both paths, and full live completion is blocked by a separate 60-second provider request timeout. First verify whether a supported timeout fix is available under my latest release instructions; otherwise report the concrete blocker and continue independent work. Do not repeat unchanged blocked live runs or replace Framework internals. Continue through reviewed complete real-model captures, deterministic replay and all first-delivery acceptance scenarios for both embedded Java and Python/FastAPI + Sidecar, including actual Framework-generated trace files. LOOMSPAN_OPENROUTER_API_KEY supplies the provider credential; never print it. Make and document routine engineering choices without reopening settled decisions. Keep observed results separate from claims; do not approve incomplete captures or claim unexecuted checks passed.
+Continue in `C:\opendev\code\loomspan-sidecar-test-suite`, using this same workspace.
+Read `AGENTS.md`, `README.md`, `docs/project-agreement.md`,
+`docs/implementation-handoff.md`, `docs/implementation-status.md`,
+`docs/local-run.md` and both customer-facing claims documents. Follow the latest
+verified checkpoints; older blockers/recommendations remain historical.
+
+Next implement and verify full-mission malformed-output recovery on both Java and
+Python/Sidecar using the approved reviewed replay fixture. Explicitly label the
+injected malformed response and offline correction provenance. Require actual
+Framework rejection/correction feedback, successful completed assessment, unchanged
+quotes/asset/approval context/USD cents through both parents and no unintended
+service commitment. Isolated diagnostics do not establish full-mission recovery.
+Then verify gated parallel overlap and two-case isolation within first-delivery scope.
+
+Keep this phase offline: no Muse or other paid-provider calls. Normal configuration
+is restored, `compose.offline.yaml` disables provider access, and all five services
+were ready at handoff; verify readiness. Framework PR14/15 remains installed at
+commit `4313a7fcdbad33ef358b6ee4d068ce610f3dee51`, with SHA256
+`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
+Use the existing snapshot packages; do not repeat unchanged live discovery.
+
+Reviewed baseline/priority offline replay is verified. Direct approval-bound
+creation/recovery passes53 evidence checks/eight assertions; valid-approval nested
+authorization passes32/eight, with46 focused offline tests passing. Read:
+- `evidence/review-service-requests-offline-20261002-114412/summary.md`
+- `evidence/review-nested-authorization-offline-20261002-115456/summary.md`
+- The nested `review-current.json` is the corrected frame-ID correlation report;
+  its earlier `review.json` is a retained false-negative review.
+
+Preserve all journals, actual Framework traces, durable business records, original
+captures, provenance and any uncommitted work. `.runtime`, `.build`, `.venv` and run
+evidence are ignored local state and do not follow Git; stay in this checkout.
+Archive active runtime evidence before recreating hosts. Delete only verified
+reproducible caches/scratch, recording cleanup. Never print
+`LOOMSPAN_OPENROUTER_API_KEY` or local secrets. Never approve incomplete or
+semantically incorrect captures, rewrite historical source evidence, or claim
+first-delivery completion from partial acceptance. Broader update/load scenarios
+remain later scope. Update status and retain per-run manifests/checksums/reviews.

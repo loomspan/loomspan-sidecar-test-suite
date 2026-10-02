@@ -1,6 +1,21 @@
 # Loomspan reference applications and acceptance suite
 
-**Current checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
+**Current checkpoint (2026-10-02):** valid-approval nested authorization passes on
+both applications: 32 evidence checks, eight assessment assertions and46 focused
+offline tests. Maya cannot invoke creation; Luis reaches the same real restricted
+leaf once and its matching durable receipt survives both parent completions.
+No paid calls. Normal configuration restored; first delivery remains incomplete.
+See [status](docs/implementation-status.md) and [review](evidence/review-nested-authorization-offline-20261002-115456/summary.md).
+
+**Earlier checkpoint (2026-10-02):** approved service-request creation/recovery
+passes on Java and Sidecar: 53 evidence checks, eight assessment assertions and
+44 focused offline tests. Exact quote/scope/USD-cent approval creates one durable
+request; denial, conflicting retry and new creation at expiry cannot add requests.
+A lost completed-result response is recovered at expiry without duplication.
+No paid calls or creation model calls. First delivery remains incomplete; see
+[status](docs/implementation-status.md) and [review](evidence/review-service-requests-offline-20261002-114412/summary.md).
+
+**Earlier checkpoint (2026-10-02):** versioned reviewed Muse fixtures now pass
 baseline and continuity-priority offline workflows through both applications.
 Each pair passes 34 evidence checks and eight workflow assertions; 39 focused
 offline tests pass. Approved scope is deterministic assessment replay only.

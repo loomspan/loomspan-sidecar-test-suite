@@ -6,6 +6,10 @@ Run directories are generated and ignored by Git. They include actual Framework 
 
 | Evidence | Use and disposition |
 | --- | --- |
+| [Valid-approval nested pair](review-nested-authorization-offline-20261002-115456/summary.md) | Both paths pass 32 checks/eight assessment assertions. Maya filtered/no creation; Luis one actual creation and preserved parent receipt. Normal configuration restored; no paid calls. |
+| [Partial nested115131](review-nested-authorization-offline-20261002-115131/summary.md), [115313](review-nested-authorization-offline-20261002-115313/summary.md) | Harness matcher/envelope failures, retained unapproved. Real115313 receipts and traces preserved. |
+| [Service creation/recovery](review-service-requests-offline-20261002-114412/summary.md) | Both paths pass 53 checks/eight assessment assertions: one approved durable request, direct denial, real lost-result transport recovery and expiry/idempotency. Zero paid calls. |
+| [Partial creation114112](review-service-requests-offline-20261002-114112/summary.md), [114221](review-service-requests-offline-20261002-114221/summary.md) | Unapproved partial harness runs: empty403 parsing and missing deployed clock route. Actual records/traces preserved. |
 | [Reviewed baseline replay](review-business-reviewed-baseline-20261002-112945/summary.md) | Both offline paths complete; 34 checks/eight assertions pass. Approved deterministic assessment scope only; zero paid calls. |
 | [Reviewed priority replay](review-business-reviewed-priority-20261002-113035/summary.md) | Both offline paths complete; 34 checks/eight assertions pass. Approved deterministic assessment scope only; original sources retained. |
 | [review-live-20261002-102148](review-live-20261002-102148/summary.md) | Java priority completes; all31 mechanical checks and four assertions pass, business wording and exact assessment fidelity suitable for curation. No shared approval. |

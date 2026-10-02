@@ -1,5 +1,86 @@
 # Implementation and observed status — 2026-10-02
 
+## Valid-approval nested authorization — verified 2026-10-02
+
+[Controlled offline pair](../evidence/review-nested-authorization-offline-20261002-115456/summary.md)
+passes 32 independent evidence checks, eight assessment/planning assertions and
+46 focused offline tests. Fresh reviewed baseline assessments provide complete
+matching approvals: the same approval is presented first under Maya, then Luis.
+Both controlled planners are accessible; only the real creation leaf is restricted.
+
+Actual Maya nested capability lists omit creation; an intentionally unavailable-child
+proposal receives real linter feedback and fails without leaf invocation or request
+writes. Sidecar access logs independently show zero creation-endpoint calls. Luis
+sees the same real restricted leaf, invokes it once and persists one matching request
+per path, preserving verified identity, authoritative quote/scope/USD cents and full
+approval. The actual leaf receipt survives both native parent completion stages.
+The extra plan/action/final responses are explicitly hand-authored authorization
+scaffolding; finals echo actual completed-task evidence, not invented business receipts.
+No paid calls or new Muse judgment; original reviewed business fixtures are unchanged.
+
+Java correlates terminal session ID directly to its actual trace. Sidecar omits that
+field, so all public execution event frame IDs correlate uniquely to the root trace.
+The initial read-only review falsely required Sidecar sessionId; the retained corrected
+report uses actual frame IDs and verifies outcomes/leaf events. No capture was rewritten.
+Partial115131 matcher and115313 missing-model envelope runs remain unapproved;
+actual requests created during115313 remain intact. The fixture now checks replay
+extension only after existing stages are consumed, forbids live stages and validates
+unique completed-task evidence before returning a model-compatible echo envelope.
+
+Runtime restored to normal configuration with no authorization test mount/override;
+all five services ready. Actual active traces/journal were archived before recreation;
+application/Framework package bytes are unchanged and provider access remains disabled.
+
+Cleanup removed30 bytecode cache files and four empty directories. All134
+protected original hashes and finalized source/new capture checksums match.
+An initial19-test subset passed with a Windows pytest cache-write warning; final46
+checks and eight assertions disable the cache provider and pass without warnings.
+See [integrity report](../evidence/review-nested-authorization-offline-20261002-115456/cleanup-integrity.json).
+
+Next: full-mission malformed-output correction using labeled mutations of reviewed
+replay, then gated overlap/two-case isolation. First delivery remains incomplete;
+broader configuration-update/load demonstrations remain later scope.
+
+## Approval-bound creation and recovery — verified 2026-10-02
+
+[Offline paired verification](../evidence/review-service-requests-offline-20261002-114412/summary.md)
+passes all 53 independent evidence checks, eight assessment/planning assertions
+and 44 focused offline tests. Fresh reviewed baseline assessments feed the actual
+restricted createServiceRequest skill on both applications. Exactly one new durable
+PENDING_DISPATCH request per path matches Luis's verified identity, assessment
+version, exact quote, attendance, scoped repair approval and integer USD cents.
+No model call is made for any commitment operation; no paid calls in this phase.
+
+Missing explicit approval, altered cap, same-key content conflict and a new request
+at the exact11:00 expiry boundary fail without request writes. Otherwise-valid Maya
+submission receives403 at the public Framework boundary before admission on both
+paths (Java empty response body, Sidecar structured response); no denial trace is
+expected before admission. Each admitted creation/failure/retry has a correlated
+actual Framework trace. Maya receipt lookup is also denied.
+
+A deliberate local HTTP proxy observes completed creation then drops the result
+response, producing actual RemoteProtocolError. Authorized lookup and same-content
+retry at expiry return the original receipt without a second record. This verifies
+asynchronous **result-response loss**, not loss of the initial submission response.
+Existing quotes, assessments and requests remain intact. Application/Framework
+packages are unchanged; a rebuilt fixture adds authenticated per-case clock control,
+with timezone/invalid-input/isolation checks and recorded running source equality.
+Provider credential remains disabled via the offline overlay.
+
+Two partial harness runs are retained and unapproved:114112 assumed JSON on Java's
+empty403, and114221 used an image without the new clock route. The latter's one
+actual Java request is preserved. Neither substitutes for the paired passing run.
+
+Cleanup removed33 regenerated cache files and seven empty directories. All134
+protected original hashes and finalized source/new capture checksums match. Actual
+Framework traces, fixture journals and durable requests remain intact. See the
+[cleanup report](../evidence/review-service-requests-offline-20261002-114412/cleanup-integrity.json).
+
+Next first-delivery work: controlled nested authorization with otherwise-valid Maya
+approval and a real Luis creation positive control; full-mission malformed-output
+recovery; gated overlap/two-case isolation. Broader configuration updates/load remain
+later scope. No complete first-delivery acceptance is claimed.
+
 ## Reviewed deterministic assessment replay — verified 2026-10-02
 
 Versioned [business-reviewed-v1.json](../fixtures/replay/business-reviewed-v1.json)

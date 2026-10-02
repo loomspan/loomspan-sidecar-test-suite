@@ -1,5 +1,52 @@
 # Local build and evidence
 
+## Valid-approval controlled nested pair
+
+This separate offline configuration exposes the test parent/nested planner to
+Maya and Luis, with the real restricted creation leaf. Preserve evidence before
+both configuration changes:
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml -f compose.authorization.yaml up -d --build --no-deps fixtures java sidecar
+.venv/Scripts/python.exe scripts/capture_nested_authorization.py
+.venv/Scripts/python.exe scripts/review_nested_authorization.py CAPTURE --output REVIEW/review.json
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --no-deps --force-recreate java sidecar
+.venv/Scripts/python.exe scripts/readiness.py
+```
+
+Use the printed capture path, with review outside it. The harness uses fresh
+approved assessment replay and a complete valid approval, negative then positive
+under the same controlled configuration/input. It creates one actual pending-dispatch
+request per successful path. Test responses are explicitly hand-authored; positive
+final envelopes echo the actual leaf receipt through completed-task evidence.
+Appending offline authorization stages requires exhausted original replay stages;
+no stage reset or provider fallback. Sidecar trace correlation uses its public event
+frame IDs when execution responses omit sessionId. The ordinary assessment must
+never acquire creation as an available capability. Fixture source edits need image
+rebuilding; packages remain pinned to the current installed snapshot.
+
+## Offline approved service-request verification
+
+With the normal application configuration and provider disabled, run:
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --build --no-deps fixtures
+.venv/Scripts/python.exe scripts/capture_service_requests.py
+.venv/Scripts/python.exe scripts/review_service_requests.py CAPTURE --output REVIEW/review.json
+```
+
+Use the printed new capture path and write review outside it. The fixture must be
+rebuilt after source changes; recreation alone keeps the old image. This harness
+creates real local pending-dispatch records, one per successful fresh case, and
+preserves existing state. It replays approved baseline assessments, uses Keycloak
+Maya/Luis tokens and public Framework creation routes, drops one completed-result
+HTTP response through a local proxy and advances only each case's fixture clock to
+quote expiry. Never modify saved quotes or host time to simulate expiry. Runs make
+no paid calls. A pre-admission403 may have an empty body and no execution trace.
+
 ## Reviewed offline assessment replay
 
 Current approved fixture: `fixtures/replay/business-reviewed-v1.json`, bound by

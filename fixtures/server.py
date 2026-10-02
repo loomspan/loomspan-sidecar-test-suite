@@ -1,5 +1,5 @@
 """External evidence/model fixture. Control API is separate from business routes."""
-import asyncio, json, os, pathlib, time, uuid
+import asyncio, datetime, json, os, pathlib, time, uuid
 import httpx
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -20,6 +20,24 @@ def mission_input_matches(body, step):
         return actual == step['missionInputEquals']
     except (StopIteration, KeyError, IndexError, ValueError):
         return False
+
+def completed_task_response(body, selector):
+    """Controlled offline envelope copying actual Framework task evidence unchanged."""
+    try:
+        system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
+        block=system.split('--- COMPLETED TASK EVIDENCE ---\n',1)[1]
+        tasks=json.JSONDecoder().raw_decode(block[block.index('['):])[0]
+        matches=[t for t in tasks if t.get('taskId')==selector['taskId'] and t.get('skillName')==selector['skillName']]
+        if len(matches)!=1: raise ValueError()
+        result=matches[0]['result']
+        if isinstance(result,str): json.loads(result)
+        else: result=json.dumps(result)
+    except (KeyError,IndexError,ValueError,TypeError):
+        raise HTTPException(409,'missing or ambiguous completed task evidence')
+    return {'id':'controlled-echo-'+uuid.uuid4().hex,'object':'chat.completion','created':1790924400,
+            'model':body.get('model','meta/muse-spark-1.3-contributor'),
+            'choices':[{'index':0,'finish_reason':'stop','message':{'role':'assistant',
+              'content':json.dumps({'stepAction':'FINAL_RESPONSE','finalResponse':result})}}]}
 def control(key):
     if not key or key != os.environ['CONTROL_KEY']: raise HTTPException(403)
 @app.get('/health')
@@ -45,11 +63,37 @@ async def register(case_id:str, body:dict, x_control_key:str=Header('')):
 async def release(case_id:str,name:str,x_control_key:str=Header('')):
     control(x_control_key); gates[(case_id,name)].set(); journal('released',caseId=case_id,name=name)
     return {'released':True}
+
+@app.post('/control/extend/{case_id}')
+async def extend(case_id:str,body:dict,x_control_key:str=Header('')):
+    control(x_control_key)
+    async with lock:
+        if case_id not in cases: raise HTTPException(404,'unregistered case')
+        case=cases[case_id]; steps=body.get('steps',[])
+        expected=list(range(len(case.get('steps',[]))))
+        if case.get('mode')!='replay' or sorted(case['used'])!=expected or body.get('expectedUsed')!=expected:
+            raise HTTPException(409,'existing replay stages must be exhausted')
+        if not steps or any(s.get('live') for s in steps): raise HTTPException(400,'offline stages required')
+        case['steps'].extend(steps)
+        journal('extended',caseId=case_id,previousStages=len(expected),addedStages=len(steps))
+    return {'caseId':case_id,'stages':len(case['steps'])}
 @app.get('/control/journal')
 def get_journal(x_control_key:str=Header('')):
     control(x_control_key)
     p=DATA/'journal.ndjson'
     return [json.loads(x) for x in p.read_text().splitlines()] if p.exists() else []
+
+@app.post('/control/clock/{case_id}')
+async def clock(case_id:str, body:dict, x_control_key:str=Header('')):
+    control(x_control_key)
+    if case_id not in cases: raise HTTPException(404,'unregistered case')
+    try:
+        now=body['now']; parsed=datetime.datetime.fromisoformat(now)
+        if parsed.utcoffset() is None: raise ValueError()
+    except (KeyError, TypeError, ValueError): raise HTTPException(400,'offset timestamp required')
+    cases[case_id]['clock']=now
+    journal('clock-set',caseId=case_id,now=now)
+    return {'caseId':case_id,'now':now}
 @app.get('/records/{case_id}/{kind}')
 async def records(case_id:str,kind:str):
     if case_id not in cases: raise HTTPException(404,'unregistered case')
@@ -57,6 +101,8 @@ async def records(case_id:str,kind:str):
     gate=gates.get((case_id,kind))
     if gate: await asyncio.wait_for(gate.wait(),180)
     source=json.loads(pathlib.Path('fixtures/business.json').read_text())
+    if kind=='clock' and 'clock' in cases[case_id]:
+        source['clock']={'now':cases[case_id]['clock']}
     if kind not in source: raise HTTPException(404)
     result={'caseId':case_id,'revision':'1','kind':kind,'data':source[kind]}
     journal('returned',caseId=case_id,kind=kind,result=result)
@@ -118,6 +164,7 @@ async def model(path:str,request:Request):
         # Forward upstream headers/body promptly, including any provider whitespace
         # keepalives. This is still one non-streaming Chat Completions JSON response.
         return StreamingResponse(relay(),status_code=response.status_code,media_type=response.headers.get('content-type','application/json'))
-    result=step['response']
+    result=(completed_task_response(body,step['responseFromCompletedTask'])
+            if 'responseFromCompletedTask' in step else step['response'])
     journal('model-response',path=path,caseId=case_id,requestId=request_id,response=result,stage=i,provenance=step.get('provenance','development scaffold'))
     return result
