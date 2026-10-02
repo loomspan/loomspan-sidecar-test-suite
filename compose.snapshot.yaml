@@ -1,0 +1,11 @@
+# Local test build: Sidecar beta.2 source with installed Framework beta.8-SNAPSHOT.
+services:
+  java:
+    environment:
+      LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 240s
+      LOOMSPAN_SESSION_MISSIONTIMEOUT: 1200s
+  sidecar:
+    build: .build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT
+    environment:
+      LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 240s
+      LOOMSPAN_SESSION_MISSIONTIMEOUT: 1200s

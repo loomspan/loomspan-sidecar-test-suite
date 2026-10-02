@@ -1,0 +1,14 @@
+name: createServiceRequest
+description: Deterministically record explicit authorized approval and a pending-dispatch
+  request. Requires immutable assessment and matching quote.
+rest: true
+rbac_roles:
+- REQUEST_SERVICE
+input_schema:
+  type: object
+  properties:
+    approval:
+      type: object
+      additionalProperties: true
+  required:
+  - approval

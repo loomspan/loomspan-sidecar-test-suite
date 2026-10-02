@@ -1,0 +1,45 @@
+targets:
+  equipment:
+    base-url: http://python:8080
+    auth:
+      mode: caller-passthrough
+    connect-timeout: 5s
+    read-timeout: 240s
+    max-response-size: 1MB
+routes:
+  assetContext:
+    target: equipment
+    method: POST
+    path: /skills/assetContext
+  serviceHistory:
+    target: equipment
+    method: POST
+    path: /skills/serviceHistory
+  referenceEvidence:
+    target: equipment
+    method: POST
+    path: /skills/referenceEvidence
+  serviceTerms:
+    target: equipment
+    method: POST
+    path: /skills/serviceTerms
+  entitlements:
+    target: equipment
+    method: POST
+    path: /skills/entitlements
+  serviceResources:
+    target: equipment
+    method: POST
+    path: /skills/serviceResources
+  continuityOptions:
+    target: equipment
+    method: POST
+    path: /skills/continuityOptions
+  quoteOptions:
+    target: equipment
+    method: POST
+    path: /skills/quoteOptions
+  createServiceRequest:
+    target: equipment
+    method: POST
+    path: /skills/createServiceRequest

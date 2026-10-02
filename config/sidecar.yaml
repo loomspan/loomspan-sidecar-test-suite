@@ -1,0 +1,40 @@
+loomspan-sidecar:
+  configuration:
+    mode: file
+  rest-routes:
+    location: file:/config/routes.yaml
+  auth:
+    jwt:
+      issuer-uri: http://localhost:18080/realms/equipment
+      jwk-set-uri: http://keycloak:8080/realms/equipment/protocol/openid-connect/certs
+      audience: equipment-service
+      roles-claim: roles
+      role-prefix: ROLE_
+      clock-skew: 0s
+  executions:
+    diagnostics: ALWAYS
+loomspan:
+  connections:
+    model:
+      driver: openai
+      base-url: http://fixtures:8080/model/sidecar/v1
+      api-key: fixture-transport-not-a-provider-secret
+      openai:
+        compatibility-profile: openrouter
+      provider-retry:
+        max-attempts: 1
+  models:
+    reasoning:
+      connection: model
+      provider-model: meta/muse-spark-1.3-contributor
+      thinking-levels: [medium]
+  skills:
+    locations: [file:/config/skills/*.yaml, file:/config/rest-skills/*.yaml]
+  session:
+    mission-timeout: 600s
+  execution-trace:
+    persistence: ALWAYS
+  observability:
+    enabled: true
+    auth:
+      api-key: ${OBSERVER_KEY}

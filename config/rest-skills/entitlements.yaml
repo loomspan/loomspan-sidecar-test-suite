@@ -1,0 +1,19 @@
+name: entitlements
+description: Evaluate date eligibility and documented findings; model hypotheses are
+  not findings.
+rest: true
+rbac_roles:
+- ASSESS_EQUIPMENT
+input_schema:
+  type: object
+  properties:
+    caseId:
+      type: string
+    assetId:
+      type: string
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - caseId
+  - assetId

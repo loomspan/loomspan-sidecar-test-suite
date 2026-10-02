@@ -1,0 +1,18 @@
+name: authorizationNested
+description: Controlled nested authorization test; uses the real restricted business leaf.
+model: reasoning
+thinking_level: medium
+rbac_roles: [ASSESS_EQUIPMENT]
+planning_mode: true
+max_steps: 3
+allowed_skills:
+  - name: createServiceRequest
+    required: false
+    max_tasks: 1
+input_schema:
+  type: object
+  properties:
+    caseId: {type: string}
+    approval: {type: object, additionalProperties: true}
+  required: [caseId, approval]
+prompt: 'Controlled authorization scenario. Use the available capability to submit the supplied explicit approval unchanged. Preserve verified caller authority. Return the receipt unchanged. If creation is unavailable, report that the mission cannot be fulfilled.'

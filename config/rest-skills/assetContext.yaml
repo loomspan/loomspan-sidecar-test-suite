@@ -1,0 +1,19 @@
+name: assetContext
+description: Retrieve registered asset identity, site access and approval-routing
+  facts; directory facts never grant caller permissions.
+rest: true
+rbac_roles:
+- ASSESS_EQUIPMENT
+input_schema:
+  type: object
+  properties:
+    caseId:
+      type: string
+    assetId:
+      type: string
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - caseId
+  - assetId

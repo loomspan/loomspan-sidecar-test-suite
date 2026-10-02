@@ -1,0 +1,9 @@
+.build/
+.runtime/
+.venv/
+**/target/
+**/__pycache__/
+.pytest_cache/
+.env
+evidence/*
+!evidence/README.md

@@ -1,0 +1,555 @@
+{
+  "assetContext": {
+    "id": "ASSET-017",
+    "revision": "1",
+    "issuer": "Northbank asset administration",
+    "assetId": "NB-P240-017",
+    "serial": "AP24B-0517",
+    "manufacturer": "Aster Equipment",
+    "model": "P240",
+    "hardwareRevision": "B",
+    "commissioned": "2025-02-10",
+    "owner": "Northbank Fulfillment",
+    "site": {
+      "id": "SITE-WEST",
+      "revision": "1",
+      "siteId": "NB-WEST",
+      "timezone": "America/Los_Angeles",
+      "access": "08:00-18:00; later access must be arranged with Luis Romero"
+    },
+    "approvalContext": {
+      "id": "AUTH-NB",
+      "revision": "1",
+      "currency": "USD",
+      "monetaryUnit": "cents",
+      "luisMaximumCustomerExposure": 100000,
+      "mayaMayCommit": false,
+      "largerCommitments": "Require separately verified approval from Priya Shah; the current service-request workflow does not implement procurement approval.",
+      "permissionBoundary": "Informational routing only. Verified caller permissions, site grants, spending ceiling and explicit approval are enforced independently by the application."
+    },
+    "contacts": [
+      {
+        "id": "CONTACT-MAYA",
+        "revision": "1",
+        "name": "Maya Chen",
+        "responsibility": "Operator and incident reporter",
+        "email": "maya.chen@northbank.example"
+      },
+      {
+        "id": "CONTACT-LUIS",
+        "revision": "1",
+        "name": "Luis Romero",
+        "responsibility": "Maintenance manager and access contact",
+        "hours": "08:00-18:00",
+        "email": "luis.romero@northbank.example"
+      },
+      {
+        "id": "CONTACT-PRIYA",
+        "revision": "1",
+        "name": "Priya Shah",
+        "responsibility": "Procurement approval contact",
+        "hours": "09:00-17:00",
+        "email": "priya.shah@northbank.example"
+      },
+      {
+        "id": "CONTACT-BEACON",
+        "revision": "1",
+        "name": "Erin Cole",
+        "responsibility": "Dispatch; service-request queue is authoritative for status",
+        "email": "dispatch@beacon-service.example"
+      },
+      {
+        "id": "CONTACT-WARRANTY",
+        "revision": "1",
+        "responsibility": "Aster warranty review for disputed findings",
+        "email": "warranty@aster-equipment.example"
+      }
+    ]
+  },
+  "serviceHistory": [
+    {
+      "id": "WO-0820",
+      "revision": "1",
+      "date": "2026-08-20",
+      "author": "Jo Ellis, authorized technician",
+      "observation": "Replaced S17-B after E17; suspected sensor fault; 20-minute test without recurrence"
+    },
+    {
+      "id": "NOTE-0916",
+      "revision": "1",
+      "date": "2026-09-16",
+      "author": "Maya Chen",
+      "observation": "E17 after 42 minutes; restart temporarily effective; linked to WO-0820"
+    },
+    {
+      "id": "MAINT-0710",
+      "revision": "1",
+      "date": "2026-07-10",
+      "author": "Jo Ellis",
+      "observation": "Scheduled inspection complete, no open exceptions"
+    },
+    {
+      "id": "MAINT-0928",
+      "revision": "1",
+      "date": "2026-09-28",
+      "author": "Maya Chen",
+      "observation": "Operator condition/cleaning complete, no visible window obstruction"
+    }
+  ],
+  "referenceEvidence": [
+    {
+      "id": "MAN-1.1",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "The P240 seals pre-formed cartons on a packaging line. The controller monitors carton passage and stops the cycle when the expected passage signal is absent. A stopped cycle describes the observed state; it does not identify the failed component. The asset label, hardware revision, and controller event record are needed when requesting support.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-1.2",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Record the asset identifier, manufacturer serial number, hardware revision, and site. Similar-looking P200 and P240 machines use different parts and guidance. Use documents applicable to the registered model and revision. An unverified photograph or a familiar product name is insufficient to choose a replacement part.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-1.3",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Operators report symptoms and perform only site-approved actions designated for operators. Authorized technicians investigate internal faults, replace internal components, and determine whether the equipment can return to service. The service coordinator arranges assistance and records uncertainty; it does not grant technical clearance.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-1.4",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Reports of smoke, burning odor, exposed wiring, a damaged guard, or an active protective interlock require the site's stop-use and qualified-person escalation process. Production urgency does not justify bypassing a guard or protective function. Absence of these reported conditions is not a statement that the equipment is safe.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-2.1",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Record the displayed event code, time since startup, whether the symptom repeats, carton type, recent changes, visible condition of the externally accessible sensor window, and actions already performed. Note whether a restart appears to restore operation and how long that restoration lasts. Do not repeatedly restart solely to conceal or work around a recurring fault.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-2.2",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "The externally accessible sensor window has an operator-cleaning procedure in the site's approved maintenance instructions. Operators must follow those instructions and applicable shutdown requirements. This reference manual does not provide a substitute physical procedure. Record that the permitted cleaning was completed, by whom, and whether the symptom recurred.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-2.3",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "`E17` means the expected carton-passage signal was not received. Possible explanations include an obstructed viewing path, a sensor problem, or an intermittent connection. `E08` indicates a protective-interlock condition; it is not a sensor-cleaning prompt. Codes are evidence for investigation and must not be converted directly into a confirmed failed-part diagnosis.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-2.4",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "A report that the machine resumes after cooling is relevant to an intermittent fault. It does not establish which component is responsible, nor does it authorize continued operation. Record the warm-up and recurrence intervals so a technician can reproduce the reported condition using approved procedures.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-3.1",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "For a single E17 incident with a documented external obstruction, record the observation and the permitted action taken. If a qualified/site-authorized process permits follow-up observation and there is no recurrence, the service case may be handled as monitoring rather than an immediate parts replacement. The service coordinator must not manufacture a safety clearance.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-3.2",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Recurrence after an interval, especially after an apparently effective restart or cleaning, warrants technician assessment. Include warm-up duration, prior interventions, recent component changes, and any applicable service bulletin. Do not assume that the most recently replaced component has failed again.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-3.3",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "An external obstruction report supports one explanation. Recurrence after documented cleaning weakens that explanation but does not eliminate all optical or alignment causes. A temperature-linked pattern may justify considering a connection or component issue. Inspection findings are required before recording a specific confirmed defect.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-3.4",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Record test conditions, duration, observed events, and the responsible technician in the work-order closeout. Link subsequent incident reports to the relevant work order and retain the original closeout record.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-4.1",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "The example site's maintenance schedule calls for an operator condition entry each working day and a qualified inspection every 90 days. Entries identify the asset, activity, date, author, and exceptions. Missing entries should be investigated. Their absence alone does not prove that maintenance was omitted or caused a fault.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-4.2",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Revision B equipment uses sensor `S17-B` and connector kit `H17-B`. A revision A part with a similar description is not an approved substitute. Compatibility must come from the catalog or an authoritative supersession record. Stock quantity alone cannot make an incompatible part feasible.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-4.3",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Internal access, fault confirmation, internal part replacement, and return-to-service decisions belong to appropriately qualified personnel. A service recommendation can request investigation and identify potentially useful parts. It must distinguish parts to bring from parts already diagnosed as necessary.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-4.4",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "The closeout should state the observed cause, corrective work, installed part identifiers, test conditions and duration, remaining limitations, and the responsible technician. Where the original symptom was intermittent, explain how the verification addressed that symptom. Do not treat a service-request receipt as evidence that this work occurred.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-5.1",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Provide the asset/serial, event code, symptom chronology, recurrence intervals, prior repair IDs, completed operator actions, applicable evidence, site contact, access restrictions, production deadline, and authorized scope. Include unresolved questions rather than filling gaps with guesses.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-5.2",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "A response or attendance commitment describes when support will respond or attend. It does not guarantee fault identification, availability of every required part, successful repair, or restored production by a particular time. Those depend on findings and resources.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-5.3",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "A compatible temporary unit can be considered when restoration is uncertain and continuity matters. Check capacity, site compatibility, delivery and setup requirements, availability, cost, and approval. A permanent replacement may have a longer lead time than a temporary unit. Do not describe either as ready merely because it appears in a catalog.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-5.4",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Consult the asset's warranty certificate and current service agreement. Being within the warranty period is one condition, not confirmation that every incident is covered. Explain conditional charges and excluded premiums. The user manual does not override the contractual terms.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "MAN-5.5",
+      "revision": "2.0",
+      "issuer": "Aster Equipment",
+      "text": "Provide the next responsible party with the evidence summary, requested decision, urgency, contact details, and current uncertainty. If approval or further diagnosis is required, say so clearly. Preparing this information is distinct from sending a message or confirming a booking.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B"
+      }
+    },
+    {
+      "id": "SB-1",
+      "revision": "1",
+      "issuer": "Aster Equipment",
+      "text": "Repeated E17 incidents after warm-up have sometimes been associated with intermittent sensor-harness connections. Affected serial eligibility and a matching symptom are reasons to investigate, not proof of the condition.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B",
+        "serialRangeInclusive": [
+          "AP24B-0400",
+          "AP24B-0799"
+        ]
+      }
+    },
+    {
+      "id": "SB-2",
+      "revision": "1",
+      "issuer": "Aster Equipment",
+      "text": "When E17 recurs after sensor replacement or permitted external cleaning, an authorized technician should include the harness connection in the investigation. Avoid ordering another sensor solely because E17 appears. This supplements MAN-3.2 and does not supersede the manual's responsibility or escalation boundaries.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B",
+        "serialRangeInclusive": [
+          "AP24B-0400",
+          "AP24B-0799"
+        ]
+      }
+    },
+    {
+      "id": "SB-3",
+      "revision": "1",
+      "issuer": "Aster Equipment",
+      "text": "The bulletin is not a recall, blanket replacement authorization, or warranty extension. Warranty determination still requires applicable terms and incident findings.",
+      "applicability": {
+        "manufacturer": "Aster Equipment",
+        "model": "P240",
+        "hardwareRevision": "B",
+        "serialRangeInclusive": [
+          "AP24B-0400",
+          "AP24B-0799"
+        ]
+      }
+    }
+  ],
+  "serviceTerms": {
+    "clauses": [
+      {
+        "id": "W-1",
+        "revision": "1",
+        "text": "During the certificate period, covered manufacturing defects qualify for the listed replacement parts and associated standard repair labor"
+      },
+      {
+        "id": "W-2",
+        "revision": "1",
+        "text": "A qualified authorized technician must document the defect and its relationship to the incident; an operator report or model hypothesis alone yields pending determination"
+      },
+      {
+        "id": "W-3",
+        "revision": "1",
+        "text": "Confirmed accidental damage, unauthorized modification causing the fault, and ordinary consumable wear are excluded; exclusions require evidence relevant to this incident"
+      },
+      {
+        "id": "W-4",
+        "revision": "1",
+        "text": "Missing maintenance records are an information gap; their absence alone does not trigger warranty review, suspend coverage, or establish an exclusion. Incomplete or disputed incident-specific findings remain subject to W-7"
+      },
+      {
+        "id": "W-5",
+        "revision": "1",
+        "text": "Expedited attendance premiums, loaners, lost production, and unrelated upgrades are excluded from this warranty"
+      },
+      {
+        "id": "W-6",
+        "revision": "1",
+        "text": "Warranty does not extend merely because a part was replaced during the original period; no separate replacement-part warranty is modeled in this draft"
+      },
+      {
+        "id": "W-7",
+        "revision": "1",
+        "text": "Conflicting or incomplete findings produce pending review with a responsible reviewer; do not silently convert pending to covered or denied"
+      },
+      {
+        "id": "S-1",
+        "revision": "1",
+        "text": "Standard service desk hours are weekdays 08:00\u201317:00 site time; requests submitted in that window receive acknowledgment within two business hours"
+      },
+      {
+        "id": "S-2",
+        "revision": "1",
+        "text": "Standard attendance targets the next business day, subject to dispatch confirmation; this is not a guaranteed repair deadline"
+      },
+      {
+        "id": "S-3",
+        "revision": "1",
+        "text": "For covered assets, diagnosis and travel are included even if the fault remains unresolved. Only actual authorized repair labor and installed parts are chargeable, subject to warranty and the approved cap. Diagnostic investigation is not chargeable repair labor"
+      },
+      {
+        "id": "S-4",
+        "revision": "1",
+        "text": "Expedited same-day attendance may be offered for a $300 premium, subject to availability and authorization. The premium is payable when expedited attendance occurs, even if the fault remains unresolved; neither service agreement nor warranty pays it"
+      },
+      {
+        "id": "S-5",
+        "revision": "1",
+        "text": "An approved service request submitted before quote expiry preserves the quoted prices for its approved scope. Approval alone does not preserve prices. Creating the request asks dispatch to confirm resources; it does not reserve stock or book an appointment. Changes to attendance, repair scope, or the approved cap require renewed approval"
+      },
+      {
+        "id": "S-6",
+        "revision": "1",
+        "text": "Work beyond the approved scope/cap requires a new quote and approval. No tax applies in this synthetic fixture; this is not a statement about real taxation"
+      },
+      {
+        "id": "S-7",
+        "revision": "1",
+        "text": "This first example provides no separate workmanship/callback guarantee for repeat repairs, including WO-0820. Manufacturer warranty and service-plan benefits still apply under their respective terms; a recurring symptom alone creates no additional free-repeat-work entitlement"
+      }
+    ],
+    "certificate": {
+      "id": "WC-017",
+      "revision": "1",
+      "start": "2025-02-10",
+      "endExclusive": "2027-02-10",
+      "serial": "AP24B-0517"
+    },
+    "agreement": {
+      "id": "SA-NB-2026",
+      "revision": "1",
+      "start": "2026-01-01",
+      "endExclusive": "2027-01-01",
+      "diagnosisIncluded": true,
+      "travelIncluded": true,
+      "assetId": "NB-P240-017",
+      "siteId": "NB-WEST"
+    },
+    "rates": {
+      "id": "RATE-09",
+      "revision": "1",
+      "currency": "USD",
+      "diagnosis": 25000,
+      "travel": 10000,
+      "repairHourly": 15000,
+      "sensor": 12000,
+      "connector": 6000,
+      "expedited": 30000,
+      "monetaryUnit": "cents"
+    }
+  },
+  "entitlements": {
+    "id": "FINDINGS-017",
+    "revision": "1",
+    "findings": [],
+    "maintenanceRecordAvailable": true
+  },
+  "serviceResources": {
+    "id": "RESOURCES-017",
+    "revision": "1",
+    "observedAt": "2026-09-29T09:05:00-07:00",
+    "expiresAt": "2026-09-29T11:00:00-07:00",
+    "parts": [
+      {
+        "id": "S17-B",
+        "quantity": 2,
+        "revision": "B"
+      },
+      {
+        "id": "H17-B",
+        "quantity": 1,
+        "revision": "B"
+      }
+    ],
+    "expedited": {
+      "id": "SLOT-EXP-017",
+      "arrival": "2026-09-29T14:00:00-07:00/2026-09-29T16:00:00-07:00",
+      "technician": "Jo Ellis",
+      "qualification": "P240-B",
+      "workEstimateHours": [
+        2,
+        4
+      ]
+    },
+    "standard": {
+      "id": "SLOT-STD-017",
+      "arrival": "2026-09-30T10:00:00-07:00/2026-09-30T12:00:00-07:00"
+    },
+    "reserved": false
+  },
+  "continuityOptions": {
+    "id": "CONTINUITY-017",
+    "revision": "1",
+    "expiresAt": "2026-09-29T11:00:00-07:00",
+    "loaner": {
+      "id": "LOAN-017",
+      "model": "P240-B",
+      "capacityPerMinute": 20,
+      "price": 240000,
+      "currency": "USD",
+      "arrival": "2026-09-29T20:00:00-07:00/2026-09-29T22:00:00-07:00",
+      "durationDays": 3,
+      "packageIncludes": [
+        "delivery and setup window",
+        "three-day use",
+        "return"
+      ],
+      "compatible": true
+    },
+    "replacement": {
+      "id": "REPLACE-017",
+      "price": 1250000,
+      "leadBusinessDays": 10,
+      "installationQuoted": false,
+      "currency": "USD",
+      "model": "P240",
+      "hardwareRevision": "B",
+      "compatible": true
+    },
+    "reserved": false,
+    "monetaryUnit": "cents",
+    "currency": "USD"
+  },
+  "clock": {
+    "now": "2026-09-29T09:05:00-07:00"
+  }
+}

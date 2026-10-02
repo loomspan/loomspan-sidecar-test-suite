@@ -1,0 +1,12 @@
+# Explicit opt-in test configuration. Normal assessment has no creation capability.
+services:
+  java:
+    environment:
+      LOOMSPAN_SKILLS_LOCATIONS: file:/config/skills/*.yaml,file:/config/authorization/*.yaml
+    volumes:
+      - ./config/authorization:/config/authorization:ro
+  sidecar:
+    environment:
+      LOOMSPAN_SKILLS_LOCATIONS: file:/config/skills/*.yaml,file:/config/rest-skills/*.yaml,file:/config/authorization/*.yaml
+    volumes:
+      - ./config/authorization:/config/authorization:ro

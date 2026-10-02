@@ -1,0 +1,52 @@
+name: equipment-acceptance
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.5@sha256:357829ec7c4693397533035092ad13b0644bcc95ded311f33a3738c4d9e9bdba
+    command: [start-dev, --import-realm, --hostname=http://localhost:18080]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN}
+    volumes: [./.runtime/realm.json:/opt/keycloak/data/import/realm.json:ro]
+    ports: [127.0.0.1:18080:8080]
+  fixtures:
+    build: {context: ., dockerfile: apps/python/Dockerfile}
+    command: [uvicorn, fixtures.server:app, --host, 0.0.0.0, --port, '8080']
+    environment:
+      CONTROL_KEY: ${CONTROL}
+      OPENROUTER_API_KEY: ${LOOMSPAN_OPENROUTER_API_KEY:-}
+    volumes: [./.runtime/fixture:/data]
+    ports: [127.0.0.1:18090:8080]
+  python:
+    build: {context: ., dockerfile: apps/python/Dockerfile}
+    environment:
+      ISSUER: http://localhost:18080/realms/equipment
+      JWKS: http://keycloak:8080/realms/equipment/protocol/openid-connect/certs
+      SIDECAR: http://sidecar:8080
+      FIXTURES: http://fixtures:8080
+    volumes: [./.runtime/python:/data]
+    ports: [127.0.0.1:18082:8080]
+  java:
+    build: apps/java
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/runtime.yaml
+      OBSERVER_KEY: ${OBSERVER}
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/data/equipment.db
+    volumes:
+      - ./config/java.yaml:/config/runtime.yaml:ro
+      - ./config/skills:/config/skills:ro
+      - ./.runtime/java:/data
+    ports: [127.0.0.1:18081:8080]
+  sidecar:
+    build: .build/sidecar-1.0.0-beta.2
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/runtime.yaml
+      OBSERVER_KEY: ${OBSERVER}
+    volumes:
+      - ./config/sidecar.yaml:/config/runtime.yaml:ro
+      - ./config/skills:/config/skills:ro
+      - ./config/rest-skills:/config/rest-skills:ro
+      - ./config/routes.yaml:/config/routes.yaml:ro
+      - sidecar-data:/sidecar/data
+    ports: [127.0.0.1:18083:8080, 127.0.0.1:19091:9091]
+volumes:
+  sidecar-data:

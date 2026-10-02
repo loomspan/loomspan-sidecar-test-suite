@@ -1,0 +1,13 @@
+{
+  "assetId": "NB-P240-017",
+  "context": {
+    "incident": "E17 stops after 35-50 minutes warm-up, restarts after cooling; permitted cleaning did not resolve three recurrences. No smoke, unusual odor or damaged guard reported.",
+    "productionStart": "2026-09-30T06:00:00-07:00",
+    "recoverableDelayHours": 2,
+    "lostMorningShift": "threatens shipment",
+    "minimumCapacityPerMinute": 18,
+    "restorationRiskPreference": "unspecified",
+    "siteAccess": "08:00-18:00; later access must be arranged with Luis",
+    "businessNow": "2026-09-29T09:05:00-07:00"
+  }
+}
