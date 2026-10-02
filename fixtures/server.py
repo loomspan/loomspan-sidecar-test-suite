@@ -17,8 +17,13 @@ def health(): return {'status':'up'}
 async def register(case_id:str, body:dict, x_control_key:str=Header('')):
     control(x_control_key)
     if case_id in cases: raise HTTPException(409,'case already registered')
-    if body.get('mode','replay') not in ['live','replay']:
-        raise HTTPException(400,'mode must be live or replay')
+    if body.get('mode','replay') not in ['live','replay','controlled-live']:
+        raise HTTPException(400,'invalid fixture mode')
+    live_steps=[i for i,s in enumerate(body.get('steps',[])) if s.get('live')]
+    if live_steps and (body.get('mode')!='controlled-live' or len(live_steps)!=1):
+        raise HTTPException(400,'one explicit live stage requires controlled-live mode')
+    if body.get('mode')=='controlled-live' and len(live_steps)!=1:
+        raise HTTPException(400,'controlled-live requires exactly one live stage')
     if body.get('path') not in [None,'java','sidecar']:
         raise HTTPException(400,'invalid integration path')
     cases[case_id]={**body,'used':[],'attempts':{}}
@@ -58,7 +63,22 @@ async def model(path:str,request:Request):
         raise HTTPException(409,'wrong integration path')
     request_id=uuid.uuid4().hex
     journal('model-request',path=path,caseId=case_id,requestId=request_id,request=body)
-    if case.get('mode')=='live':
+    step=None; i=None
+    if case.get('mode')!='live':
+        async with lock:
+            candidates=[]
+            system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
+            for n,item in enumerate(case.get('steps',[])):
+                if n in case['used']: continue
+                if (all(t in serialized for t in item['contains']) and all(t not in serialized for t in item.get('excludes',[]))
+                    and all(t in system for t in item.get('systemContains',[]))
+                    and all(t not in system for t in item.get('systemExcludes',[]))
+                    and all(d in case['used'] for d in item.get('after',[]))):candidates.append((n,item))
+            if len(candidates)!=1:
+                journal('model-rejected',path=path,caseId=case_id,requestId=request_id,reason='unexpected or ambiguous stage',candidates=[n for n,_ in candidates])
+                raise HTTPException(409,'unexpected or ambiguous replay stage')
+            i,step=candidates[0];case['used'].append(i)
+    if case.get('mode')=='live' or (case.get('mode')=='controlled-live' and step.get('live')):
         key=os.getenv('OPENROUTER_API_KEY')
         if not key: raise HTTPException(503,'provider credential unavailable')
         client=httpx.AsyncClient(timeout=240)
@@ -76,7 +96,7 @@ async def model(path:str,request:Request):
                     chunks.append(chunk)
                     yield chunk
                 result=json.loads(b''.join(chunks))
-                journal('model-response',path=path,caseId=case_id,requestId=request_id,status=response.status_code,response=result,provenance='live OpenRouter')
+                journal('model-response',path=path,caseId=case_id,requestId=request_id,status=response.status_code,response=result,provenance='live OpenRouter',stage=i)
             except (httpx.HTTPError,ValueError) as error:
                 journal('provider-transport-failure',path=path,caseId=case_id,requestId=request_id,errorType=type(error).__name__)
                 raise
@@ -86,19 +106,6 @@ async def model(path:str,request:Request):
         # Forward upstream headers/body promptly, including any provider whitespace
         # keepalives. This is still one non-streaming Chat Completions JSON response.
         return StreamingResponse(relay(),status_code=response.status_code,media_type=response.headers.get('content-type','application/json'))
-    async with lock:
-        candidates=[]
-        system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
-        for i,step in enumerate(case.get('steps',[])):
-            if i in case['used']: continue
-            if (all(t in serialized for t in step['contains']) and all(t not in serialized for t in step.get('excludes',[]))
-                and all(t in system for t in step.get('systemContains',[]))
-                and all(t not in system for t in step.get('systemExcludes',[]))):
-                if all(d in case['used'] for d in step.get('after',[])): candidates.append((i,step))
-        if len(candidates)!=1:
-            journal('model-rejected',path=path,caseId=case_id,requestId=request_id,reason='unexpected or ambiguous stage',candidates=[i for i,_ in candidates])
-            raise HTTPException(409,'unexpected or ambiguous replay stage')
-        i,step=candidates[0]; case['used'].append(i)
     result=step['response']
     journal('model-response',path=path,caseId=case_id,requestId=request_id,response=result,stage=i,provenance=step.get('provenance','development scaffold'))
     return result

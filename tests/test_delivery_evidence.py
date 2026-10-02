@@ -1,13 +1,14 @@
 """Independent first-delivery evidence assertions. Run explicitly on a capture."""
 import json, os, pathlib
 import pytest
+from inspect_capture import mission
 capture=os.getenv('CAPTURE_DIRECTORY')
 pytestmark=pytest.mark.skipif(not capture,reason='Set CAPTURE_DIRECTORY to a complete live capture; no acceptance implied')
 @pytest.mark.parametrize('path',['java','sidecar'])
 def test_required_evidence_reaches_equipment_assessment(path):
     events=json.loads((pathlib.Path(capture)/'journal.json').read_text(encoding='utf-8'))
     requests=[e['request'] for e in events if e['event']=='model-request' and e.get('path')==path]
-    assessment=[r for r in requests if any("Execute skill 'assessEquipment'" in str(m.get('content','')) for m in r['messages'])]
+    assessment=[r for r in requests if mission(r,'assessEquipment')]
     assert assessment,'equipment model responsibility was not exercised'
     material=json.dumps(assessment[0])
     for required in ['WO-0820','NOTE-0916','SB-2','20-minute','42 minutes']:

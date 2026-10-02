@@ -1,5 +1,24 @@
 # Muse JSON failure: model output and Framework prompting
 
+Subsequent controlled diagnostic 2026-10-02: both actual paths reject the injected
+original trailing-brace action and Muse/medium answers their PR 14 feedback with
+valid entitlement calls. Each lookup executes once after correction, with no prior
+tool call or business-record change. The model drops optional context to `{}`;
+this proves isolated recovery with authoritative re-reads, not full-payload copying
+or original full-workflow recovery. See
+[forced-failure evidence](../evidence/review-controlled-step-live-20261002-004937/summary.md).
+
+Follow-up 2026-10-02: installed Framework source `4313a7f` includes PR 14 recovery
+feedback and PR 15 prompt changes. Both original failures still reject offline;
+new bounded feedback retains the parser diagnostic and long-response tail. One new
+Muse/medium workflow per path completes, but neither emits malformed JSON or
+exercises step-action correction. Java instead demonstrates ordinary schema recovery.
+This verifies the feedback improvement without proving Muse recovery from these
+trailing-brace failures. Both new captures remain semantically unapproved; see
+[follow-up review](../evidence/review-live-20261002-000544/summary.md).
+
+The investigation below preserves the earlier source and capture observations.
+
 Reviewed 2026-10-01, using the preserved `live-20261001-220102` capture and Framework
 source commit `b7dbefee8ffca873e84efb455e5609234c59e119`. No provider calls or
 production code/configuration changes were made for this investigation.

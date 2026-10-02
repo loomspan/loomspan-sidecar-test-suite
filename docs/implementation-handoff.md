@@ -1,6 +1,22 @@
 # First-delivery implementation handoff
 
-**Latest full Muse baseline (2026-10-01):** `meta/muse-spark-1.3-contributor`, medium reasoning, ran once on each path after offline fixes and successful access checks. Java failed on malformed step-action JSON after correction; Sidecar published its assessment with unchanged quotes and correct monetary units but has semantic wording findings. Focused assertions: 6 passed / 2 failed. Both Framework traces are retained. The capture remains unapproved for replay. See `evidence/review-live-20261001-220102/summary.md` and implementation status.
+**Latest Muse verification (2026-10-02):** both paths completed and published on
+installed Framework `4313a7f` (PR 14/15), with Muse/medium. Eight capture assertions
+and 53 mechanical checks pass. Java's real schema correction succeeds; neither
+path exercises PR 14 step-action correction in that full run. The subsequent
+[controlled fault diagnostic](../evidence/review-controlled-step-live-20261002-004937/summary.md)
+demonstrates isolated PR 14 recovery on both paths. Captures remain unapproved for business
+wording findings. See [review](../evidence/review-live-20261002-000544/summary.md)
+and current implementation status. Historical checkpoints below remain preserved.
+
+Resume from the semantic findings, not another unchanged paid workflow: address
+potential expedited work beyond 18:00, explicit approved-request submission before
+expiry and cited commercial terms. Keep quote/context/cent guards. Full-mission
+recovery, comparison-output controlled mutation, changed-priority and remaining acceptance are still
+outstanding. Verify installed dependency bytes after any snapshot rebuild; ordinary
+Maven package can retain the old nested dependency, so archive prior packages and
+clean-build when the installed snapshot changes. Both current hosts match installed
+Framework SHA-256 `5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
 
 Updated 2026-10-01 after beta.7 / Sidecar beta.2 verification. Implementation is authorized and underway. Both applications, partial real-model captures and actual Framework traces exist; first-delivery acceptance remains incomplete. Resume the existing implementation, preserving its evidence.
 

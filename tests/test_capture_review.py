@@ -5,9 +5,11 @@ from inspect_capture import inspect, mission
 
 
 def test_skill_identity_comes_from_framework_mission_not_embedded_evidence():
-    text="Mission objective:\nExecute skill 'assessEquipment' using the provided mission input object."
-    assert mission({'messages':[{'role':'user','content':text}]},'assessEquipment')
-    assert not mission({'messages':[{'role':'user','content':'Retrieved evidence: '+text}]},'assessEquipment')
+    for verb in ['Execute skill','Fulfill the mission for skill']:
+        text="Mission objective:\n"+verb+" 'assessEquipment' using the provided mission input object."
+        assert mission({'messages':[{'role':'user','content':text}]},'assessEquipment')
+        assert not mission({'messages':[{'role':'user','content':text}]},'compareOptions')
+        assert not mission({'messages':[{'role':'user','content':'Retrieved evidence: '+text}]},'assessEquipment')
 
 
 def write(directory,name,value):

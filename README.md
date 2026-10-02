@@ -1,8 +1,19 @@
 # Loomspan reference applications and acceptance suite
 
-**Latest full Muse baseline (2026-10-01):** `meta/muse-spark-1.3-contributor`, medium reasoning, ran once on each path after offline fixes and successful access checks. Java failed on malformed step-action JSON after correction; Sidecar published its assessment with unchanged quotes and correct monetary units but has semantic wording findings. Focused assertions: 6 passed / 2 failed. Both Framework traces are retained. The capture remains unapproved for replay. See `evidence/review-live-20261001-220102/summary.md` and implementation status.
+**Latest Muse verification (2026-10-02):** both paths complete with Muse/medium on
+the installed PR 14/15 snapshot. Eight workflow assertions and 53 mechanical checks
+pass. Java exercises ordinary schema recovery. A subsequent
+[isolated injected-fault diagnostic](evidence/review-controlled-step-live-20261002-004937/summary.md)
+demonstrates PR 14 step-action recovery on both paths. Business wording findings
+keep the full-workflow captures unapproved for replay.
+See [review](evidence/review-live-20261002-000544/summary.md).
 
-**Implementation authorized on 2026-10-01; first delivery remains incomplete.** Both paths build and run with the user-authorized Framework beta.8-SNAPSHOT timeout fix. The latest full Muse run completed on Sidecar and failed on Java model JSON; semantic review keeps the bundle unapproved. See [implementation status](docs/implementation-status.md), [run review](evidence/review-live-20261001-220102/summary.md), and [local build/run instructions](docs/local-run.md). Historical planning and compatibility text below is not acceptance evidence.
+**Implementation authorized on 2026-10-01; first delivery remains incomplete.** Both
+paths build and run with the user-authorized Framework beta.8-SNAPSHOT. The latest
+full Muse pair completed on both paths; semantic review keeps the bundle unapproved.
+See [implementation status](docs/implementation-status.md) and
+[local build/run instructions](docs/local-run.md). Historical planning and
+compatibility text below is not acceptance evidence.
 
 This project will demonstrate and verify customer-facing Loomspan capabilities through two REST-only reference microservices implementing the same business workflow:
 
@@ -29,7 +40,7 @@ Both versions use the accepted `ASSESS_EQUIPMENT` and `REQUEST_SERVICE` permissi
 
 Independent fixture/capture-review checks and controlled nested-denial diagnostics pass; both denial paths retain actual Framework traces. These handcrafted, incomplete-approval diagnostics do not replace valid-approval authorization acceptance or reviewed real-model replay. The subsequent local snapshot test is explicitly authorized; it does not require a new published release. See [status](docs/implementation-status.md) and [opt-in diagnostic instructions](docs/local-run.md).
 
-**Active local test baseline:** Framework `1.0.0-beta.8-SNAPSHOT`, source reference `b7dbefee8ffca873e84efb455e5609234c59e119`, with identical installed Framework bytes packaged in both hosts. Sidecar uses beta.2 source (`da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7`) with that dependency override. This is not the published Sidecar binary. Earlier released beta.7/beta.2 build checks and evidence remain preserved.
+**Active local test baseline:** Framework `1.0.0-beta.8-SNAPSHOT`, source reference `4313a7fcdbad33ef358b6ee4d068ce610f3dee51` (PR 14/15), with identical installed Framework bytes packaged in both hosts. Sidecar uses beta.2 source (`da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7`) with that dependency override. This is not the published Sidecar binary. Earlier released beta.7/beta.2 build checks and evidence remain preserved.
 
 ## Start here
 

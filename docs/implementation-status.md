@@ -1,6 +1,97 @@
-# Implementation and observed status — 2026-10-01
+# Implementation and observed status — 2026-10-02
 
-**Latest full Muse baseline (2026-10-01):** `meta/muse-spark-1.3-contributor`, medium reasoning, ran once on each path after offline fixes and successful access checks. Java failed on malformed step-action JSON after correction; Sidecar published its assessment with unchanged quotes and correct monetary units but has semantic wording findings. Focused assertions: 6 passed / 2 failed. Both Framework traces are retained. The capture remains unapproved for replay. See `evidence/review-live-20261001-220102/summary.md` and implementation status.
+**Latest Muse verification (2026-10-02):** both paths COMPLETED on the installed
+PR 14/15 Framework snapshot, Muse/medium. Both actual traces SUCCEEDED; authoritative
+quotes, asset/approval context and monetary checks pass. Java exercised ordinary
+output-schema correction; neither path exercised PR 14 step-action correction or
+emitted malformed JSON. Semantic findings keep the complete captures unapproved
+for replay. See [full review](../evidence/review-live-20261002-000544/summary.md).
+
+## Controlled step-action failure and Muse recovery — 2026-10-02
+
+The user authorized an isolated injected fault rather than another full workflow.
+[Both-path diagnostic](../evidence/review-controlled-step-live-20261002-004937/summary.md)
+demonstrates real PR 14 correction: the preserved extra-brace response is rejected,
+actual parser/tail feedback reaches Muse/medium, and its one live answer per path
+returns a valid assigned entitlement action. Both Framework traces and diagnostic
+executions succeed. All 25 evidence checks pass; exactly one entitlement invocation
+occurs after correction on each path, none before rejection. Independent source
+reads corroborate ordering; assessment/quote/request records remain unchanged.
+
+The original Java fault is reused on both paths with case-ID-only substitution.
+Temporary one-task plans and final completion markers are synthetic; only correction
+responses are new live output. Two calls total return HTTP 200, with reported cost
+0.0016351. Seven fixture tests and a both-host offline rehearsal passed first.
+Controlled-live mode permits one explicit matched provider stage and has no fallback.
+
+Muse reduces the optional context to `{}` in both corrected actions. The real leaf
+uses case/asset IDs and re-reads authoritative records, so these calls are valid.
+This demonstrates isolated recovery, not faithful recopying of the 15 KB context,
+original full-mission recovery, an A/B or a measured success rate. The source captures
+remain unchanged and unapproved. The new capture supports this labeled diagnostic,
+but is not an approved business replay baseline. Comparison-output mutation,
+changed-priority and remaining business acceptance remain outstanding.
+
+All 16 predeployment active Framework traces were archived, new diagnostic traces
+exported, existing capture checksums verified, and normal skill configuration
+restored. Both running hosts retain the same installed Framework bytes; all five
+services are ready. The PR 14 recovery gap described in the earlier full-run section
+below is now filled for this isolated lookup only.
+
+## Installed PR 14/15 verification — 2026-10-02
+
+Verified clean Framework source `4313a7fcdbad33ef358b6ee4d068ce610f3dee51`,
+including PR 14 and subsequent PR 15. The installed correction, step-loop and
+prompt-builder class bytes match fresh source compilation. Clean host rebuilds
+package identical installed Framework SHA-256
+`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
+Ordinary package initially reused old nested dependency bytes; prior packages are
+preserved, and clean rebuild resolved the mismatch before provider calls.
+Sidecar remains unchanged beta.2 source with the snapshot override. Running host
+hashes, source revisions/worktree state and configuration hashes are recorded.
+
+[Offline evidence](../evidence/pr14-verification-20261002/build-baseline.json):
+148 focused Framework tests and 25 suite checks passed. Both captured extra-brace
+originals remain rejected; installed feedback retains bounded candidate head/tail,
+explicit omissions and actual parser reasons. Existing forensic and prior live
+capture checksums remain unchanged. Scripted recovery verifies Framework behavior,
+not Muse recovery. Both single-call Muse/medium
+[compatibility probes](../evidence/compatibility-20261002-000453/manifest.json) pass.
+
+Exactly one [new full workflow](../evidence/live-20261002-000544/manifest.json)
+per path was then run concurrently on separate cases. Java completed in 447.171 s
+with 18 calls; Sidecar completed in 397.659 s with 17 calls. All 35 responses are
+HTTP 200, actual Muse/medium requests are verified, and every provider content string
+matches the real Framework trace. Each path publishes one immutable assessment
+and no service commitment. Eight capture assertions and 53 mechanical checks pass;
+three reviewer regressions pass too. Initial reports with obsolete PR 15 stage
+wording are preserved, and updated stage detection reran on identical captures.
+
+Java's valid-JSON equipment assessment omitted required hypothesis fields. Real
+output-schema feedback prompted a successful correction (trace rejection/retry
+160/161, corrected response 170, schema acceptance 176). Sidecar has no correction.
+Neither path exercises PR 14 step-action correction, malformed-JSON recovery, or the
+controlled mutation scenario. Improved feedback is proven offline; Muse recovery
+from the earlier trailing-brace failure remains unproven. Combined PR 14/15 source
+and one pair of runs do not establish causality or reliability rates.
+
+Compared with `live-20261001-220102`, Java now reaches comparison/publication and
+both assessment inputs retain bulletin serial applicability. Sidecar now addresses
+the recoverable two-hour delay. Both preserve complete comparison through native
+synthesis, exactly two unmodified authoritative service quotes and USD-cent clarity.
+Business semantics still block replay approval: both imply expedited work fits site
+access despite potential work beyond 18:00; next-decision handoffs do not clearly
+require approved-request submission before expiry; Sidecar's commercial advice lacks
+service/warranty citations; Java has ambiguous diagnosis/travel wording and uses a
+quote ID rather than the option name as selectedOption. The current string schema
+permits that selection representation, but shared replay needs a settled convention.
+
+Both captures are complete but **REJECTED_FOR_REPLAY** as a business baseline.
+No extra paid run or prompt change was made. Changed-priority responsiveness,
+controlled malformed-output correction, approved replay, valid-approval
+creation/recovery, authorization positive control and gated isolation remain
+outstanding. First delivery remains incomplete. See the full review for precise
+field evidence, correction IDs, traces and provenance.
 
 Implementation is authorized by the user's current request. **First delivery is incomplete.** The active local test uses user-authorized Framework beta.8-SNAPSHOT in embedded Java and unchanged Sidecar beta.2 source. Workflow, permissions, provider and evidence requirements remain unchanged.
 

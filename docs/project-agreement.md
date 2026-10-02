@@ -1,6 +1,32 @@
 # Project agreement and conversation handoff
 
-Last updated: 2026-10-01.
+Last updated: 2026-10-02.
+
+### Accepted isolated controlled step-action fault — 2026-10-02
+
+The user accepted injecting the preserved extra-closing-brace action into an actual
+Framework step and letting Muse/medium answer its real PR 14 correction request,
+once per integration path. This replaces hoping for a spontaneous defect in another
+full workflow. Use explicit captured-fault provenance, a temporary one-task planner
+with the real entitlement leaf, synthetic plan/final diagnostic envelopes, and one
+strictly matched live correction stage. No unexpected stage may fall back to paid
+calls. Preserve actual feedback, answers, traces and independent side-effect evidence.
+Successful isolated recovery does not approve the original or complete business
+captures, establish comparative reliability, or replace the comparison-output
+controlled mutation and broader business acceptance scenarios.
+
+### Accepted PR 14 installed-snapshot verification — 2026-10-02
+
+The user authorized verification of the current neighboring Framework implementation
+and installed artifact, offline correction-feedback checks using preserved malformed
+Muse responses, rebuilding both hosts, a small Muse/medium compatibility check, and
+one full live workflow per path after offline checks pass. Record exact revisions,
+artifact hashes and provenance; preserve all existing evidence and uncommitted work.
+The installed source also includes PR 15's objective/step-prompt change, so the new
+live run is evidence for that combined revision rather than a controlled PR 14 A/B.
+Keep quote equality, authoritative asset/approval context and USD-cent clarity.
+Successful execution without malformed output does not demonstrate model recovery.
+Do not approve incomplete captures or repeat paid workflows without a specific gap.
 
 The user subsequently authorized one full Muse baseline workflow per path after the offline checks and access probes passed. The observed mixed outcome and unapproved-capture review are recorded in implementation status; this run changes no business acceptance criteria.
 

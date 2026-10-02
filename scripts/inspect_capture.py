@@ -14,8 +14,9 @@ def system(request):
 
 
 def mission(request,skill):
-    prefix="Mission objective:\nExecute skill '"+skill+"' using the provided mission input object."
-    return any(m.get('role')=='user' and m.get('content','').startswith(prefix)
+    prefixes=tuple("Mission objective:\n"+verb+" '"+skill+"' using the provided mission input object."
+                   for verb in ['Execute skill','Fulfill the mission for skill'])
+    return any(m.get('role')=='user' and m.get('content','').startswith(prefixes)
                for m in request.get('messages',[]))
 
 

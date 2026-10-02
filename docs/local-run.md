@@ -1,6 +1,51 @@
 # Local build and evidence
 
-**Latest full Muse baseline (2026-10-01):** `meta/muse-spark-1.3-contributor`, medium reasoning, ran once on each path after offline fixes and successful access checks. Java failed on malformed step-action JSON after correction; Sidecar published its assessment with unchanged quotes and correct monetary units but has semantic wording findings. Focused assertions: 6 passed / 2 failed. Both Framework traces are retained. The capture remains unapproved for replay. See `evidence/review-live-20261001-220102/summary.md` and implementation status.
+**Latest Muse verification (2026-10-02):** both paths complete on the installed
+PR 14/15 snapshot; eight capture assertions and 53 mechanical checks pass. Java
+schema recovery succeeds, but PR 14 step-action recovery is not exercised in that full run.
+Business findings keep captures unapproved. See
+[review](../evidence/review-live-20261002-000544/summary.md) and implementation status.
+
+The subsequent [isolated controlled fault](../evidence/review-controlled-step-live-20261002-004937/summary.md)
+demonstrates real PR 14 recovery on both paths. It uses synthetic planning/final
+markers, a captured malformed action and one actual Muse correction response per
+path. It is not a full business replay baseline. Both model answers omit the large
+optional context; the deterministic lookup reads authoritative records using IDs.
+
+## Isolated correction diagnostic
+
+Only run the live command when a new paid correction check is explicitly wanted.
+`controlled-live` has exactly one matched provider stage per case, with no fallback
+for unexpected/repeated requests. Preserve active traces/logs before recreating hosts
+(this execution retained all 16 active traces in `evidence/pre-controlled-correction-20261002-004519`).
+The fixture tests and `--offline` rehearsal make no provider calls.
+
+```powershell
+.venv/Scripts/python -m pytest tests/test_fixture_proxy.py tests/test_fixture_replay.py
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.correction.yaml up -d --build fixtures java sidecar
+.venv/Scripts/python -u scripts/capture_step_correction.py --offline
+# Explicit opt-in: one Muse/medium correction call per path.
+.venv/Scripts/python -u scripts/capture_step_correction.py
+# Review the newly returned capture path, writing outside that original capture:
+.venv/Scripts/python scripts/review_step_correction.py evidence/controlled-step-live-RUN --output evidence/review-controlled-step-live-RUN/review.json
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml up -d java sidecar
+.venv/Scripts/python scripts/readiness.py
+```
+
+The diagnostic invokes only the real entitlement leaf. Original captured syntax is
+retained with case-ID-only substitution. The synthetic terminal marker is diagnostic
+scaffolding, not a model-produced business assessment. Restore normal configuration
+after evidence is exported, even if correction fails.
+
+The new artifact was verified offline against both captured trailing-brace failures
+before two compatibility probes and exactly one workflow per path. Do not repeat
+those paid runs merely to verify feedback. Current read-only capture review accepts
+both historical `Execute skill` and PR 15 `Fulfill the mission for skill` wording.
+Initial obsolete-matcher reports remain preserved beside corrected reports.
+
+Before using the `clean package` snapshot commands below, archive any previous
+packages needed as evidence. `record_snapshot_build.py` must pass before deployment;
+it catches stale nested Framework bytes even when ordinary packaging succeeds.
 
 Use PowerShell at the repository root, Docker Desktop, Java 21 via Maven and Python 3.13. Provider credentials remain in the existing `LOOMSPAN_OPENROUTER_API_KEY` environment variable. Never paste credentials into a command, source file or report.
 
@@ -29,8 +74,8 @@ to run them before the offline fixes pass or without an identified evidence gap.
 The user installed Framework `1.0.0-beta.8-SNAPSHOT` locally and authorized this test on 2026-10-01. Both hosts can consume it without publishing Framework or releasing Sidecar. The separate Sidecar export at `.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT` is unchanged beta.2 source. To create it in a fresh workspace, export tag `v1.0.0-beta.2` from the neighboring Sidecar checkout into that directory, preserving the earlier beta.2 build.
 
 ```powershell
-mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -f apps/java/pom.xml package
-mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -DskipTests -f .build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/pom.xml package
+mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -f apps/java/pom.xml clean package
+mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -DskipTests -f .build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/pom.xml clean package
 .venv/Scripts/python scripts/record_snapshot_build.py
 docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml up -d --build java sidecar
 .venv/Scripts/python scripts/readiness.py
