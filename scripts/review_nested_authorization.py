@@ -51,7 +51,7 @@ def inspect(directory):
         check(path,'Luis invokes and completes actual creation exactly once',len(leaf_calls(lf,'TOOL_CALL_STARTED'))==len(leaf_calls(lf,'TOOL_CALL_COMPLETED'))==1 and luis['terminal']['status']=='COMPLETED')
         if luis['terminal']['status']=='COMPLETED':
             receipt=json.loads(luis['terminal']['result']);added=[row for row in luis['requestsAfter'] if row not in luis['requestsBefore']]
-            check(path,'exactly one durable matching Luis receipt with quote scope USD cents',len(added)==1 and json.loads(added[0][2])==approval and json.loads(added[0][3])==receipt and receipt['approval']==approval and receipt['quote']==quote and receipt['evidence']==expected['citations'] and receipt['status']=='PENDING_DISPATCH' and receipt['approver']=={'issuer':'http://localhost:18080/realms/equipment','subject':'luis'} and receipt['caseId']==case)
+            check(path,'exactly one durable matching Luis receipt with quote scope USD cents',len(added)==1 and json.loads(added[0][2])==approval and json.loads(added[0][3])==receipt and receipt['approval']==approval and receipt['quote']==quote and receipt['evidence']==expected['citations'] and receipt['status']=='PENDING_DISPATCH' and receipt['approver']=={'issuer':manifest.get('runtimeIdentity',{}).get('issuer','http://localhost:18080/realms/equipment'),'subject':'luis'} and receipt['caseId']==case)
             finals=[request_by_id[e['requestId']] for e in responses if e['stage'] in [n+8,n+9]]
             children=[json.loads(task['result']) for r in finals for task in completed(r)]
             check(path,'both native parent inputs and final echoes preserve real receipt',len(finals)==2 and len(children)==2 and all(v==receipt for v in children))

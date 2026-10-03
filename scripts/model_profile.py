@@ -1,4 +1,5 @@
 """Label new captures from the shared mounted model configuration."""
+import environment as target_env
 from pathlib import Path
 import subprocess
 import yaml
@@ -11,8 +12,7 @@ def model_profile():
     for path in ('java', 'sidecar'):
         raw = (ROOT / 'config' / (path + '.yaml')).read_text(encoding='utf-8')
         mounted = subprocess.check_output(
-            ['docker', 'exec', 'equipment-acceptance-' + path + '-1',
-             'cat', '/config/runtime.yaml'], text=True)
+            target_env.execute(path, 'cat', '/config/runtime.yaml'), text=True)
         if yaml.safe_load(raw) != yaml.safe_load(mounted):
             raise RuntimeError('Mounted model configuration differs for ' + path)
         model = yaml.safe_load(raw)['loomspan']['models']['reasoning']

@@ -1,10 +1,11 @@
 """Authorization Code + S256 PKCE, isolated browser sessions; no password grant."""
+import environment as target_env
 import base64, hashlib, http.server, json, pathlib, secrets, threading, urllib.parse, webbrowser
 import httpx
 from playwright.sync_api import sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-ISSUER='http://localhost:18080/realms/equipment'
-REDIRECT='http://localhost:18765/callback'
+ISSUER=target_env.url(18080, '/realms/equipment', 'localhost')
+REDIRECT=target_env.url(18765, '/callback', 'localhost')
 def login(user='maya',manual=False):
     verifier=secrets.token_urlsafe(48); state=secrets.token_urlsafe(24); received={}
     class Callback(http.server.BaseHTTPRequestHandler):
@@ -13,7 +14,7 @@ def login(user='maya',manual=False):
             if params.get('state')!=[state]: self.send_error(400); return
             received.update(params); self.send_response(200); self.end_headers(); self.wfile.write(b'Login complete. You may close this tab.')
         def log_message(self,*args): pass
-    server=http.server.HTTPServer(('127.0.0.1',18765),Callback)
+    server=http.server.HTTPServer(('127.0.0.1',target_env.port(18765)),Callback)
     thread=threading.Thread(target=server.serve_forever,daemon=True); thread.start()
     url=ISSUER+'/protocol/openid-connect/auth?'+urllib.parse.urlencode({
       'client_id':'equipment-browser','response_type':'code','scope':'openid','redirect_uri':REDIRECT,'state':state,

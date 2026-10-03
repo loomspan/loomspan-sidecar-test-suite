@@ -1,4 +1,5 @@
 """Collect bounded diagnostics and independent SQLite records; never copy secrets."""
+import environment as target_env
 import hashlib, json, os, pathlib, sqlite3, subprocess, sys
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def finalize(directory):
@@ -7,16 +8,18 @@ def finalize(directory):
     def redact(text):
         for secret in secrets:text=text.replace(secret,'[REDACTED]')
         return text
-    log=subprocess.check_output(['docker','compose','--env-file','.runtime/compose.env','logs','--no-color'],cwd=ROOT,text=True,encoding='utf-8',errors='replace')
+    log=subprocess.check_output(target_env.compose()+['logs','--no-color'],cwd=ROOT,text=True,encoding='utf-8',errors='replace')
     (out/'containers.log').write_text(redact(log),encoding='utf-8')
     identities={}
+    services={item['Service']: item for item in target_env.services()}
+    images={item['ContainerName']:item['ID'] for item in json.loads(subprocess.check_output(target_env.compose()+['images','--format','json'],text=True))}
     for service in ['java','python','sidecar','fixtures','keycloak']:
-        name='equipment-acceptance-'+service+'-1'
-        image=subprocess.check_output(['docker','inspect','--format','{{.Image}}',name],text=True).strip()
+        name=services[service]['Name']
+        image=images[name]
         identities[service]={'container':name,'imageId':image}
         if service in ['java','sidecar']:
             jar='/app/app.jar' if service=='java' else '/app/loomspan-sidecar.jar'
-            identities[service]['runningJarSha256']=subprocess.check_output(['docker','exec',name,'sha256sum',jar],text=True).split()[0]
+            identities[service]['runningJarSha256']=subprocess.check_output(target_env.execute(service,'sha256sum',jar),text=True).split()[0]
     (out/'running-identities.json').write_text(json.dumps(identities,indent=2))
     # Preserve the authored public configuration with the run, not credentials.
     configuration=out/'configuration'

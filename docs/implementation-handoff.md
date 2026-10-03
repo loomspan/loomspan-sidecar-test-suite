@@ -1,5 +1,43 @@
 # First-delivery implementation handoff
 
+**Newest on-prem setup checkpoint (2026-10-02):** the user selected Docker Compose
+only, with a separate project on this host, installed from explicit runtime assets
+as an on-prem operator would use it. [Setup verification](../evidence/clean-compose-20261002/summary.md)
+passes 311 checks, 56 assertions and 96 focused tests on fresh project state, with
+zero paid calls. The [operator runbook](on-prem-runtime.md) needs no sibling source
+checkouts or Maven cache. A Python startup-schema gap was found and fixed without
+weakening acceptance; the retained stack, original evidence and approved replay
+remain intact. Both projects are ready and provider-disabled. The retained Python
+image remains original; the fix is deployed only in `equipment-onprem`.
+
+Runtime artifacts are still the pinned local snapshot/Sidecar host. The user will
+release Framework and Sidecar after this verification; next select published
+assets and revalidate their identities/provenance without rewriting original
+evidence or bypassing exact checks. No publication is authorized by this checkpoint.
+This is not a fresh Windows/toolchain installation or source-build test. Java's
+stronger priority response remains inconclusive and full delivery is undeclared.
+The VM plan and earlier checkpoints below retain historical scope only.
+
+**Current post-live offline checkpoint (2026-10-02):**
+[consolidated acceptance](../evidence/acceptance-offline-20261002-204252-34a71c/summary.md)
+passes 311 scenario checks, 56 workflow assertions and 86 focused tests, including
+fresh-live reviewer and audit regression tests. No failures/skips or paid calls.
+The audit revalidates the retained live pair's 256 process checks, 16 assertions,
+semantic source bindings and phase evidence. Genuine native parent completion is
+observed; controlled correction replay still has explicit actual-child copying
+envelopes. Approved replay content is unchanged. Normal services are ready with
+provider access disabled, packages unchanged and prior evidence/durable rows intact.
+
+First delivery remains undeclared. Java's stronger continuity-priority response
+remains inconclusive; Sidecar explicitly escalates. Clean-workspace setup remains
+unverified. Next validate in a separate disposable Windows VM with pinned build
+inputs, a checksummed evidence bundle, fresh credentials/databases and disabled
+provider access, following the [concrete setup plan](local-run.md#next-validation-clean-setup-in-a-separate-environment-not-yet-run).
+Do not recreate this retained workspace, modify original evidence or bypass exact
+identity checks. Broader load/publication/restart/shutdown/CI remains outside this
+phase. Historical checkpoint text and suggested prompts below are superseded by
+this entry and the user's current request.
+
 **Latest fresh live checkpoint (2026-10-02):** final baseline and continuity-priority
 workflows on both applications use real Muse/medium at every model stage, including
 native parents. They pass 256 process checks, 16 assertions and six focused tests.

@@ -1,11 +1,12 @@
 """Prepare isolated release sources and local-only credentials; never print secrets."""
-import json, os, pathlib, secrets, subprocess, tarfile
+import environment as target_env
+import argparse, json, os, pathlib, secrets, subprocess, tarfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 def write(path, value):
     p = ROOT / path
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(value, encoding="utf-8")
-def main():
+def export_sources():
     for name, version, expected in [
         ('sidecar','1.0.0-beta.2','da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7'),
         ('framework','1.0.0-beta.7','0778065ef5bafc9c8ea979093e5e0e48d7e1e687')]:
@@ -18,6 +19,7 @@ def main():
             subprocess.run(['git','-C',str(repo),'archive','--format=tar',f'--output={archive}',f'v{version}'],check=True)
             dest.mkdir()
             with tarfile.open(archive) as t: t.extractall(dest,filter='data')
+def prepare_runtime():
     runtime=ROOT/'.runtime'; runtime.mkdir(exist_ok=True)
     secretfile=runtime/'secrets.json'
     if not secretfile.exists():
@@ -27,7 +29,7 @@ def main():
     realm={'realm':'equipment','enabled':True,'sslRequired':'none','accessTokenLifespan':1800,
       'roles':{'realm':[{'name':r} for r in ['ASSESS_EQUIPMENT','REQUEST_SERVICE']]},
       'clients':[{'clientId':'equipment-browser','publicClient':True,'standardFlowEnabled':True,
-        'directAccessGrantsEnabled':False,'redirectUris':['http://localhost:18765/callback'],
+        'directAccessGrantsEnabled':False,'redirectUris':[target_env.url(18765, '/callback', 'localhost')],
         'attributes':{'pkce.code.challenge.method':'S256'},'protocol':'openid-connect',
         'protocolMappers':[
           {'name':'roles','protocol':'openid-connect','protocolMapper':'oidc-usermodel-realm-role-mapper',
@@ -39,5 +41,12 @@ def main():
                 'realmRoles':['ASSESS_EQUIPMENT']+(['REQUEST_SERVICE'] if u=='luis' else [])} for u in ['maya','luis']]}
     write('.runtime/realm.json',json.dumps(realm,indent=2))
     write('.runtime/compose.env','\n'.join(f'{k.upper()}={v}' for k,v in s.items())+'\n')
-    print('Prepared pinned release sources and ignored local credentials.')
+    print('Prepared ignored local credentials and realm import; credentials not printed.')
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--runtime-only',action='store_true',help='Generate local runtime credentials without Git, Maven or neighboring checkouts')
+    args=parser.parse_args()
+    if not args.runtime_only: export_sources()
+    prepare_runtime()
 if __name__=='__main__': main()

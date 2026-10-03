@@ -1,4 +1,5 @@
 """Small live access check on both paths; retain failures as well as successes."""
+import environment as target_env
 import json, pathlib, time, uuid
 import httpx
 from login import login
@@ -17,11 +18,11 @@ def run():
     results=[];cases=[]
     with httpx.Client(timeout=300,trust_env=False) as client:
         try:
-            for path,port in [('java',18081),('sidecar',18082)]:
+            for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))]:
                 case='compat-'+path+'-'+uuid.uuid4().hex;cases.append(case)
                 item={'path':path,'caseId':case,'passed':False};results.append(item)
                 try:
-                    r=client.post('http://127.0.0.1:18090/control/cases/'+case,json={'mode':'live','path':path},
+                    r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json={'mode':'live','path':path},
                                   headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                     api=f'http://127.0.0.1:{port}'
                     r=client.post(api+'/v1/skills/compatibility/executions',json={'caseId':case},headers={'Authorization':'Bearer '+token});r.raise_for_status()

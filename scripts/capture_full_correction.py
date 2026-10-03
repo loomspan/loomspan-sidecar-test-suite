@@ -1,4 +1,5 @@
 """Controlled live full-workflow correction, or strict replay of its reviewed fixture."""
+import environment as target_env
 import argparse
 import json
 import time
@@ -37,7 +38,7 @@ def run(offline=False, rehearsal=False):
     cases,results=[],[];save('business-records-before.json',records())
     with httpx.Client(timeout=300,trust_env=False) as client:
         try:
-            for path,port in [('java',18081),('sidecar',18082)]:
+            for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))]:
                 sample=bundle['scenarios']['baseline'][path];verify_source(sample)
                 case='full-correction-'+path+'-'+uuid.uuid4().hex;cases.append(case)
                 if offline:
@@ -55,7 +56,7 @@ def run(offline=False, rehearsal=False):
                 registration={'mode':'replay' if offline or rehearsal else 'controlled-live','path':path,'steps':steps}
                 save(path+'-registration.json',registration);save(path+'-input.json',body)
                 save(path+'-baseline-expected.json',normalized(sample['expected'],CASE,case))
-                r=client.post('http://127.0.0.1:18090/control/cases/'+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
+                r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                 api=f'http://127.0.0.1:{port}'
                 r=client.post(api+'/assessments',json=body,headers={'Authorization':'Bearer '+token});r.raise_for_status()
                 item={'path':path,'caseId':case,'executionId':r.json()['id'],'expectedCalls':len(steps)};results.append(item)

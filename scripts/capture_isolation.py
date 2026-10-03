@@ -1,4 +1,5 @@
 """Two complete reviewed cases per application, with independently observed read gates."""
+import environment as target_env
 import json
 import time
 import uuid
@@ -42,13 +43,13 @@ def run():
         control = {'X-Control-Key': secrets['control']}
 
         def journal():
-            r = client.get('http://127.0.0.1:18090/control/journal', headers=control)
+            r = client.get(target_env.url(18090, '/control/journal', '127.0.0.1'), headers=control)
             r.raise_for_status()
             return r.json()
 
         def release(case):
             for gate in GATES:
-                r = client.post(f'http://127.0.0.1:18090/control/gates/{case}/{gate}', headers=control)
+                r = client.post(f'{target_env.url(18090)}/control/gates/{case}/{gate}', headers=control)
                 r.raise_for_status()
 
         def submit(path, api, scenario, user):
@@ -62,7 +63,7 @@ def run():
             d = out / scenario
             for name, value in [('registration', reg), ('input', body), ('expected', normalized(sample['expected'], CASE, case))]:
                 (d / (path + '-' + name + '.json')).write_text(json.dumps(value, indent=2))
-            r = client.post('http://127.0.0.1:18090/control/cases/' + case, json=reg, headers=control)
+            r = client.post(target_env.url(18090, '/control/cases/', '127.0.0.1') + case, json=reg, headers=control)
             r.raise_for_status()
             cases.append(case)
             r = client.post(api + '/assessments', json=body, headers={'Authorization': 'Bearer ' + tokens[user]})
@@ -72,7 +73,7 @@ def run():
             return item
 
         try:
-            for path, port in [('java', 18081), ('sidecar', 18082)]:
+            for path, port in [('java', target_env.port(18081)), ('sidecar', target_env.port(18082))]:
                 api = f'http://127.0.0.1:{port}'
                 blocked = submit(path, api, 'baseline', 'maya')
                 try:

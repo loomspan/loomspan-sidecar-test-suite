@@ -1,10 +1,21 @@
 import os
+from contextlib import asynccontextmanager
 import httpx, jwt
 from jwt import PyJWKClient
 from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.responses import JSONResponse
-app=FastAPI()
 from . import business
+
+@asynccontextmanager
+async def lifespan(application):
+    connection=business.db()
+    try:
+        connection.commit()
+    finally:
+        connection.close()
+    yield
+
+app=FastAPI(lifespan=lifespan)
 jwks=PyJWKClient(os.environ['JWKS'])
 def identity(authorization:str=Header('')):
     try:

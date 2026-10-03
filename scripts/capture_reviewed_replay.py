@@ -1,4 +1,5 @@
 """Run reviewed captured workflows through both Framework paths without provider access."""
+import environment as target_env
 import argparse, hashlib, json, pathlib, subprocess, time, uuid
 import httpx
 from baseline import baseline
@@ -12,8 +13,8 @@ from capture_business_diagnostic import normalized
 from recovery_replay import recovery_steps
 
 def require_offline_provider():
-    result = subprocess.run(['docker', 'exec', 'equipment-acceptance-fixtures-1', 'python', '-c',
-        "import os; print('disabled' if not os.getenv('OPENROUTER_API_KEY') else 'enabled')"],
+    result = subprocess.run(target_env.execute('fixtures', 'python', '-c',
+        "import os; print('disabled' if not os.getenv('OPENROUTER_API_KEY') else 'enabled')"),
         capture_output=True, text=True, check=True)
     if result.stdout.strip() != 'disabled':
         raise RuntimeError('Offline capture requires fixture provider credential disabled via compose.offline.yaml')
@@ -50,7 +51,7 @@ def run(scenario, recovery=False):
     (out / 'business-records-before.json').write_text(json.dumps(before, indent=2), encoding='utf-8')
     with httpx.Client(timeout=300, trust_env=False) as client:
         try:
-            for path, port in [('java', 18081), ('sidecar', 18082)]:
+            for path, port in [('java', target_env.port(18081)), ('sidecar', target_env.port(18082))]:
                 case = 'business-replay-' + path + '-' + uuid.uuid4().hex
                 cases.append(case)
                 sample = samples[path]
@@ -63,7 +64,7 @@ def run(scenario, recovery=False):
                 (out / (path + '-expected.json')).write_text(json.dumps(candidate, indent=2), encoding='utf-8')
                 body = normalized(sample['input'], CASE, case)
                 (out / (path + '-input.json')).write_text(json.dumps(body, indent=2), encoding='utf-8')
-                r = client.post('http://127.0.0.1:18090/control/cases/' + case, json=registration,
+                r = client.post(target_env.url(18090, '/control/cases/', '127.0.0.1') + case, json=registration,
                                 headers={'X-Control-Key': secrets['control']})
                 r.raise_for_status()
                 api = f'http://127.0.0.1:{port}'

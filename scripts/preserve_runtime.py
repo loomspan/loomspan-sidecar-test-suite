@@ -1,4 +1,5 @@
 """Archive actual active traces and existing runtime evidence before host recreation."""
+import environment as target_env
 import hashlib
 import argparse
 import json
@@ -20,7 +21,7 @@ def main():
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_text())
     index = []
     with httpx.Client(timeout=60, trust_env=False) as client:
-        for path, port in [('java', 18081), ('sidecar', 18083)]:
+        for path, port in [('java', target_env.port(18081)), ('sidecar', target_env.port(18083))]:
             base = f'http://127.0.0.1:{port}/_loomspan/observability/v1'
             headers = {'X-loomspan-Api-Key': secrets['observer']}
             response = client.get(base + '/traces', headers=headers)

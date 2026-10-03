@@ -1,0 +1,10 @@
+# On-prem runtime distribution: exact supplied artifacts, no Maven/source checkout.
+services:
+  java:
+    build:
+      context: .
+      dockerfile: deploy/java.Dockerfile
+  sidecar:
+    build:
+      context: .
+      dockerfile: deploy/sidecar.Dockerfile

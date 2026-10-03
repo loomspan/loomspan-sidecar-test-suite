@@ -54,6 +54,17 @@ Do not approve or regenerate replay fixtures merely because a live run completes
 
 ## One-command offline acceptance
 
+The delivery audit now revalidates the retained fresh complete live pair before
+running scenarios and again after acceptance. It checks the review bundle and all
+phase capture/archive checksums, semantic-review source bindings, matching current
+configuration/package identities, 256 process checks and the retained 16 workflow
+assertions. `fresh-live-audit.json` keeps these separate from newly executed offline
+counts. This is read-only evidence verification, not new provider execution or a
+new semantic approval. Both native live parents genuinely completed; the controlled
+recovery replay still uses explicit actual-child copying. Java's stronger response
+to continuity priority remains inconclusive. Focused verification includes
+`test_fresh_live_review.py` and audit disposition/binding regression tests.
+
 From this repository root, with the documented normal snapshot stack running:
 
 ```powershell
@@ -106,6 +117,55 @@ preservation fails, it reports the failure and leaves hosts in place to avoid
 discarding unique traces. Inspect `failure.json` and redacted logs before retrying.
 The runner requires the normal offline configuration at start; do not run unrelated
 fixture/configuration work concurrently with it.
+
+## Next validation: clean setup in a separate environment (not yet run)
+
+**Superseded plan; current result:** the user selected a separate Compose project
+on this host, installed through the documented [on-prem runtime](on-prem-runtime.md).
+That installation now passes 311 checks, 56 assertions and 96 focused tests after
+fixing Python's fresh-start schema initialization. See [setup evidence](../evidence/clean-compose-20261002/summary.md).
+The helpers now support explicit project/port/issuer isolation. No retained service
+was recreated, no VM/cloud resource was provisioned, and provider access stayed
+disabled. Host prerequisites and supplied local artifacts are explicit; fresh
+Windows/source-build/published-asset verification is not claimed. The user plans
+new Framework/Sidecar releases next. The section title and original VM plan below
+are retained for historical links, not as current instructions.
+
+### Historical VM proposal — not executed, no longer the selected target
+
+Use a disposable Windows VM with its own Docker Desktop, ports, volumes and user
+home. Keep this retained workspace and its running stack intact. A separate Compose
+project on this host alone is insufficient isolation: current helpers address
+fixed container names and localhost ports.
+
+1. Record the source revision plus any reviewed audit changes, Windows/Docker,
+   Java 21, Maven and Python 3.13 versions. Prepare a checksummed, credential-free
+   input bundle containing the pinned Framework source/build inputs and Sidecar
+   tag source, both approved replay fixtures/approvals, and every capture/review
+   referenced by provenance and focused tests, including the fresh-live phase.
+   Keep these labeled as retained evidence inputs; they are not fresh VM results.
+2. Clone source into the VM, install locked Python dependencies and Playwright
+   Chromium, generate fresh local credentials/Keycloak state, install the exact
+   Framework snapshot from its recorded source and build both application hosts.
+   Follow the snapshot setup recipe, using `compose.offline.yaml` from the first
+   startup and leaving the provider key unset. Do not copy existing databases,
+   tokens or `.runtime/secrets.json`. Inspect generated configuration against the
+   committed configuration before deployment; setup must not silently rewrite it.
+3. Record package/configuration identities and compare them with pinned inputs.
+   If rebuilding yields different package bytes, investigate and document the
+   cause and equivalence before selecting a new baseline; do not rewrite original
+   capture manifests or weaken provenance checks to force acceptance. The current
+   runner intentionally requires exact identity with its retained live checkpoint.
+4. Run readiness, real seeded-user PKCE login and `scripts/run_acceptance.py` in
+   the VM. Retain fresh setup logs, manifests, traces, journals, JUnit, integrity
+   and audit reports, with zero paid calls. Report missing inputs, setup failures
+   or identity mismatches as reproducibility findings. Only a completed clean run
+   can close the setup qualification.
+
+This is a concrete next validation plan, not evidence of a clean bootstrap. No VM
+was created and no current runtime, packages, records or original evidence were
+replaced for this phase. Java's priority-response qualification is a separate
+review target and is not resolved by setup testing.
 
 ## Full-workflow recovery and gated two-case isolation
 

@@ -2,6 +2,7 @@
 
 Not approved business replay or model judgment. Never registers a paid/live stage.
 """
+import environment as target_env
 import argparse
 import copy
 import hashlib
@@ -117,7 +118,7 @@ def run():
     (out / 'business-records-before.json').write_text(json.dumps(before, indent=2))
     with httpx.Client(timeout=300, trust_env=False) as client:
         try:
-            for path, port in [('java', 18081), ('sidecar', 18082)]:
+            for path, port in [('java', target_env.port(18081)), ('sidecar', target_env.port(18082))]:
                 case = 'business-diagnostic-' + path + '-' + uuid.uuid4().hex
                 cases.append(case)
                 steps, candidate = stages(source, diagnostic, path, case)
@@ -127,7 +128,7 @@ def run():
                 body = json.loads((ROOT / 'fixtures/base-case.json').read_text())
                 body['caseId'] = case
                 (out / (path + '-input.json')).write_text(json.dumps(body, indent=2))
-                r = client.post('http://127.0.0.1:18090/control/cases/' + case, json=registration,
+                r = client.post(target_env.url(18090, '/control/cases/', '127.0.0.1') + case, json=registration,
                                 headers={'X-Control-Key': secrets['control']})
                 r.raise_for_status()
                 api = f'http://127.0.0.1:{port}'

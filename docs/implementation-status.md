@@ -1,5 +1,83 @@
 # Implementation and observed status — 2026-10-02
 
+## On-prem Compose installation — verified with explicit qualifications
+
+The user replaced VM provisioning with a separate Compose project on this host,
+installed as an on-prem operator would use it. Project `equipment-onprem` at
+`C:\opendev\clean-validation\20261002\equipment` uses fresh credentials, databases,
+network/volume and offset ports. A checksummed distribution supplies exact approved
+Java/Sidecar JARs, source/configuration and an installer requiring no neighboring
+checkouts, local Java or Maven. See the [operator runbook](on-prem-runtime.md).
+
+The first acceptance attempt exposed a real bootstrap defect: Python returned
+healthy before its SQLite database existed. Application lifespan now initializes
+the schema, fails startup on unusable storage and preserves existing rows. The
+fix was deployed only to the new project; no acceptance assertion was relaxed.
+An overlapping manual PKCE helper attempt also failed; sequential login succeeded
+and the failure remains retained. The corrected project began acceptance with
+both schemas present and zero business rows.
+
+[Fresh acceptance](../evidence/acceptance-offline-20261002-214147-5a4252/summary.md)
+passes **311 checks, 56 workflow assertions and 96 focused tests**, without
+failures/skips or paid calls. Both seeded-user PKCE logins succeeded. The live
+audit separately revalidated 256 retained checks/16 retained assertions; imported
+evidence remains explicitly classified as an input. Normal configuration was
+restored after nested authorization. All original container IDs, package hashes,
+durable rows and 134 protected files remain unchanged. The retained Python image
+still has its original code; the startup fix is active only in the new project.
+
+[Setup evidence](../evidence/clean-compose-20261002/summary.md) records prerequisites,
+commands, failure/fix, exact distribution identities and 11 exported fresh-result
+directories. This verifies the supplied-artifact runtime installation on a host
+with existing Windows/Docker/toolchain/cache prerequisites. It does not verify a
+virgin Windows installation, a source rebuild or published assets. No VM/cloud
+resources were created. The user will release Framework/Sidecar next, after which
+published assets can be selected and revalidated with explicit provenance.
+Java's stronger priority response remains inconclusive; first delivery remains
+undeclared. Broader load/publication/restart/shutdown/CI remain outside scope.
+The [earlier VM/input preparation](../evidence/clean-setup-preparation-20261002/summary.md)
+is historical; no VM action remains required by the user's current decision.
+
+## Current post-live consolidated offline acceptance — verified
+
+The [new consolidated report](../evidence/acceptance-offline-20261002-204252-34a71c/summary.md)
+passes all six paired groups on the committed business configuration: **311
+independent scenario checks, 56 workflow assertions and 86 focused offline tests**,
+with no failures, errors or skips. Baseline/priority each contribute 39 checks,
+genuine correction replay 42, direct service creation/recovery 59, gated isolation
+100 and nested authorization 32. No application/configuration regression was
+observed and no approved replay fixture or approval was changed.
+
+The focused suite now includes all five fresh-live reviewer tests and four audit
+binding/disposition tests, alongside the existing generation and regression tests.
+The [read-only live audit](../evidence/acceptance-offline-20261002-204252-34a71c/fresh-live-audit.json)
+revalidates the original review bundle, all seven phase captures and preservation
+archives, semantic source bindings, matching package/configuration identities,
+256 process checks and 16 retained workflow assertions. These live counts are
+separate from the new offline counts. No new provider execution, semantic approval,
+curation or replay approval occurred. The audit now recognizes observed genuine
+native parent completion; controlled correction replay's parent envelopes still
+explicitly copy actual completed child results.
+
+Zero paid calls. Normal configuration is restored and all five services are ready
+with provider access disabled and packages unchanged. Integrity verifies 134
+protected original files and 139 suite/configuration/review files unchanged,
+preserves all prior durable rows and records exactly two new expected Luis
+`PENDING_DISPATCH` requests per application. Runtime journals and actual traces
+were archived before both authorization configuration changes. Earlier failed
+attempts and all original captures retain their dispositions.
+
+First delivery remains undeclared. Sidecar explicitly escalates for continuity
+priority; Java retains a defensible parallel pre-expiry loaner decision but stronger
+priority responsiveness remains inconclusive. Clean-workspace reproducibility is
+unverified. The concrete next step is the
+[separate Windows VM setup validation](local-run.md#next-validation-clean-setup-in-a-separate-environment-not-yet-run),
+using fresh credentials/databases, pinned build inputs and a checksummed retained
+evidence bundle with provider access disabled. Exact package identity and evidence
+prerequisites must be verified rather than bypassed. This workspace was not recreated
+or discarded. Broader load, publication, restart, shutdown and CI remain outside
+this phase. Older sections below preserve their original checkpoint scope.
+
 ## Fresh complete live workflows — verified with a priority-response qualification
 
 The [fresh live review](../evidence/review-fresh-live-20261002/summary.md) covers

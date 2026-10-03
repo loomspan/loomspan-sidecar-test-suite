@@ -1,4 +1,5 @@
 """One offline acceptance command; preserve runtime, review evidence and restore normal hosts."""
+import environment as target_env
 import hashlib
 import json
 import os
@@ -25,13 +26,14 @@ from review_nested_authorization import inspect as nested_review
 from capture_full_correction import run as full_correction
 from review_full_correction import inspect as full_correction_review
 from curate_full_correction import verify_approval as correction_approval
+from audit_fresh_live import verify as verify_fresh_live
 
 FOCUSED = ['test_recovery_replay', 'test_reviewed_replay', 'test_fixture_replay', 'test_fixture_proxy',
            'test_fixture_clock', 'test_capture_review', 'test_business_output', 'test_quote_publication',
            'test_workflow_generation', 'test_comparison_mutation', 'test_nested_authorization_fixture',
-           'test_business_workflow_replay', 'test_acceptance_report', 'test_full_correction', 'test_correction_context']
-COMPOSE = ['docker', 'compose', '--env-file', '.runtime/compose.env', '-f', 'compose.yaml',
-           '-f', 'compose.snapshot.yaml', '-f', 'compose.offline.yaml']
+           'test_business_workflow_replay', 'test_acceptance_report', 'test_full_correction', 'test_correction_context',
+           'test_fresh_live_review', 'test_fresh_live_audit', 'test_environment', 'test_runtime_startup']
+COMPOSE = target_env.compose()
 
 
 def runtime_state(build):
@@ -40,13 +42,11 @@ def runtime_state(build):
     observed = baseline()
     normal = True
     for name in ['java', 'sidecar']:
-        mounts = json.loads(subprocess.check_output(['docker','inspect','--format','{{json .Mounts}}',
-                                                    'equipment-acceptance-'+name+'-1'],text=True))
-        setting = subprocess.run(['docker','exec','equipment-acceptance-'+name+'-1','printenv',
-                                  'LOOMSPAN_SKILLS_LOCATIONS'],capture_output=True,text=True)
+        mounts = subprocess.check_output(target_env.execute(name,'cat','/proc/self/mountinfo'),text=True)
+        setting = subprocess.run(target_env.execute(name,'printenv','LOOMSPAN_SKILLS_LOCATIONS'),capture_output=True,text=True)
         if setting.returncode not in [0, 1]:
             raise RuntimeError('Unable to verify skill-location setting')
-        normal &= not any('/authorization' in m['Destination'] for m in mounts) and 'authorization' not in setting.stdout
+        normal &= '/config/authorization' not in mounts and 'authorization' not in setting.stdout
     return {'ready': True, 'providerDisabled': True, 'normalConfiguration': normal,
             'artifactsUnchanged': observed['artifacts']==build['artifacts'],
             'frameworkCommit':observed['frameworkCommit'], 'frameworkSha256':observed['installedFrameworkSha256']}
@@ -65,8 +65,7 @@ def provenance_preflight():
     for service, files in [('fixtures',['fixtures/server.py','fixtures/business.json']),
                            ('python',['apps/python/app.py','apps/python/business.py'])]:
         for name in files:
-            actual = subprocess.check_output(['docker','exec','equipment-acceptance-'+service+'-1',
-                                              'sha256sum','/app/'+name],text=True).split()[0]
+            actual = subprocess.check_output(target_env.execute(service,'sha256sum','/app/'+name),text=True).split()[0]
             if actual!=digest(ROOT/name):
                 raise ValueError('Running '+service+' source differs: '+name+'; preserve evidence before rebuilding')
     return {'fixtureSha256':digest(file), 'approvalSha256':digest(file.parent/'business-reviewed-v1-approval.json'),
@@ -80,11 +79,13 @@ def main():
         raise RuntimeError('Start from the documented normal offline configuration')
     profile = model_profile()
     provenance = provenance_preflight()
+    live_audit = verify_fresh_live(build)
     out = ROOT/'evidence'/('acceptance-offline-'+time.strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:6])
     out.mkdir()
     (out/'reviews').mkdir()
     def save(name, value):
         (out/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
+    save('fresh-live-audit.json', live_audit)
     # Source bytes and original evidence remain immutable; no credentials are copied.
     source_hashes = {p.relative_to(ROOT).as_posix():digest(p) for directory in ['scripts','tests','config']
                      for p in (ROOT/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts}
@@ -92,6 +93,8 @@ def main():
                           'compose.offline.yaml','compose.authorization.yaml','requirements.lock']})
     source_hashes.update({name:digest(ROOT/name) for name in ['fixtures/replay/full-correction-reviewed-v1.json',
                           'fixtures/replay/full-correction-reviewed-v1-approval.json']})
+    live_directory = ROOT/live_audit['reviewDirectory']
+    source_hashes.update({p.relative_to(ROOT).as_posix():digest(p) for p in live_directory.iterdir() if p.is_file()})
     save('suite-source-sha256.json',source_hashes)
     save('business-records-before.json',records())
     protected = json.loads((ROOT/'evidence/business-output-offline-20261002/preserved-source-sha256.json').read_bytes())
@@ -200,6 +203,7 @@ def main():
     before=json.loads((out/'business-records-before.json').read_bytes())
     failures=[name for name,wanted in {**protected,**source_hashes}.items() if digest(ROOT/name)!=wanted]
     for stage in stages: checksums(stage['capture'])
+    verify_fresh_live(build)
     # SQLite helper returns tuples; compare JSON-normalized snapshots.
     after=json.loads(json.dumps(after))
     preserved=all(row in after[path][table] for path in ['java','python'] for table in ['quotes','assessments','requests']
@@ -220,16 +224,20 @@ def main():
         {'requirement':'Full-workflow malformed-output recovery with reviewed real correction provenance','status':'VERIFIED',
          'basis':'Fresh paired fault replay uses unedited genuine Muse corrections from '+provenance['genuineCorrectionCapture']+
                  ', with approved fixture/source hashes, semantic review, complete corrective context and both actual-child parent envelopes. Parent envelopes are explicit replay scaffolding, not new model reasoning.'},
-        {'requirement':'Optional live mode through both applications','status':'HISTORICALLY_VERIFIED',
-         'basis':'Referenced reviewed Muse baseline/priority source captures; deliberately not rerun with provider access disabled.'},
-        {'requirement':'Reproducible local setup/run and retained acceptance evidence','status':'VERIFIED_EXISTING_WORKSPACE',
-         'basis':'Single documented command passes on the retained snapshot workspace. Ignored runtime/build/source-provenance files remain prerequisites; no clean-workspace bootstrap was tested.'}
+        {'requirement':'Complete live workflows including genuine native parent completion','status':'VERIFIED',
+         'basis':'Fresh live baseline 201004 and priority 201657: 256 process checks revalidated, 16 retained assertions and hash-bound semantic review verified in [live audit](fresh-live-audit.json). Real Muse/medium at every model stage; no new paid execution or replay approval.'},
+        {'requirement':'Strength of response to continuity priority','status':'QUALIFIED',
+         'basis':'Sidecar explicitly escalates urgently. Java retains a defensible parallel pre-expiry loaner decision, but stronger escalation over baseline remains inconclusive. No claim of demonstrated priority-sensitive ranking on both paths.'},
+        {'requirement':'Reproducible local setup/run and retained acceptance evidence','status':'VERIFIED_INITIALIZED_RUNTIME',
+         'basis':'Single documented command passes on the recorded initialized runtime'+
+                 (' using explicitly supplied pinned artifacts in Compose project '+build['runtimeIdentity']['composeProject'] if 'installationMode' in build else '')+
+                 '. Fresh installation, prerequisite supply and retained-stack preservation require separate setup evidence; this acceptance command alone does not establish clean bootstrap or published-asset/source-build reproducibility.'}
     ]}
     report=consolidate(stages,runtime,integrity,audit)
     save('report.json',report)
     (out/'summary.md').write_text(markdown(report,out),encoding='utf-8')
     save('manifest.json',{**build,**profile,**provenance,'mode':'offline consolidated acceptance','status':report['status'],
-                          'suiteCommit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+                          'suiteCommit':build['runtimeSourceCommit'] if 'runtimeSourceCommit' in build else subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
                           'paidCalls':0,'stages':[{k:v for k,v in s.items() if k!='review'} for s in stages],
                           'preservationArchives':archives,'firstDeliveryComplete':report['firstDeliveryComplete']})
     # Aggregate references bind sibling captures; do not duplicate their traces/journals.

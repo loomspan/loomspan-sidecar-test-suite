@@ -1,4 +1,5 @@
 """Explicit live capture through deployed apps; no substitute model or orchestration."""
+import environment as target_env
 import argparse, hashlib, json, pathlib, subprocess, time, uuid
 import httpx
 from concurrent.futures import ThreadPoolExecutor
@@ -9,11 +10,11 @@ from baseline import baseline
 from model_profile import model_profile
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 def collect(client,out,cases,secrets,tokens):
-    r=client.get('http://127.0.0.1:18090/control/journal',headers={'X-Control-Key':secrets['control']});r.raise_for_status()
+    r=client.get(target_env.url(18090, '/control/journal', '127.0.0.1'),headers={'X-Control-Key':secrets['control']});r.raise_for_status()
     events=[e for e in r.json() if e.get('caseId') in cases]
     (out/'journal.json').write_text(json.dumps(events,indent=2),encoding='utf-8')
     traces=[]
-    for path,port in [('java',18081),('sidecar',18083)]:
+    for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18083))]:
         base=f'http://127.0.0.1:{port}/_loomspan/observability/v1'; headers={'X-loomspan-Api-Key':secrets['observer']}
         r=client.get(base+'/traces',headers=headers);r.raise_for_status()
         for item in r.json()['items']:
@@ -45,7 +46,7 @@ def main():
             body=json.loads((ROOT/'fixtures/base-case.json').read_text());body['caseId']=case
             if args.priority:body['context']['restorationRiskPreference']='Prioritize continuity despite higher cost; urgently escalate loaner approval while retaining diagnosis as needed.'
             (out/(path+'-input.json')).write_text(json.dumps(body,indent=2))
-            r=client.post('http://127.0.0.1:18090/control/cases/'+case,json={'mode':'live','path':path},headers={'X-Control-Key':s['control']});r.raise_for_status()
+            r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json={'mode':'live','path':path},headers={'X-Control-Key':s['control']});r.raise_for_status()
             api=f'http://127.0.0.1:{port}';r=client.post(api+'/assessments',json=body,headers={'Authorization':'Bearer '+maya});r.raise_for_status();execution=r.json()['id']
             print(path,'submitted',execution,flush=True)
             result=wait(client,api,execution,maya,timeout=build.get('missionTimeoutSeconds',600)+30)
@@ -53,7 +54,7 @@ def main():
             results.append({'path':path,'caseId':case,'executionId':execution,'status':result['status']});print(path,result['status'],flush=True)
     with httpx.Client(timeout=300,trust_env=False) as client:
       try:
-        targets=[t for t in [('java',18081),('sidecar',18082)] if args.path in [t[0],'both']]
+        targets=[t for t in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))] if args.path in [t[0],'both']]
         if args.parallel:
             with ThreadPoolExecutor(max_workers=2) as workers:list(workers.map(execute,targets))
         else:

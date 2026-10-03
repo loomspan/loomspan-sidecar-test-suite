@@ -5,5 +5,6 @@
 **/__pycache__/
 .pytest_cache/
 .env
+runtime-artifacts/
 evidence/*
 !evidence/README.md

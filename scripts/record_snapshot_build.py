@@ -1,5 +1,6 @@
 """Record the local snapshot and verify that both packaged hosts embed its bytes."""
 import hashlib
+import argparse
 import json
 import pathlib
 import subprocess
@@ -10,7 +11,10 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 VERSION='1.0.0-beta.8-SNAPSHOT'
 
 def main():
-    installed=pathlib.Path.home()/'.m2/repository/ai/loomspan/loomspan-spring-boot-starter'/VERSION/('loomspan-spring-boot-starter-'+VERSION+'.jar')
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--maven-repository',type=pathlib.Path,default=pathlib.Path.home()/'.m2/repository')
+    args=parser.parse_args()
+    installed=args.maven_repository/'ai/loomspan/loomspan-spring-boot-starter'/VERSION/('loomspan-spring-boot-starter-'+VERSION+'.jar')
     digest=hashlib.sha256(installed.read_bytes()).hexdigest()
     overlay=yaml.safe_load((ROOT/'compose.snapshot.yaml').read_text())
     settings=overlay['services']['java']['environment']

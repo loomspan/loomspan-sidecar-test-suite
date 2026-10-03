@@ -21,7 +21,8 @@ def inspect(directory):
         quote=next(q for q in expected['quotes'] if q['option']=='expedited')
         created=ops['approved-create-lost-result'];result=created['terminal'];receipt=json.loads(result.get('result','{}'));approval=created['approval']
         check(path,'approved pending-dispatch receipt binds exact assessment quote and USD cents',created['caller']=='luis' and created['httpStatus']==202 and result['status']=='COMPLETED' and receipt.get('status')=='PENDING_DISPATCH' and receipt.get('approval')==approval and approval['approved'] is True and approval['assessmentVersion']==terminal['assessmentVersion'] and approval['cap']==78000 and type(approval['cap']) is int and all(approval[k]==quote[k] for k in ['option','quoteId','attendance','scope']) and receipt.get('quote')==quote and receipt.get('evidence')==expected['citations'] and receipt.get('caseId')==case and receipt.get('assetId')=='NB-P240-017')
-        check(path,'verified Luis identity and submission before authoritative expiry',receipt.get('approver')=={'issuer':'http://localhost:18080/realms/equipment','subject':'luis'} and datetime.datetime.fromisoformat(receipt['createdAt'])<datetime.datetime.fromisoformat(quote['expiresAt']))
+        expected_issuer=manifest.get('runtimeIdentity',{}).get('issuer','http://localhost:18080/realms/equipment')
+        check(path,'verified Luis identity and submission before authoritative expiry',receipt.get('approver')=={'issuer':expected_issuer,'subject':'luis'} and datetime.datetime.fromisoformat(receipt['createdAt'])<datetime.datetime.fromisoformat(quote['expiresAt']))
         loss=created['lostResult']
         check(path,'actual transport response loss occurs after creation completed',loss.get('clientError') in ['RemoteProtocolError','ReadError'] and loss.get('upstream')==result and result['status']=='COMPLETED')
         recovery=load(path+'-recovery.json');retry=ops['same-content-retry-after-expiry']

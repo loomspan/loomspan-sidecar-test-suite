@@ -3,6 +3,7 @@
 Planner/final envelopes are synthetic harness scaffolding, not approved business replay.
 The live request is forwarded unchanged. No unexpected stage falls back to a provider.
 """
+import environment as target_env
 import argparse, hashlib, json, pathlib, sqlite3, time, uuid
 import httpx
 from baseline import baseline
@@ -55,7 +56,7 @@ def run(offline=False):
         'approvedBusinessReplay':False}
     with httpx.Client(timeout=300,trust_env=False) as client:
         try:
-            for path,port in [('java',18081),('sidecar',18082)]:
+            for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))]:
                 case='correction-'+path+'-'+uuid.uuid4().hex;cases.append(case)
                 body=json.loads(json.dumps(original_input).replace(old_case,case))
                 injected=candidate.replace(old_case,case)
@@ -84,7 +85,7 @@ def run(offline=False):
                 (out/(path+'-registration.json')).write_text(json.dumps({'mode':'replay' if offline else 'controlled-live',
                     'path':path,'steps':steps},indent=2))
                 (out/(path+'-input.json')).write_text(json.dumps(body,indent=2))
-                r=client.post('http://127.0.0.1:18090/control/cases/'+case,json={'mode':'replay' if offline else 'controlled-live',
+                r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json={'mode':'replay' if offline else 'controlled-live',
                     'path':path,'steps':steps},headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                 r=client.post(f'http://127.0.0.1:{port}/v1/skills/stepCorrectionDiagnostic/executions',
                     json=body,headers={'Authorization':'Bearer '+token});r.raise_for_status()

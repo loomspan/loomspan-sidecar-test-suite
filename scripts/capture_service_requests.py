@@ -1,4 +1,5 @@
 """Offline creation/denial/idempotency/recovery through actual Framework boundaries."""
+import environment as target_env
 import copy, hashlib, json, socket, threading, time, uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import httpx
@@ -53,7 +54,7 @@ def run():
     cases,results=[],[]; before=records();save('business-records-before.json',before)
     with httpx.Client(timeout=300,trust_env=False) as client:
         try:
-            for path,port in [('java',18081),('sidecar',18082)]:
+            for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))]:
                 api=f'http://127.0.0.1:{port}';storage='java' if path=='java' else 'python'
                 case='service-acceptance-'+path+'-'+uuid.uuid4().hex;cases.append(case)
                 sample=bundle['scenarios']['baseline'][path];verify_source(sample)
@@ -61,7 +62,7 @@ def run():
                 steps=normalized(sample['steps'],CASE,case)
                 registration={'mode':'replay','path':path,'steps':steps}
                 save(path+'-registration.json',registration);save(path+'-input.json',body);save(path+'-expected.json',expected)
-                r=client.post('http://127.0.0.1:18090/control/cases/'+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
+                r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                 r=client.post(api+'/assessments',json=body,headers={'Authorization':'Bearer '+tokens['maya']});r.raise_for_status()
                 assessment=wait(client,api,r.json()['id'],tokens['maya'],timeout=180);save(path+'-assessment.json',assessment)
                 if assessment['status']!='COMPLETED': raise ValueError('Assessment failed')
@@ -88,7 +89,7 @@ def run():
                 changed=copy.deepcopy(approval);changed['cap']=77999;changed['idempotencyKey']=case+'-terms'
                 submit('changed-quote-terms',changed)
                 created=submit('approved-create-lost-result',approval,drop=True)
-                r=client.post('http://127.0.0.1:18090/control/clock/'+case,json={'now':quote['expiresAt']},headers={'X-Control-Key':secrets['control']});r.raise_for_status();save(path+'-expiry-clock.json',r.json())
+                r=client.post(target_env.url(18090, '/control/clock/', '127.0.0.1')+case,json={'now':quote['expiresAt']},headers={'X-Control-Key':secrets['control']});r.raise_for_status();save(path+'-expiry-clock.json',r.json())
                 r=client.get(api+'/service-requests/by-key/'+approval['idempotencyKey'],headers={'Authorization':'Bearer '+tokens['luis']});save(path+'-recovery.json',{'httpStatus':r.status_code,'body':response_body(r)})
                 submit('same-content-retry-after-expiry',approval)
                 changed=copy.deepcopy(approval);changed['cap']=77999

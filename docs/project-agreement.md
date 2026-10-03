@@ -2,6 +2,80 @@
 
 Last updated: 2026-10-02.
 
+### Accepted on-prem runtime installation and later release sequence — 2026-10-02
+
+The user wants the isolated Compose setup to follow how an on-prem operator would
+install and use the documented runtime. Supply explicit, checksummed runtime
+artifacts/configuration and generate fresh local state; normal runtime installation
+must not require neighboring developer checkouts or an existing Maven cache.
+Validate the currently pinned local Framework/Sidecar packages first. After this
+works, the user will release new Framework and Sidecar versions so the installation
+can switch to published assets. Do not publish releases now or relabel the local
+snapshot as published. Source-build reproducibility is distinct from this supplied
+artifact runtime-installation result. Retained evidence is an optional explicit
+input to the offline acceptance suite, not a newly produced installation result.
+
+### Accepted clean target: separate Compose project on this host — 2026-10-02
+
+The user explicitly selected "Separate Compose project on this host", replacing
+the separate Windows VM requirement. Use Docker Compose only for environment
+management. Isolate source/build/runtime directories, project/network/volumes,
+ports, fresh credentials and databases while preserving the retained stack.
+Record host Windows/Docker/toolchain prerequisites as supplied inputs; this can
+qualify a clean project bootstrap, not a virgin Windows installation. Follow the
+[concrete Compose execution plan](clean-compose-setup.md). Keep all acceptance,
+provenance, offline-provider and evidence-preservation requirements unchanged.
+
+### Current environment restriction: Docker Compose only — 2026-10-02
+
+During clean-setup preparation the user clarified: "We should only be using docker
+compose". Use Docker Compose for environment management; do not provision Hyper-V
+or cloud resources. No VM/cloud resources had been created. The earlier separate
+Windows VM plan is historical pending clarification of the clean target: an
+isolated Compose project on this host versus Compose in a separately supplied
+Windows environment. Do not treat a same-host project as a clean Windows bootstrap.
+Preservation, provider-disabled execution, unchanged acceptance/replay and separate
+Java priority qualification continue to apply.
+
+### Accepted separate clean Windows setup validation — 2026-10-02
+
+The user selected a separate disposable Windows VM to test reproduction from
+documented, explicitly supplied inputs. Inspect tooling and prepare a concrete
+input inventory and execution plan before provisioning. If VM provisioning is
+unavailable, complete independent preparation and identify the specific external
+action. This retained workspace and its running stack remain the source of truth;
+preserve uncommitted work, ignored runtime/build/evidence, captures, journals,
+actual traces, approvals and durable records. Generate fresh guest credentials
+and databases. Keep provider access disabled; no paid-model experiment is needed.
+
+Distinguish supplied retained evidence from fresh VM observations. Investigate
+artifact/provenance mismatches without weakening checks, changing approved replay
+or rewriting originals. Retain prerequisites, commands, failures/fixes, identities
+and actual acceptance results. Java's stronger continuity-priority response remains
+a separate inconclusive qualification; broader load/publication/restart/shutdown/CI
+remain outside scope. Passing offline checks alone does not declare full delivery.
+The [guest procedure](clean-windows-setup.md) records the concrete plan; the
+[preparation evidence](../evidence/clean-setup-preparation-20261002/summary.md)
+records observed blockers, not a completed VM run.
+
+### Accepted post-live consolidated audit — 2026-10-02
+
+Verify the committed configuration through consolidated offline acceptance in this
+same retained workspace, including fresh-live reviewer regression tests. The
+delivery audit must revalidate and reference the fresh complete live evidence,
+distinguishing genuine native parent completion from controlled recovery replay
+whose parent envelopes explicitly copy actual child results. Keep Java's stronger
+priority response inconclusive; do not change approved replay content to obtain a
+pass. Provider access remains disabled and no new paid run is needed for this audit.
+
+Preserve ignored runtime/build/evidence, original captures, journals, actual traces,
+approvals and all durable records; archive runtime before necessary recreation.
+Passing offline acceptance does not establish full delivery. Clean-workspace setup
+remains unverified: identify a separate-environment validation step without
+recreating or discarding this workspace. Broader load, publication, restart,
+shutdown and CI remain outside this phase. System capability claims stay separate
+from implementation provenance in evidence.
+
 ### Accepted fresh complete live workflow verification — 2026-10-02
 
 The user requested fresh baseline and continuity-priority workflows through both

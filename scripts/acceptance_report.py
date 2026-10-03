@@ -92,8 +92,11 @@ def markdown(report, directory):
               'Full-workflow recovery replays reviewed genuine Muse responses to the injected fault, '
               'normalized only for case IDs. Both parent envelopes explicitly copy actual completed '
               'child content; this proves preservation, not new parent-model reasoning. '
+              'Separately, the retained fresh live baseline/priority pair demonstrates genuine native parent completion; '
+              'its process evidence and semantic-review bindings are revalidated in [the live audit](fresh-live-audit.json). '
+              'Java\'s stronger priority response remains inconclusive; Sidecar explicitly escalates. '
               'Historical rejected captures retain their original dispositions. '
-              'The setup verified here uses the documented existing snapshot workspace; Git alone cannot recover ignored provenance/build/runtime files.', '',
+              'This command verifies the recorded initialized runtime. Separate setup evidence establishes fresh installation and supplied prerequisites; Git alone cannot recover ignored provenance/build/runtime inputs.', '',
               '[Machine-readable report](report.json), [aggregate JUnit](acceptance-junit.xml), '
               '[focused tests](focused-junit.xml), [integrity](integrity.json), [runtime](runtime.json).']
     return '\n'.join(lines) + '\n'

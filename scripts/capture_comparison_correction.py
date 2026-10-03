@@ -2,6 +2,7 @@
 
 No synthetic correction or parent final. Direct comparison, not full-workflow recovery.
 """
+import environment as target_env
 import argparse
 import copy
 import hashlib
@@ -69,7 +70,7 @@ def run(source, offline=False):
     (out / 'business-records-before.json').write_text(json.dumps(before, indent=2))
     with httpx.Client(timeout=300, trust_env=False) as client:
         try:
-            for path, port in [('java', 18081), ('sidecar', 18082)]:
+            for path, port in [('java', target_env.port(18081)), ('sidecar', target_env.port(18082))]:
                 case = 'comparison-correction-' + path + '-' + uuid.uuid4().hex
                 cases.append(case)
                 body, injected, provenance = sample(source, path, case)
@@ -88,7 +89,7 @@ def run(source, offline=False):
                      'response': envelope(json.dumps(injected), profile['model']), 'provenance': provenance}, correction]}
                 (out / (path + '-registration.json')).write_text(json.dumps(registration, indent=2))
                 (out / (path + '-input.json')).write_text(json.dumps(body, indent=2))
-                r = client.post('http://127.0.0.1:18090/control/cases/' + case, json=registration,
+                r = client.post(target_env.url(18090, '/control/cases/', '127.0.0.1') + case, json=registration,
                                 headers={'X-Control-Key': secrets['control']})
                 r.raise_for_status()
                 api = f'http://127.0.0.1:{port}'

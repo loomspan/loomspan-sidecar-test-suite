@@ -1,8 +1,31 @@
 # Loomspan reference applications and acceptance suite
 
+**On-prem Compose installation verified (2026-10-02):** a separate project with
+fresh credentials/databases passes **311 checks, 56 assertions and 96 focused
+tests**, with zero paid calls. Follow the [operator runbook](docs/on-prem-runtime.md)
+and [setup evidence](evidence/clean-compose-20261002/summary.md). A real fresh-start
+database gap was fixed; the retained stack and original evidence remain unchanged.
+This uses supplied local artifacts and host prerequisites; published assets follow
+the user's planned releases. Java's stronger priority response remains inconclusive
+and full delivery is not declared. Checkpoints below retain their historical scope.
+
 This suite verifies capabilities of the system as a whole through two equivalent
 applications and a complete business process. Scenarios and evidence establish
 behavior under documented conditions.
+
+**Current consolidated offline verification (2026-10-02):** all six paired scenario
+groups pass **311 checks, 56 workflow assertions and 86 focused tests**, with no
+failures or skips and zero paid calls, on the committed business configuration.
+The [delivery audit](evidence/acceptance-offline-20261002-204252-34a71c/summary.md)
+also revalidates the fresh live pair's 256 process checks and retained 16 assertions,
+with content-bound semantic review. Genuine native live parent completion is
+observed separately from controlled recovery replay's actual-child copying envelopes.
+Java's stronger priority response remains inconclusive; Sidecar explicitly escalates.
+Normal services are ready, provider access disabled, packages and prior evidence/
+records preserved. Approved replay content is unchanged. First delivery remains
+undeclared: clean-workspace setup is unverified; the
+[next validation plan](docs/local-run.md#next-validation-clean-setup-in-a-separate-environment-not-yet-run)
+uses a separate VM and leaves this workspace intact. Checkpoints below are historical.
 
 **Fresh complete live workflows reviewed (2026-10-02):** baseline and continuity
 priority complete through both applications using real Muse/medium at every model
@@ -24,7 +47,7 @@ are curated and approved after 42 offline checks and eight workflow assertions.
 Consolidated recovery now uses those responses. Provider access is disabled again.
 See [live-to-replay evidence](evidence/review-full-correction-live-20261002-171741/summary.md).
 
-The [latest consolidated offline run](evidence/acceptance-offline-20261002-172357-b0ee31/summary.md)
+The [prior consolidated offline run](evidence/acceptance-offline-20261002-172357-b0ee31/summary.md)
 passes **311 checks, 56 workflow assertions and 76 tests**, with no failures or skips.
 The genuine correction-provenance gap is closed. Normal configuration and
 provider-disabled runtime are restored; prior evidence and records remain intact.

@@ -1,4 +1,5 @@
 """Controlled valid-approval nested denial and Luis positive control; no provider calls."""
+import environment as target_env
 import copy, hashlib, json, subprocess, time, uuid
 import httpx
 from baseline import baseline
@@ -41,7 +42,7 @@ def stages(body,start,positive=False):
     return steps
 
 def creation_calls():
-    p=subprocess.run(['docker','logs','equipment-acceptance-python-1'],capture_output=True,text=True,encoding='utf-8',errors='replace',check=True)
+    p=subprocess.run(target_env.compose()+['logs','--no-color','python'],capture_output=True,text=True,encoding='utf-8',errors='replace',check=True)
     return sum('/skills/createServiceRequest ' in line for line in (p.stdout+p.stderr).splitlines())
 
 def run():
@@ -55,13 +56,13 @@ def run():
     cases,results=[],[];save('business-records-before.json',records())
     with httpx.Client(timeout=180,trust_env=False) as client:
         try:
-            for path,port in [('java',18081),('sidecar',18082)]:
+            for path,port in [('java',target_env.port(18081)),('sidecar',target_env.port(18082))]:
                 api=f'http://127.0.0.1:{port}';storage='java' if path=='java' else 'python';case='nested-approval-'+path+'-'+uuid.uuid4().hex;cases.append(case)
                 sample=bundle['scenarios']['baseline'][path];verify_source(sample)
                 base=normalized(sample['steps'],CASE,case);assessment_body=normalized(sample['input'],CASE,case);expected=normalized(sample['expected'],CASE,case)
                 # Execution/version assigned only after assessment; register its source stages first.
                 registration={'mode':'replay','path':path,'steps':base}
-                r=client.post('http://127.0.0.1:18090/control/cases/'+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
+                r=client.post(target_env.url(18090, '/control/cases/', '127.0.0.1')+case,json=registration,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                 r=client.post(api+'/assessments',json=assessment_body,headers={'Authorization':'Bearer '+tokens['maya']});r.raise_for_status();assessment=wait(client,api,r.json()['id'],tokens['maya'],timeout=180)
                 save(path+'-assessment.json',assessment);save(path+'-expected.json',expected);save(path+'-input.json',assessment_body)
                 if assessment['status']!='COMPLETED':raise ValueError('Assessment failed')
@@ -70,7 +71,7 @@ def run():
                 approval={'assessmentVersion':assessment['assessmentVersion'],'option':'expedited','quoteId':quote['quoteId'],'attendance':quote['attendance'],'scope':quote['scope'],'cap':78000,'approved':True,'idempotencyKey':case+'-nested'}
                 body={'caseId':case,'approval':approval};denial=stages(body,len(base));positive=stages(body,len(base)+len(denial),True)
                 extension={'steps':denial+positive,'expectedUsed':list(range(len(base)))}
-                r=client.post('http://127.0.0.1:18090/control/extend/'+case,json=extension,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
+                r=client.post(target_env.url(18090, '/control/extend/', '127.0.0.1')+case,json=extension,headers={'X-Control-Key':secrets['control']});r.raise_for_status()
                 registration['steps']=base+denial+positive;save(path+'-registration.json',registration);save(path+'-nested-input.json',body)
                 observations=[]
                 for who in ['maya','luis']:
