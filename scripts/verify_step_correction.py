@@ -1,8 +1,8 @@
 """Offline forensic check of installed Framework bytes; no provider calls."""
 import hashlib, json, pathlib, subprocess, zipfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-OUT = ROOT / 'evidence/pr14-verification-20261002'
-LIB = ROOT / '.build/pr14-verification-libs'
+OUT = ROOT / 'evidence/step-correction-verification-20261002'
+LIB = ROOT / '.build/step-correction-verification-libs'
 LIB.mkdir(parents=True, exist_ok=True)
 installed = pathlib.Path.home()/'.m2/repository/ai/loomspan/loomspan-spring-boot-starter/1.0.0-beta.8-SNAPSHOT/loomspan-spring-boot-starter-1.0.0-beta.8-SNAPSHOT.jar'
 with zipfile.ZipFile(ROOT/'apps/java/target/equipment-java-1.0.jar') as jar:

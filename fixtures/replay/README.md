@@ -1,5 +1,20 @@
 # Replay provenance gate
 
+Current checkpoint (2026-10-02): `business-reviewed-v1.json` is approved for scoped
+baseline/continuity-priority assessment replay on both applications. Its separate
+approval record binds the exact fixture hash. All per-path live-source captures,
+configuration identities, response provenance and semantic reviews remain required
+local inputs; only case identifiers are normalized. The historical diagnostic
+descriptions below keep their original rejected/unapproved dispositions.
+
+`scripts/run_acceptance.py` runs all first-delivery offline scenario groups and
+independent reviews with provider access disabled. Full-workflow recovery deliberately
+appends an extra closing brace, then replays the original valid comparison only after
+matching actual parser feedback. It labels both fault and correction provenance and
+never modifies the approved fixture. This correction is reused captured content,
+not a new model response to the injected failure. See the consolidated delivery audit
+before making a complete-delivery claim.
+
 `quote-contract-diagnostic-v1.json` reuses the paired comparison responses from
 `evidence/live-20261001-205953`, retaining the original Sol model, request IDs,
 provider envelopes, usage and source-file hashes. It is **not an approved replay
@@ -32,3 +47,11 @@ No accepted baseline exists yet. Complete beta.6 live captures lose required ups
 The fixture's replay engine supports execution-specific steps, evidence substrings, forbidden substrings, predecessor dependencies and single-use stage/attempt matching. It rejects missing/ambiguous matches and has no live fallback. A delivered scenario must cite a reviewed capture and the exact request/response event indexes, preserve the model/provider identity and usage, describe identifier normalization, and label any intentional fault mutation.
 
 After the documented evidence-flow blocker is resolved, complete and review baseline and changed-priority workflows in both paths, capture real correction feedback/responses, and derive scripts. Do not add input-independent expected answers or treat development scripts as model provenance. Ordinary acceptance must fail/skip explicitly when a reviewed scenario is absent; it must never make a provider call to fill the gap.
+The approved `full-correction-reviewed-v1.json` contains genuine Muse/medium
+corrections captured within complete Java/Sidecar workflows with complete correction context. Original
+comparison output has one explicitly labeled extra closing brace; corrective
+envelopes are captured unchanged with case-ID normalization only. Both parent
+envelopes echo actual corrected child content. The separate
+`full-correction-reviewed-v1-approval.json` binds source/review hashes and paired
+offline fidelity/JUnit verification. Consolidated acceptance requires it.
+See [evidence](../../evidence/review-full-correction-live-20261002-171741/summary.md).

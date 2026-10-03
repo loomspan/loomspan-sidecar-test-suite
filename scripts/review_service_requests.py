@@ -37,10 +37,11 @@ def inspect(directory):
         check(path,'prior requests quotes and assessments remain intact',all(row in after[storage][table] for table in ['requests','quotes','assessments'] for row in before[storage][table]))
         records=load(storage+'-business-records.json');quotes={r['id']:json.loads(r['body']) for r in records['quotes']}
         check(path,'authoritative quotes remain identical and both caps are cents',all(quotes[q['quoteId']]==q for q in expected['quotes']) and [(q['maxExposure'],q['fullyCoveredScopeMaximum']) for q in expected['quotes']]==[(78000,30000),(48000,0)])
-        traces=[t for t in index if t['path']==path and case in t['cases']]; contents=[]
+        traces=[t for t in index if t['path']==path and case in t['cases']]; contents=[];frames_by_session={}
         for t in traces:
             raw=(d/t['file']).read_bytes();assert hashlib.sha256(raw).hexdigest()==t['sha256']
             frames=[json.loads(line) for line in raw.decode().splitlines()]
+            frames_by_session[t['sessionId']]=frames
             if t['entrySkill']=='createServiceRequest':
                 check(path,'creation trace '+t['sessionId']+' has no model request',not any(f['recordType'].startswith('MODEL_') for f in frames))
             for f in frames:
@@ -51,8 +52,12 @@ def inspect(directory):
                     contents.append(payload['content'])
         check(path,'all fixture responses equal actual Framework trace content',Counter(contents)==Counter(e['response']['choices'][0]['message']['content'] for e in resp))
         for o in observations:
-            if o.get('terminal',{}).get('sessionId'):
-                matches=[t for t in traces if t['sessionId']==o['terminal']['sessionId'] and t['entrySkill']=='createServiceRequest']
+            if o.get('httpStatus')==202:
+                terminal=o['terminal'];session=terminal.get('sessionId')
+                ids={e['frameId'] for e in terminal.get('events',[]) if e.get('frameId')}
+                matches=[t for t in traces if t['entrySkill']=='createServiceRequest' and (
+                    t['sessionId']==session if session else bool(ids) and ids.issubset(
+                        {f.get('frameId') for f in frames_by_session[t['sessionId']]}))]
                 check(path,o['name']+' has actual correlated creation trace',len(matches)==1 and matches[0]['outcome']==('SUCCEEDED' if o['terminal']['status']=='COMPLETED' else 'FAILED'))
     return {'status':'PASS' if all(c['passed'] for c in checks) else 'FAIL','checks':checks,'paidCalls':0,'scope':'Direct approval-bound creation, denial, result-response loss, idempotency and expiry recovery on both paths; no nested-positive-control or complete first-delivery claim'}
 if __name__=='__main__':

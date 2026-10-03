@@ -2,6 +2,135 @@
 
 Last updated: 2026-10-02.
 
+### Accepted fresh complete live workflow verification — 2026-10-02
+
+The user requested fresh baseline and continuity-priority workflows through both
+reference applications, with real Muse/medium at every model stage, including
+native parent completion. Review planning, complete evidence transfer, parent
+synthesis, authoritative constraints, citations, equivalent business outcomes and
+durable records mechanically and semantically. Completion alone is insufficient.
+Useful provider calls are authorized without renewed spending confirmation when
+they resolve an observed gap. This supersedes earlier phase-specific restrictions
+on live calls for this continuation; it does not approve captures automatically.
+
+Continue in this workspace and preserve ignored runtime/build/evidence state,
+uncommitted work, original captures, journals, actual traces, approvals and durable
+records. Archive runtime evidence before recreation and restore provider-disabled
+access afterward. Claims remain capabilities of the overall system, with no
+association to implementation changes; environment provenance belongs in run
+evidence. Broader load, publication, restart, shutdown and CI work stays outside
+this phase. Existing controlled recovery still establishes its documented replay
+scope; fresh live parent reasoning requires its own observations.
+
+### Accepted capability-based scope and documentation — 2026-10-02
+
+The suite demonstrates the overall Framework process through two equivalent
+reference applications. Claims describe the system as a whole. They have no
+association with tickets, pull requests, commits or individual implementation
+changes. Scenarios and acceptance criteria demonstrate those system capabilities.
+Correction-context preservation, malformed-output recovery, mission-objective
+preservation and execution isolation are general Framework validation targets.
+Run evidence separately records the tested environment for reproducibility.
+Implementation provenance must not become a claim identifier, claim grouping,
+claim justification or claim-to-change mapping.
+
+Retain the distinction between desired claims and observed results under specific
+conditions. Preserve historical evidence, journals, actual Framework traces,
+durable records and hash-bound approvals. Historical artifact paths retain their
+original names for reproducibility; maintained prose and new reports use capability
+names. A controlled correction with replayed surrounding stages proves only its
+documented scope. Fresh end-to-end model reasoning remains a separate validation
+target.
+
+### Accepted live malformed-output correction and citation review — 2026-10-02
+
+The user authorized proceeding with real Muse verification after offline correction-context
+acceptance, and permits useful real-model calls without a new spending-confirmation
+step. Start with the same controlled extra-brace comparison correction on each
+application, keeping other stages strict replay. Any further calls should resolve
+an identified gap rather than repeat unchanged runs without purpose. Preserve
+actual requests, journals, traces and durable records; restore provider-disabled
+runtime after the live phase and never print credentials.
+
+Citation review distinguishes missing references from ordering changes. Mere
+reordering of an unchanged comparison citation collection is not evidence loss;
+missing, additional or duplicated references fail mechanical preservation checks.
+Original child assessments, authoritative quotes, identity and selected scope
+remain exact invariants. Recommendation source support receives separate semantic
+review before curation. Prior captures and historical rejection records remain
+untouched. Suitable new genuine corrections may be curated, verified offline,
+approved for scoped fault replay and included in consolidated acceptance.
+
+### Installed complete correction-context continuation — 2026-10-02
+
+The user reports completed Framework correction-context implementation and local `maven install`. Continue
+verification using that installed snapshot in both reference hosts: preserve the
+previous runtime/package evidence, rebuild the existing hosts, and verify complete
+schema and step-action correction candidates in actual offline requests. Keep
+provider access disabled. The previous scoped live calls remain exhausted; this
+continuation does not authorize paid checks, approve rejected correction captures,
+or equate complete context with successful model judgment.
+
+### Accepted revised correction pair — 2026-10-02
+
+After both initial corrective calls failed assessment fidelity review, the user
+explicitly authorized one additional Muse correction per application with every
+other stage on strict replay. The comparison prompt now requires exact copying of
+the complete original child assessment from canonical input during parser retries,
+including when the previous candidate is truncated. This authorizes two revised
+calls only. Keep rejected captures and persisted records intact; accept no fixture
+unless independent fidelity and semantic review pass. Restore provider-disabled
+runtime afterward.
+
+### Accepted scoped live full-workflow correction — 2026-10-02
+
+The user authorized closing the remaining correction-provenance gap with one
+controlled full workflow per application: inject the approved baseline comparison's
+extra closing brace, allow only its genuine corrective response to call Muse/medium,
+and keep all other stages strict offline replay. Actual parent completion envelopes
+must preserve the actual corrected child result; they cannot invent or rewrite it.
+Review the genuine corrections and derive versioned offline fault fixtures, then
+restore provider-disabled runtime and rerun consolidated acceptance.
+
+This narrow live phase supersedes the prior no-paid-call restriction for exactly
+the two controlled corrective calls, not unrestricted full live workflows. Unexpected
+or repeated stages must fail without paid fallback. Preserve original captures,
+journals, actual traces, source/artifact provenance and durable records; never print
+provider credentials. Completion remains contingent on observed results and review.
+
+### Accepted consolidated offline acceptance — 2026-10-02
+
+The user authorized consolidating the verified first-delivery scenarios into one
+reproducible offline command, running it on both applications, and auditing the
+delivery boundary. Include baseline/priority assessments, malformed-output recovery,
+direct approval/creation/recovery, direct and nested authorization, and gated
+overlap/two-case isolation. Retain independent scenario evidence and one linked
+consolidated report; preserve runtime journals/traces before authorization overlay
+changes and restore normal offline configuration afterward.
+
+Provider access stays disabled. Passing the combined offline run does not by itself
+approve complete first delivery, new model judgment or broader load/update claims.
+Keep full-workflow correction provenance and setup prerequisites explicit; declare
+completion only when every required item is supported.
+
+### Accepted offline recovery/isolation continuation — 2026-10-02
+
+The user requested full-workflow malformed-output recovery on both applications,
+then gated overlap/two-case isolation, in the same workspace at 71ae72f. This phase
+makes no paid-provider calls and preserves local journals, actual Framework traces,
+durable records and original captures. The current request's no-paid-call restriction
+governs this phase despite earlier Muse call discretion.
+
+Implementation uses the approved reviewed baseline with one extra closing brace in
+comparison content, preserving the provider envelope. The corrective response replays
+the original valid reviewed Muse content; its offline provenance is explicit and
+does not claim new model correction judgment. Isolation pairs Maya's gated baseline
+with Luis's distinct continuity-priority input on each application. Different inputs
+need not select different service options: preserve each reviewed recommendation,
+including rationale, accepted risk and next decision. Observed results are in
+[implementation status](implementation-status.md); broader load/update claims remain
+outside this continuation.
+
 ### Accepted reviewed offline replay curation — 2026-10-02
 
 The user authorized turning existing reviewed Muse responses into versioned strict
@@ -77,7 +206,7 @@ model adherence to revised prompts or complete workflow acceptance.
 ### Accepted isolated controlled step-action fault — 2026-10-02
 
 The user accepted injecting the preserved extra-closing-brace action into an actual
-Framework step and letting Muse/medium answer its real PR 14 correction request,
+Framework step and letting Muse/medium answer its real invalid step-action correction request,
 once per integration path. This replaces hoping for a spontaneous defect in another
 full workflow. Use explicit captured-fault provenance, a temporary one-task planner
 with the real entitlement leaf, synthetic plan/final diagnostic envelopes, and one
@@ -87,15 +216,15 @@ Successful isolated recovery does not approve the original or complete business
 captures, establish comparative reliability, or replace the comparison-output
 controlled mutation and broader business acceptance scenarios.
 
-### Accepted PR 14 installed-snapshot verification — 2026-10-02
+### Accepted installed-snapshot recovery verification — 2026-10-02
 
 The user authorized verification of the current neighboring Framework implementation
 and installed artifact, offline correction-feedback checks using preserved malformed
 Muse responses, rebuilding both hosts, a small Muse/medium compatibility check, and
 one full live workflow per path after offline checks pass. Record exact revisions,
 artifact hashes and provenance; preserve all existing evidence and uncommitted work.
-The installed source also includes PR 15's objective/step-prompt change, so the new
-live run is evidence for that combined revision rather than a controlled PR 14 A/B.
+The installed source also includes the mission-objective/step-prompt change, so the new
+live run is evidence for that combined revision rather than a controlled recovery-only A/B comparison.
 Keep quote equality, authoritative asset/approval context and USD-cent clarity.
 Successful execution without malformed output does not demonstrate model recovery.
 Do not approve incomplete captures or repeat paid workflows without a specific gap.

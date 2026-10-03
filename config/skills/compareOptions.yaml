@@ -43,7 +43,15 @@ prompt: 'Choose a defensible strategy from checked candidates and authoritative 
   Address the 11:00 loaner decision before diagnostic attendance, access restrictions,
   restoration uncertainty and the stated risk preference (possibly unspecified). Authority
   limits commitment, not recommendation. Include equipmentAssessment from context
-  unchanged. Explain accepted risk and what would change the advice. Never book or
+  unchanged. This is an exact decoded-object copy of the original assessEquipment
+  child in the canonical mission input, including chronology, hypotheses, supporting
+  and contrary evidence, uncertainty, questions and citations arrays in their original
+  order. Never shorten, paraphrase, reorder or reconstruct this object. This exact-copy
+  rule applies equally when correcting invalid JSON. On a parser retry the previous
+  assistant candidate may be truncated; recover the full equipmentAssessment from
+  canonical mission input context, not from the truncated candidate and not from a
+  new assessment. Repair syntax without revising already-valid values or citation
+  arrays visible in the candidate. Explain accepted risk and what would change the advice. Never book or
   approve anything. Keep established facts distinct from unknown outcomes in every
   field. The expedited maximum USD 780 includes the USD 300 attendance premium, leaving
   at most USD 480 for actual justified scoped repairs; never add the premium again.

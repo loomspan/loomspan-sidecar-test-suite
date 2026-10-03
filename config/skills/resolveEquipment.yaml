@@ -24,7 +24,10 @@ prompt: 'Use selectedOption names expedited, standard, loaner, replacement, defe
   to establish registered serial, model/revision, site and approval routing. Then
   gather serviceHistory, referenceEvidence and serviceTerms as three independent tasks
   in one parallelGroup, depending on assetContext. Assess equipment using incident,
-  registered asset, history and applicable guidance. Plan resolution after assessment,
+  registered asset, history and applicable guidance. Its task dependsOn must include
+  only the task IDs for assetContext, serviceHistory and referenceEvidence; do not add serviceTerms or
+  any other commercial task as a dependency of assessEquipment. Commercial terms must
+  not delay the technical assessment. Plan resolution after assessment,
   supplying the complete assessment, assetContext, service terms and operating needs.
   Pass the full assetContext through to compareOptions. Dependency ordering matters.
   Your final response must preserve planResolution verbatim; nested compareOptions

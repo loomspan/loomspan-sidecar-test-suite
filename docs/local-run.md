@@ -1,5 +1,152 @@
 # Local build and evidence
 
+## Fresh live business-process verification
+
+The current user-authorized live phase uses Muse/medium at every model stage in
+baseline and continuity-priority workflows, including both native parent finals.
+Run on the retained normal snapshot workspace. Preserve runtime before enabling
+provider access and again before disabling it; never print the provider credential.
+The commands below do not recreate databases or rebuild packages:
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml up -d --no-deps --force-recreate fixtures
+.venv/Scripts/python.exe -u scripts/capture.py --parallel
+.venv/Scripts/python.exe -u scripts/capture.py --parallel --priority
+```
+
+Wait for each capture command to finish. Each prints its own immutable evidence
+directory. Use the first preservation archive as the baseline `--before` directory,
+and the completed baseline capture as the priority `--before` directory:
+
+```powershell
+.venv/Scripts/python.exe scripts/review_fresh_live.py CAPTURE --before BEFORE_CAPTURE --output REVIEW/process-review.json
+$env:CAPTURE_DIRECTORY='CAPTURE'
+.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider tests/test_delivery_evidence.py tests/test_planner_evidence.py --junitxml=REVIEW/workflow-junit.xml
+```
+
+The read-only reviewer checks business plan dependencies, complete source transfer,
+actual child/parent fidelity, source identifiers and required commercial citations,
+exact quotes, authenticated durable ownership, preservation of previous records,
+live-provider provenance and correlation with actual Framework traces. Independent
+source collections may reorder, but missing, changed or repeated records fail;
+the original child assessment and parent business results remain exact-copy contracts.
+Both observed native final forms (direct business object and `FINAL_RESPONSE`
+envelope) must preserve the same actual comparison. Mechanical success is explicitly
+`NEEDS_SEMANTIC_REVIEW`; review the actual hypotheses, tradeoffs, authority, pricing,
+expiry/access constraints and changed-priority response before accepting the run.
+Capture completion and the eight existing workflow assertions alone are insufficient.
+
+After live collection, restore disabled provider access and check readiness:
+
+```powershell
+.venv/Scripts/python.exe scripts/preserve_runtime.py --no-package-copy
+docker compose --env-file .runtime/compose.env -f compose.yaml -f compose.snapshot.yaml -f compose.offline.yaml up -d --no-deps --force-recreate fixtures
+.venv/Scripts/python.exe scripts/readiness.py
+```
+
+If a reviewed prompt defect requires correction, keep the failed original capture,
+archive runtime before host recreation, update the generator and matching skill
+YAML together, run the generation/reviewer tests, re-record snapshot configuration
+with `record_snapshot_build.py`, and recreate Java/Sidecar to load it. Record each
+configuration separately. These are deployment steps, not restart acceptance.
+Do not approve or regenerate replay fixtures merely because a live run completes.
+
+## One-command offline acceptance
+
+From this repository root, with the documented normal snapshot stack running:
+
+```powershell
+.venv/Scripts/python.exe -u scripts/run_acceptance.py
+```
+
+Prerequisites are Docker Desktop, the existing Java/Sidecar snapshot packages,
+`.runtime/build-baseline.json`, local databases/credentials, Python dependencies
+and Playwright Chromium. Keep the approved reviewed fixture and all source captures
+and semantic reviews in this same workspace. These ignored files are not supplied
+by Git alone. Use the snapshot setup section below when packages need rebuilding;
+archive runtime/package evidence before replacing anything. Do not run `prepare.py`
+merely to continue an already provisioned workspace.
+
+The runner now also requires `full-correction-reviewed-v1.json` and its separate
+scoped approval. It verifies genuine correction source/review hashes and the paired
+offline verification/JUnit before starting scenarios. Recovery replays actual Muse
+corrections to the deliberate fault, with complete corrective request context and actual
+child-preserving parent envelopes. Other scenario fixture provenance is unchanged.
+
+The command checks readiness, package/source identity, normal skill configuration,
+the scoped fixture approval and all reviewed source hashes. It fails before the
+scenarios if the fixture provider credential is enabled; applying
+`compose.offline.yaml` is required. It runs fresh baseline and priority assessments,
+full-workflow malformed-output recovery, direct creation/denial/loss/expiry recovery,
+gated isolation, and the valid-approval nested denial/positive control on both paths.
+Each scenario gets its independent capture directory; the aggregate report links
+those directories instead of duplicating traces. Scenario assertions and focused
+offline regression tests must run without skips, failures or errors.
+
+The nested pair temporarily recreates only Java and Sidecar with the explicit
+authorization overlay. Before enabling it and before restoring normal configuration,
+the runner archives actual runtime traces/journal using `preserve_runtime.py`.
+Neither snapshot packages, fixture registrations nor databases are reset. The run
+adds two real PENDING_DISPATCH requests per application: one direct and one nested.
+All prior records remain. Browser PKCE sessions run sequentially to share the local
+callback port safely. No paid-provider calls or capture regeneration occurs.
+
+The command prints `evidence/acceptance-offline-RUN/summary.md`. That directory
+contains `report.json`, completion audit, per-scenario reviews, aggregate workflow
+JUnit, focused-test JUnit, redacted command logs, source hashes, runtime/integrity
+reports and checksums. Each linked capture retains its own manifest, fixture journal,
+business records, logs and actual Framework traces. Exit0 means the consolidated
+offline scenarios pass; `firstDeliveryComplete` is an independently qualified audit
+field and must not be inferred from the exit code.
+
+On scenario/assertion failure, the runner retains partial evidence and exits nonzero.
+It restores the normal hosts after preserving the authorization runtime; if that
+preservation fails, it reports the failure and leaves hosts in place to avoid
+discarding unique traces. Inspect `failure.json` and redacted logs before retrying.
+The runner requires the normal offline configuration at start; do not run unrelated
+fixture/configuration work concurrently with it.
+
+## Full-workflow recovery and gated two-case isolation
+
+Run on the normal snapshot configuration with `compose.offline.yaml` active. Both
+commands fail closed if the fixture provider credential is enabled; neither can
+register a live stage. No package rebuild or configuration change is required:
+
+```powershell
+.venv/Scripts/python.exe scripts/readiness.py
+.venv/Scripts/python.exe scripts/capture_full_correction.py --offline
+.venv/Scripts/python.exe scripts/review_full_correction.py RECOVERY_CAPTURE --output RECOVERY_REVIEW/review.json
+.venv/Scripts/python.exe scripts/capture_isolation.py
+.venv/Scripts/python.exe scripts/review_isolation.py ISOLATION_CAPTURE --output ISOLATION_REVIEW/review.json
+```
+
+Keep each printed capture directory intact and write reviews outside it. Recovery
+derives a labeled extra-brace comparison fault from the approved baseline and
+matches actual parser feedback before replaying the separately captured genuine
+Muse correction. No new provider call occurs in offline mode. Both parent finals
+copy the actual corrected comparison and complete original child assessment.
+The older `capture_reviewed_replay.py --scenario baseline --recover` remains an
+explicit original-valid-response diagnostic, distinct from approved genuine fault
+replay and no longer used by consolidated acceptance.
+
+Isolation submits Maya's baseline with serviceHistory/referenceEvidence gates,
+waits for both independent fixture entries, then submits Luis's reviewed priority
+case. It records the other case's completion while the first is still RUNNING,
+cross-caller404 responses and release/return chronology, then finishes the first.
+The `baseline` and `priority` subdirectories each preserve both paths' complete
+evidence and can independently run the eight assertions below. Both may select
+expedited: their source rationale/accepted-risk/next-decision differences must survive.
+The harness releases gates in finally blocks and preserves evidence on failure.
+
+```powershell
+$env:CAPTURE_DIRECTORY='RECOVERY_CAPTURE' # Or ISOLATION_CAPTURE/baseline or /priority
+.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider tests/test_delivery_evidence.py tests/test_planner_evidence.py
+```
+
+Source fixture hashes, approval record and local provenance captures must match.
+The isolation workload is two complete cases per application, not a capacity claim.
+
 ## Valid-approval controlled nested pair
 
 This separate offline configuration exposes the test parent/nested planner to
@@ -76,10 +223,58 @@ reviewed source selection changes; a changed fixture hash invalidates the separa
 approval record and requires renewed offline verification. Fault diagnostics are
 separate fixtures. This replay scope does not approve remaining first-delivery scenarios.
 
+## Full-workflow correction diagnostics
+
+Complete correction-context preservation is now installed and verified in both running hosts. To independently check
+complete candidates in actual schema and step-action capture requests:
+
+```powershell
+.venv/Scripts/python.exe scripts/review_correction_context.py SCHEMA_REHEARSAL_CAPTURE STEP_OFFLINE_CAPTURE --output evidence/review-correction-context-RUN/context-review.json
+```
+
+The reviewer requires large-candidate exact equality on both paths and both types,
+provider-free execution, matching snapshot identities, finalized checksums and
+passing independent workflow reviews. The step capture uses the explicitly opt-in
+`compose.correction.yaml` overlay documented below. Preserve runtime before
+enabling that overlay and before restoring normal configuration afterward.
+See [Correction-context evidence](../evidence/review-complete-correction-context-20261002/summary.md).
+
+Use the retained workspace and its virtual environment. The current revised
+prompt is deployed in both hosts. With provider access disabled, rehearse the
+complete workflow and review its original-response correction explicitly:
+
+```powershell
+.venv/Scripts/python.exe scripts/capture_full_correction.py --rehearsal
+.venv/Scripts/python.exe scripts/review_full_correction.py evidence/full-correction-rehearsal-RUN --output evidence/review-full-correction-rehearsal-RUN/review.json
+```
+
+Without `--rehearsal` or `--offline`, the capture command admits exactly one live
+correction per application. It does not enable provider access itself. The two
+initial and two separately authorized revised calls have already been used;
+further live execution requires a newly authorized scope. Archive runtime with
+the virtual-environment `preserve_runtime.py --no-package-copy` before fixture or
+host recreation, collect/finalize captures, and restore `compose.offline.yaml`
+after the live phase. Never print credentials.
+
+Both historical rejected pairs remain in evidence. `curate_full_correction.py` checks source
+bytes, current independent mechanical review and content-bound semantic approval,
+rejecting either historical pair. The new correction pair is suitable and its
+`full-correction-reviewed-v1.json` has a separate scoped approval after offline
+fidelity verification. `--offline` runs that fixture; consolidated acceptance now
+requires its approval and uses genuine corrected comparison content. Explicit
+parent envelopes copy actual completed child output; this proves preservation,
+not fresh parent model reasoning. See the
+[latest review](../evidence/review-full-correction-live-20261002-171741/summary.md).
+
 ## Muse verification and comparison correction
 
+The following recipes describe the earlier live phases. The current correction-context
+continuation is offline; its installed snapshot is identified in the latest
+verification above. Prior scoped corrective calls are exhausted. These recipes
+do not authorize new paid execution.
+
 The user authorized useful Muse calls without a spending-confirmation step on
-2026-10-02. Keep Muse/medium and the installed PR 14/15 snapshot. Provider access
+2026-10-02. Keep Muse/medium and the installed Framework snapshot. Provider access
 was restored by recreating fixtures without `compose.offline.yaml`; applying that
 overlay disables it again. Preserve runtime evidence before host recreation. For
 YAML-only changes, `scripts/preserve_runtime.py --no-package-copy` records package
@@ -167,13 +362,13 @@ the exact commands used. This does not establish authentication or Framework
 acceptance. No revised configuration has been deployed by these checks.
 
 **Latest Muse verification (2026-10-02):** both paths complete on the installed
-PR 14/15 snapshot; eight capture assertions and 53 mechanical checks pass. Java
-schema recovery succeeds, but PR 14 step-action recovery is not exercised in that full run.
+recovery and mission-prompt snapshot; eight capture assertions and 53 mechanical checks pass. Java
+schema recovery succeeds, but invalid step-action recovery is not exercised in that full run.
 Business findings keep captures unapproved. See
 [review](../evidence/review-live-20261002-000544/summary.md) and implementation status.
 
 The subsequent [isolated controlled fault](../evidence/review-controlled-step-live-20261002-004937/summary.md)
-demonstrates real PR 14 recovery on both paths. It uses synthetic planning/final
+demonstrates real invalid step-action recovery on both paths. It uses synthetic planning/final
 markers, a captured malformed action and one actual Muse correction response per
 path. It is not a full business replay baseline. Both model answers omit the large
 optional context; the deterministic lookup reads authoritative records using IDs.
@@ -206,7 +401,7 @@ after evidence is exported, even if correction fails.
 The new artifact was verified offline against both captured trailing-brace failures
 before two compatibility probes and exactly one workflow per path. Do not repeat
 those paid runs merely to verify feedback. Current read-only capture review accepts
-both historical `Execute skill` and PR 15 `Fulfill the mission for skill` wording.
+both historical `Execute skill` and current `Fulfill the mission for skill` wording.
 Initial obsolete-matcher reports remain preserved beside corrected reports.
 
 Before using the `clean package` snapshot commands below, archive any previous

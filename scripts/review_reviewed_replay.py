@@ -14,9 +14,12 @@ def inspect(directory):
     before = json.loads((directory / 'business-records-before.json').read_text())
     after = json.loads((directory / 'business-records-after.json').read_text())
     inventory = review(directory)
+    recovery = manifest.get('recovery', False)
     checks, paths = [], {}
     def check(path, name, value):
         checks.append({'path': path, 'check': name, 'passed': bool(value)})
+    check(None, 'finalized evidence checksums match', all(hashlib.sha256((directory/name).read_bytes()).hexdigest()==wanted
+          for name,wanted in json.loads((directory/'checksums.json').read_bytes()).items()))
     check(None, 'two distinct integration cases', len(manifest['results']) == 2 and
           {i['path'] for i in manifest['results']} == {'java', 'sidecar'} and
           len({i['caseId'] for i in manifest['results']}) == 2)
@@ -42,7 +45,7 @@ def inspect(directory):
         check(path, 'completed replay assessment equals reviewed captured output', terminal.get('status') == 'COMPLETED' and
               terminal.get('assessmentVersion') and json.loads(terminal.get('result', '{}')) == expected)
         compare_calls = [e for e in requests if mission(e['request'], 'compareOptions')]
-        check(path, 'comparison receives authoritative context and units', len(compare_calls) == 1 and all(
+        check(path, 'comparison receives authoritative context and units', len(compare_calls) == (2 if recovery else 1) and all(
               marker in json.dumps(compare_calls[0]['request']) for marker in
               ['AP24B-0517', 'AUTH-NB', '100000', 'Priya Shah', 'integer USD cents', 'workEstimateHours', 'S-3', 'S-5']))
         equipment_calls=[e for e in requests if mission(e['request'],'assessEquipment')]
@@ -59,10 +62,19 @@ def inspect(directory):
                 return actual==step['missionInputEquals']
             except (StopIteration,KeyError,IndexError,ValueError): return False
         bundle=json.loads((ROOT/'fixtures/replay/business-reviewed-v1.json').read_bytes())
+        approval=json.loads((ROOT/'fixtures/replay/business-reviewed-v1-approval.json').read_bytes())
+        fixture_digest=hashlib.sha256((ROOT/'fixtures/replay/business-reviewed-v1.json').read_bytes()).hexdigest()
+        check(path, 'fixture hash matches scoped approval and captured manifest',
+              approval['status']=='APPROVED_FOR_SCOPED_OFFLINE_REPLAY' and
+              approval['fixtureSha256']==manifest['diagnosticSha256']==fixture_digest)
         sample=bundle['scenarios'][manifest['scenario']][path]
         verify_source(sample)
+        wanted_steps = normalized(sample['steps'],CASE,case)
+        if recovery:
+            from recovery_replay import recovery_steps, FEEDBACK
+            wanted_steps = recovery_steps(wanted_steps)
         check(path,'registration and expected output derive from unedited reviewed source',
-              registration['steps']==normalized(sample['steps'],CASE,case) and expected==normalized(sample['expected'],CASE,case))
+              registration['steps']==wanted_steps and expected==normalized(sample['expected'],CASE,case))
         check(path,'every actual canonical child input equals captured source input',all(
               mission_input_matches(r['request'],registration['steps'][next(e['stage'] for e in responses if e['requestId']==r['requestId'])]) for r in requests))
         finals = []
@@ -89,15 +101,37 @@ def inspect(directory):
         check(path, 'every model response equals actual Framework trace content', x['providerContentsMatchFrameworkTrace'])
         check(path, 'actual root trace succeeded', any(t['entrySkill'] == 'resolveEquipment' and t['outcome'] == 'SUCCEEDED'
               for t in x['traces']))
+        roots=[t for t in x['traces'] if t['entrySkill']=='resolveEquipment']
+        frame_ids={e['frameId'] for e in terminal.get('events',[]) if e.get('frameId')}
+        actual_ids={json.loads(line).get('frameId') for t in roots
+                    for line in (directory/t['file']).read_text().splitlines() if line}
+        check(path, 'public execution uniquely correlates to actual root trace', len(roots)==1 and
+              (roots[0]['sessionId']==terminal['sessionId'] if terminal.get('sessionId') else
+               bool(frame_ids) and frame_ids.issubset(actual_ids)))
         schema = [f for f in x['traceCorrectionEvents'] if f.get('recordType') == 'STRUCTURED_OUTPUT_RECORDED'
                   and f.get('data', {}).get('skillName') == 'compareOptions']
-        check(path,'comparison output schema passes without authored correction',len(schema)==1 and schema[0]['data'].get('status')=='PASSED')
+        if recovery:
+            rejected = [f for f in schema if f['data'].get('status') == 'RETRYING']
+            accepted = [f for f in schema if f['data'].get('status') == 'PASSED']
+            check(path, 'actual trace rejects malformed comparison before accepting correction',
+                  len(rejected)==len(accepted)==1 and rejected[0]['sequence'] < accepted[0]['sequence'] and
+                  rejected[0]['data'].get('failureMode')=='INVALID_JSON' and
+                  any(i.get('code')=='invalid_json' for i in rejected[0]['data'].get('issues',[])))
+            feedback = [r for r in compare_calls if any(m.get('role')=='user' and m.get('content','').startswith(FEEDBACK)
+                        for m in r['request']['messages'])]
+            replies = [e for e in responses if e['requestId'] in {r['requestId'] for r in compare_calls}]
+            check(path, 'actual parser feedback receives unchanged reviewed correction', len(feedback)==1 and len(replies)==2 and
+                  replies[0]['response']['choices'][0]['message']['content'] == replies[1]['response']['choices'][0]['message']['content']+'}' and
+                  json.loads(replies[1]['response']['choices'][0]['message']['content']) == expected and
+                  len(x['invalidJsonResponses'])==1)
+        else:
+            check(path,'comparison output schema passes without authored correction',len(schema)==1 and schema[0]['data'].get('status')=='PASSED')
         paths[path] = {'caseId': case, 'modelRequests': len(requests), 'durationSeconds': x['durationSeconds'],
             'traces': x['traces'], 'comparisonSchemaEvents': schema,
             'scope': 'Actual Framework behavior for unedited captured responses; no new model judgment'}
     return {'status': 'PASS' if all(c['passed'] for c in checks) else 'FAIL', 'checks': checks, 'paths': paths,
-        'approvedBusinessReplay': all(c['passed'] for c in checks), 'paidCalls': 0,
-        'scope': 'Approval limited to baseline/priority deterministic assessment replay; no new model judgment, service commitment or complete first-delivery acceptance'}
+        'approvedBusinessReplay': not recovery and all(c['passed'] for c in checks), 'paidCalls': 0,
+        'scope': 'Full-workflow injected recovery with offline captured correction; no new model judgment' if recovery else 'Approval limited to baseline/priority deterministic assessment replay; no new model judgment, service commitment or complete first-delivery acceptance'}
 
 
 if __name__ == '__main__':

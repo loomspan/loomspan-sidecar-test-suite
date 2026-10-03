@@ -5,7 +5,7 @@ from baseline import baseline
 from capture import collect, wait
 from capture_step_correction import records, envelope
 from capture_business_diagnostic import normalized
-from capture_reviewed_replay import verify_source
+from capture_reviewed_replay import verify_source, require_offline_provider
 from curate_business_replay import ROOT, CASE
 from finalize_evidence import finalize
 from login import login
@@ -45,6 +45,7 @@ def creation_calls():
     return sum('/skills/createServiceRequest ' in line for line in (p.stdout+p.stderr).splitlines())
 
 def run():
+    require_offline_provider()
     ready();build=baseline();secrets=json.loads((ROOT/'.runtime/secrets.json').read_bytes());tokens={u:login(u) for u in ['maya','luis']}
     fixture=ROOT/'fixtures/replay/business-reviewed-v1.json';bundle=json.loads(fixture.read_bytes())
     approval_file=ROOT/'fixtures/replay/business-reviewed-v1-approval.json';approval_record=json.loads(approval_file.read_bytes())

@@ -27,6 +27,9 @@ def records():
     return result
 
 def run(offline=False):
+    if offline:
+        from capture_reviewed_replay import require_offline_provider
+        require_offline_provider()
     ready();build=baseline();profile=model_profile()
     out=ROOT/'evidence'/('controlled-step-'+('offline-' if offline else 'live-')+time.strftime('%Y%m%d-%H%M%S'));out.mkdir()
     source=ROOT/'evidence/json-forensics-20261001-220102'
@@ -94,7 +97,7 @@ def run(offline=False):
             after=records();(out/'business-records-after.json').write_text(json.dumps(after,indent=2))
             (out/'manifest.json').write_text(json.dumps({**build,**profile,'mode':'controlled offline' if offline else 'controlled live correction',
                 'results':results,'provenance':provenance,'businessRecordsUnchanged':before==after,
-                'scope':'PR 14 step-action rejection/recovery only; synthetic planning and final response; not full-workflow acceptance',
+                'scope':'Invalid step-action rejection/recovery only; synthetic planning and final response; not full-workflow acceptance',
                 'review':'PENDING','approved':False},indent=2))
             (out/'compose.correction.yaml').write_bytes((ROOT/'compose.correction.yaml').read_bytes())
             finalize(out);print(out,flush=True)

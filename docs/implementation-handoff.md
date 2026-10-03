@@ -1,6 +1,83 @@
 # First-delivery implementation handoff
 
-**Current checkpoint (2026-10-02):** valid-approval nested authorization passes on
+**Latest fresh live checkpoint (2026-10-02):** final baseline and continuity-priority
+workflows on both applications use real Muse/medium at every model stage, including
+native parents. They pass 256 process checks, 16 assertions and six focused tests.
+Semantic review supports authoritative constraints and equivalent business outcomes;
+Java's stronger response to priority remains inconclusive, while Sidecar explicitly
+escalates. All earlier attempts remain retained. Provider access is disabled, normal
+services ready and prior records/evidence preserved. No new replay approval or
+full-delivery declaration. See [complete review](../evidence/review-fresh-live-20261002/summary.md).
+Historical checkpoints below retain their original scope and chronology.
+
+**Latest genuine correction checkpoint (2026-10-02):** the authorized malformed-output
+Muse pair passes 40 mechanical checks and semantic review, preserving full
+assessments, quotes and every comparison reference. Java retains every decoded
+field; Sidecar makes equivalent wording changes only. Genuine corrections are
+curated and separately approved after 42 offline checks/eight assertions.
+Consolidated recovery now uses them with strict approval/provenance guards.
+Provider access is disabled again. See
+[live-to-replay review](../evidence/review-full-correction-live-20261002-171741/summary.md).
+
+**Latest consolidated result (2026-10-02):** on the installed Framework snapshot,
+[six-group offline acceptance](../evidence/acceptance-offline-20261002-153543-a71ccc/summary.md)
+passes 310 checks, 56 workflow assertions and 73 focused tests without skips or
+failures. Normal configuration is restored, provider access disabled and prior
+durable evidence preserved. Together with the targeted correction-context review,
+this verifies the installed runtime fix; new model correction fidelity remains
+unmeasured and first delivery remains incomplete.
+
+**Latest complete correction-context checkpoint (2026-10-02):** user-installed Framework at
+`900cc86bc2ba619d38647688008b138a07108af6`, SHA256
+`57824a5ffa711b5eef0a5d35b4af95820efdc2a1741bb62354ea33e8286610ef`,
+is deployed in both hosts. Schema and step-action correction now send complete
+large candidates exactly; all four real path/type combinations pass independent
+offline review. Previous packages/runtime are preserved and normal hosts restored.
+See [Complete correction-context verification](../evidence/review-complete-correction-context-20261002/summary.md).
+Provider access stays disabled. Do not rerun truncation investigation or assume
+improved model judgment; prior live sources remain rejected.
+
+**Latest offline regression (2026-10-02):** after the revised rejected live pair,
+[consolidated acceptance](../evidence/acceptance-offline-20261002-130917-a9bcef/summary.md)
+passes 310 checks, 56 workflow assertions and 69 focused tests, including rejection
+of both live pairs by curation. Zero paid calls in that rerun; normal configuration,
+provider-disabled runtime and prior durable evidence are preserved. Genuine
+full-workflow correction provenance remains unapproved. The concrete next finding
+is in [correction context](correction-context-finding.md).
+
+**Latest correction checkpoint (2026-10-02):** the two authorized revised Muse
+corrections complete both full workflows and preserve the original child assessment
+exactly, but fail outer citation fidelity. Together with the initial rejected pair,
+four scoped calls are retained and none supplies an approved fault fixture.
+Provider access is disabled. Keep all journals/traces and rejected persisted records;
+do not rerun paid calls or weaken review. Next investigate supported preservation
+of complete invalid-candidate correction context (current internal limit 8192 code
+points), with offline verification first. See [review](../evidence/review-full-correction-live-20261002-130627/summary.md)
+and [status](implementation-status.md).
+
+**Current checkpoint (2026-10-02):** `scripts/run_acceptance.py` passes a fresh
+six-group paired offline run: 310 scenario checks, 56 workflow assertions and 64
+focused tests. Normal configuration is restored, all services ready and provider
+access disabled. Original records/evidence remain intact; each application gains
+the expected two Luis pending-dispatch receipts. See
+[consolidated report](../evidence/acceptance-offline-20261002-123044-813154/summary.md),
+[status](implementation-status.md) and [single-command instructions](local-run.md).
+Complete first delivery remains undeclared for the audit qualifications: reused
+full-workflow correction content, historical optional-live evidence and setup
+verification scoped to the retained workspace.
+
+**Earlier checkpoint (2026-10-02):** full-workflow malformed-JSON recovery passes
+on both applications (41 checks/eight assertions); gated overlap and two-case
+isolation pass 100 checks/16 assertions, with 50 focused offline tests. Correction
+replays unchanged approved comparison content after actual parser feedback; Maya's
+gated baseline and Luis's priority case retain their own results and durable owners.
+Zero paid calls; normal offline stack remains ready, packages unchanged. See
+[status](implementation-status.md),
+[recovery](../evidence/review-full-workflow-recovery-20261002-121334/summary.md) and
+[isolation](../evidence/review-gated-isolation-20261002-121509/summary.md).
+Complete first-delivery acceptance has not been declared.
+
+**Earlier checkpoint (2026-10-02):** valid-approval nested authorization passes on
 both applications: 32 evidence checks, eight assessment assertions and46 focused
 offline tests. Maya cannot invoke creation; Luis reaches the same real restricted
 leaf once and its matching durable receipt survives both parent completions.
@@ -36,7 +113,7 @@ Next: curate versioned strict offline replay from the reviewed sources, then ver
 remaining accepted scenarios. Historical rejected captures remain regression evidence.
 
 **Earlier checkpoint — deployed offline verification (2026-10-02):** revised
-applications/configuration are deployed on the same installed PR 14/15 bytes.
+applications/configuration are deployed on the same installed Framework bytes.
 Both complete authored/captured workflow diagnostics; 32 evidence checks and 30
 offline tests pass. Actual selection-schema correction and preservation through
 both parent synthesis inputs are verified. A replay-ordering defect exposed by
@@ -58,11 +135,11 @@ review/verification of these revised contracts, not an unchanged paid workflow.
 The examples are not real correction responses or approved acceptance replay.
 
 **Earlier Muse verification (2026-10-02):** both paths completed and published on
-installed Framework `4313a7f` (PR 14/15), with Muse/medium. Eight capture assertions
+installed Framework `4313a7f`, with Muse/medium. Eight capture assertions
 and 53 mechanical checks pass. Java's real schema correction succeeds; neither
-path exercises PR 14 step-action correction in that full run. The subsequent
+path exercises invalid step-action correction in that full run. The subsequent
 [controlled fault diagnostic](../evidence/review-controlled-step-live-20261002-004937/summary.md)
-demonstrates isolated PR 14 recovery on both paths. Captures remain unapproved for business
+demonstrates isolated invalid step-action recovery on both paths. Captures remain unapproved for business
 wording findings. See [review](../evidence/review-live-20261002-000544/summary.md)
 and current implementation status. Historical checkpoints below remain preserved.
 
@@ -208,41 +285,76 @@ Publication under load, fifty-execution experiments, restart, overload, shutdown
 
 ## Suggested prompt for the fresh context
 
-Continue in `C:\opendev\code\loomspan-sidecar-test-suite`, using this same workspace.
-Read `AGENTS.md`, `README.md`, `docs/project-agreement.md`,
-`docs/implementation-handoff.md`, `docs/implementation-status.md`,
-`docs/local-run.md` and both customer-facing claims documents. Follow the latest
-verified checkpoints; older blockers/recommendations remain historical.
+Latest continuation result: read `evidence/review-fresh-live-20261002/summary.md`,
+`report.json`, `semantic-review.json`, `phase-ledger.json`, `runtime.json` and
+`integrity-final.json` first. Fresh final baseline `live-20261002-201004` and priority
+`live-20261002-201657` use identical configuration and real Muse/medium at every
+model stage. The four executions pass 256 process checks, 16 workflow assertions
+and six focused tests. Genuine native parents preserve actual comparison results,
+complete original assessments and citations. Technical dependencies and complete
+source transfer pass. Sidecar explicitly responds to priority with urgent loaner
+escalation; Java retains the parallel pre-expiry decision, so stronger priority
+responsiveness remains inconclusive. Do not claim this distinction is resolved.
 
-Next implement and verify full-mission malformed-output recovery on both Java and
-Python/Sidecar using the approved reviewed replay fixture. Explicitly label the
-injected malformed response and offline correction provenance. Require actual
-Framework rejection/correction feedback, successful completed assessment, unchanged
-quotes/asset/approval context/USD cents through both parents and no unintended
-service commitment. Isolated diagnostics do not establish full-mission recovery.
-Then verify gated parallel overlap and two-case isolation within first-delivery scope.
+All seven paired attempts are retained: 244 calls, 13 completed executions out of
+14, and explicit evidence-flow failures despite completion. Prompt clarifications
+addressed commercial dependencies, immutable copying and context placement. One
+Sidecar bounded correction failure published no assessment; original evidence is
+intact. Provider access is disabled and all services ready. Prior rows and 134
+protected source hashes match; zero new service requests in this phase. No new
+live capture was curated/approved. The prior offline 311/56/76 checkpoint was not
+rerun after these prompt clarifications. No full-delivery or broad-reliability claim.
+Follow the user's next requested scope; do not repeat paid calls merely for a green
+result. Preserve all ignored runtime/build/evidence and existing uncommitted work.
 
-Keep this phase offline: no Muse or other paid-provider calls. Normal configuration
-is restored, `compose.offline.yaml` disables provider access, and all five services
-were ready at handoff; verify readiness. Framework PR14/15 remains installed at
-commit `4313a7fcdbad33ef358b6ee4d068ce610f3dee51`, with SHA256
-`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
-Use the existing snapshot packages; do not repeat unchanged live discovery.
+The following earlier handoff supplies historical background; its statement that
+fresh native parent reasoning is unverified is superseded by the scoped observations
+above. The controlled recovery replay still uses explicit actual-child copying.
 
-Reviewed baseline/priority offline replay is verified. Direct approval-bound
-creation/recovery passes53 evidence checks/eight assertions; valid-approval nested
-authorization passes32/eight, with46 focused offline tests passing. Read:
-- `evidence/review-service-requests-offline-20261002-114412/summary.md`
-- `evidence/review-nested-authorization-offline-20261002-115456/summary.md`
-- The nested `review-current.json` is the corrected frame-ID correlation report;
-  its earlier `review.json` is a retained false-negative review.
+Continue in C:/opendev/code/loomspan-sidecar-test-suite using this same workspace.
+Read AGENTS.md, README.md, docs/project-agreement.md, implementation status,
+local-run instructions and both customer-facing claims documents. Preserve the
+existing uncommitted work and ignored runtime, build and evidence files.
 
-Preserve all journals, actual Framework traces, durable business records, original
-captures, provenance and any uncommitted work. `.runtime`, `.build`, `.venv` and run
-evidence are ignored local state and do not follow Git; stay in this checkout.
-Archive active runtime evidence before recreating hosts. Delete only verified
-reproducible caches/scratch, recording cleanup. Never print
-`LOOMSPAN_OPENROUTER_API_KEY` or local secrets. Never approve incomplete or
-semantically incorrect captures, rewrite historical source evidence, or claim
-first-delivery completion from partial acceptance. Broader update/load scenarios
-remain later scope. Update status and retain per-run manifests/checksums/reviews.
+Keep this work centered on capabilities of the system as a whole and the complete
+business process through both applications. Claims have no association with
+tickets, pull requests or commits. Distinguish desired claims from scoped observed
+results. Keep implementation provenance in run evidence, separate from claims.
+
+Framework correction-context implementation is installed in both hosts at commit
+900cc86bc2ba619d38647688008b138a07108af6, with package SHA256
+57824a5ffa711b5eef0a5d35b4af95820efdc2a1741bb62354ea33e8286610ef.
+Actual offline requests retain complete schema and step-action correction
+candidates. The new genuine Muse/medium correction pair at
+full-correction-live-20261002-171741 passes mechanical and semantic review.
+Java preserves every decoded field; Sidecar changes equivalent wording only.
+Both retain complete original child assessments, authoritative quotes and every
+comparison reference in original order. Historical rejected sources remain intact.
+
+Approved full-correction-reviewed-v1.json preserves genuine corrective envelopes
+with case-ID normalization only. Its separate approval binds source/review hashes
+and paired offline capture/JUnit verification. Consolidated acceptance now requires
+this approval and replays genuine corrected content. Parent completion envelopes
+explicitly copy actual child results; new parent-model reasoning is not claimed.
+Citation coverage is checked independently from ordering: missing, added or
+repeated references fail, while reordering alone is not evidence loss.
+
+The newest single-command offline report is
+acceptance-offline-20261002-172357-b0ee31: 311 independent checks, 56 workflow
+assertions and 76 focused tests, no failures or skips. Its groups are baseline39,
+priority39, genuine recovery42, direct service59, isolation100 and nested32.
+Read that summary/report, completion audit, runtime and integrity evidence.
+Recovery provenance is now VERIFIED; full delivery remains undeclared because
+optional live evidence is historical and setup verification uses this retained
+workspace. Do not imply a clean-workspace bootstrap or broad reliability result.
+
+Normal configuration is restored, all services ready, provider access disabled,
+original evidence and prior durable records preserved. The run adds the expected
+two Luis pending-dispatch receipts per application. Keep offline acceptance
+provider-disabled. The user authorizes useful real Muse checks without renewed
+spending confirmation when they resolve an identified gap. Preserve runtime before
+provider/configuration recreation, restore disabled access afterward, and never
+print provider credentials or local secrets. Do not repeat unchanged paid runs
+without purpose. Use existing packages and preserve actual Framework traces,
+journals, original captures, approvals and durable records. Broader publication,
+load, restart and CI work remains later scope.

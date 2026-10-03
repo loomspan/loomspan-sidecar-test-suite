@@ -6,7 +6,7 @@ from baseline import baseline
 from capture import collect, wait
 from capture_step_correction import records
 from capture_business_diagnostic import normalized
-from capture_reviewed_replay import verify_source
+from capture_reviewed_replay import verify_source, require_offline_provider
 from curate_business_replay import ROOT, CASE
 from finalize_evidence import finalize
 from login import login
@@ -41,6 +41,7 @@ def response_body(response):
     except ValueError: return {'rawBody':response.text}
 
 def run():
+    require_offline_provider()
     ready(); build=baseline(); secrets=json.loads((ROOT/'.runtime/secrets.json').read_bytes())
     tokens={who:login(who) for who in ['maya','luis']}
     file=ROOT/'fixtures/replay/business-reviewed-v1.json'; bundle=json.loads(file.read_bytes())

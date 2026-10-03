@@ -1,6 +1,83 @@
 # Loomspan reference applications and acceptance suite
 
-**Current checkpoint (2026-10-02):** valid-approval nested authorization passes on
+This suite verifies capabilities of the system as a whole through two equivalent
+applications and a complete business process. Scenarios and evidence establish
+behavior under documented conditions.
+
+**Fresh complete live workflows reviewed (2026-10-02):** baseline and continuity
+priority complete through both applications using real Muse/medium at every model
+stage, including native parent completion. The final matching pair passes 256
+process checks, 16 workflow assertions and six focused tests. Complete source
+evidence, original child results, authoritative quotes and comparison citations
+survive through publication. Semantic review supports the business outcomes, with
+Java's stronger response to continuity priority still inconclusive; Sidecar explicitly
+escalates. Earlier failed attempts remain retained. Provider access is disabled,
+all services ready and prior records preserved. See the
+[complete review](evidence/review-fresh-live-20261002/summary.md).
+No new replay approval or full-delivery declaration is implied. The offline counts
+below remain the prior checkpoint, not a rerun after the prompt clarifications.
+
+**Genuine malformed-output correction verified (2026-10-02):** both Muse corrections now pass
+complete evidence, citation coverage and semantic review. Java retains every
+decoded field; Sidecar changes only equivalent wording. Genuine corrected responses
+are curated and approved after 42 offline checks and eight workflow assertions.
+Consolidated recovery now uses those responses. Provider access is disabled again.
+See [live-to-replay evidence](evidence/review-full-correction-live-20261002-171741/summary.md).
+
+The [latest consolidated offline run](evidence/acceptance-offline-20261002-172357-b0ee31/summary.md)
+passes **311 checks, 56 workflow assertions and 76 tests**, with no failures or skips.
+The genuine correction-provenance gap is closed. Normal configuration and
+provider-disabled runtime are restored; prior evidence and records remain intact.
+Other delivery-audit qualifications remain explicit.
+
+**Complete correction context verified offline (2026-10-02):** both applications now use the installed
+Framework snapshot `900cc86` and send complete rejected responses in both schema
+and step-action correction. All four actual candidates exceed the former 8192
+limit and arrive exactly, including their malformed tails. Provider access remains
+disabled. See [verification and artifacts](evidence/review-complete-correction-context-20261002/summary.md).
+This resolves correction-context loss in the tested paths; genuine model citation
+fidelity remains unverified on the new snapshot.
+
+The [Consolidated offline process verification](evidence/acceptance-offline-20261002-153543-a71ccc/summary.md)
+passes 310 checks, 56 workflow assertions and 73 focused tests with no failures or
+skips. Normal configuration, provider-disabled runtime and prior durable evidence
+are preserved. First delivery remains incomplete under the recorded audit.
+
+**Latest correction result (2026-10-02):** scoped live corrections complete both
+full workflows but remain rejected for citation fidelity. The revised prompt
+preserves original child assessments exactly; Java drops comparison references
+and Sidecar reorders them. Provider access is disabled, all evidence and durable
+records retained, and no approved full-correction fixture exists. See
+[review](evidence/review-full-correction-live-20261002-130627/summary.md) and
+[status](docs/implementation-status.md). First delivery remains incomplete.
+
+The subsequent [offline rerun](evidence/acceptance-offline-20261002-130917-a9bcef/summary.md)
+passes all six groups: 310 checks, 56 workflow assertions and 69 focused tests,
+with zero paid calls and normal provider-disabled runtime restored. See the
+[next correction-context target](docs/correction-context-finding.md).
+
+**Current checkpoint (2026-10-02):** one-command offline acceptance passes all six
+scenario groups on both applications: 310 independent evidence checks, 56 workflow
+assertions and 64 focused tests, with no failures or skips. Normal configuration is
+restored; no paid calls. Original records and traces are retained. Run
+`scripts/run_acceptance.py`; see the
+[consolidated report](evidence/acceptance-offline-20261002-123044-813154/summary.md)
+and [instructions](docs/local-run.md). Complete first delivery remains undeclared:
+the full-workflow correction reuses original valid captured content; genuine model
+correction captures remain isolated diagnostics. Setup verification uses this
+retained snapshot workspace.
+
+**Earlier checkpoint (2026-10-02):** full-workflow injected malformed-JSON recovery
+passes on both applications (41 evidence checks/eight assertions). Gated read overlap
+and two complete cases per application pass 100 checks/16 assertions;50 focused
+offline tests pass. Maya's baseline blocks while Luis's priority case completes,
+then resumes with its own results, quotes and identity. No paid calls or service
+commitments. See [status](docs/implementation-status.md),
+[recovery](evidence/review-full-workflow-recovery-20261002-121334/summary.md) and
+[isolation](evidence/review-gated-isolation-20261002-121509/summary.md).
+Complete first-delivery acceptance has not been declared.
+
+**Earlier checkpoint (2026-10-02):** valid-approval nested authorization passes on
 both applications: 32 evidence checks, eight assessment assertions and46 focused
 offline tests. Maya cannot invoke creation; Luis reaches the same real restricted
 leaf once and its matching durable receipt survives both parent completions.
@@ -51,10 +128,10 @@ See [status](docs/implementation-status.md) and
 [offline evidence](evidence/business-output-offline-20261002/summary.md).
 
 **Earlier Muse verification (2026-10-02):** both paths complete with Muse/medium on
-the installed PR 14/15 snapshot. Eight workflow assertions and 53 mechanical checks
+the installed Framework snapshot. Eight workflow assertions and 53 mechanical checks
 pass. Java exercises ordinary schema recovery. A subsequent
 [isolated injected-fault diagnostic](evidence/review-controlled-step-live-20261002-004937/summary.md)
-demonstrates PR 14 step-action recovery on both paths. Business wording findings
+demonstrates invalid step-action recovery on both paths. Business wording findings
 keep the full-workflow captures unapproved for replay.
 See [review](evidence/review-live-20261002-000544/summary.md).
 
@@ -90,7 +167,7 @@ Both versions use the accepted `ASSESS_EQUIPMENT` and `REQUEST_SERVICE` permissi
 
 Independent fixture/capture-review checks and controlled nested-denial diagnostics pass; both denial paths retain actual Framework traces. These handcrafted, incomplete-approval diagnostics do not replace valid-approval authorization acceptance or reviewed real-model replay. The subsequent local snapshot test is explicitly authorized; it does not require a new published release. See [status](docs/implementation-status.md) and [opt-in diagnostic instructions](docs/local-run.md).
 
-**Active local test baseline:** Framework `1.0.0-beta.8-SNAPSHOT`, source reference `4313a7fcdbad33ef358b6ee4d068ce610f3dee51` (PR 14/15), with identical installed Framework bytes packaged in both hosts. Sidecar uses beta.2 source (`da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7`) with that dependency override. This is not the published Sidecar binary. Earlier released beta.7/beta.2 build checks and evidence remain preserved.
+**Active local test baseline:** Framework `1.0.0-beta.8-SNAPSHOT`, source reference `900cc86bc2ba619d38647688008b138a07108af6`, installed SHA256 `57824a5ffa711b5eef0a5d35b4af95820efdc2a1741bb62354ea33e8286610ef`, with identical Framework bytes packaged in both hosts. Sidecar uses beta.2 source (`da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7`) with that dependency override. This is not the published Sidecar binary. Earlier snapshot and released beta.7/beta.2 build checks and evidence remain preserved.
 
 ## Start here
 

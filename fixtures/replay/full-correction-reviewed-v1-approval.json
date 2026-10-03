@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "fixture": "full-correction-reviewed-v1.json",
+  "fixtureSha256": "33a1856a59887fe8feb99a624b5e1017472476460e911269da82be12f3b2cf49",
+  "status": "APPROVED_FOR_SCOPED_OFFLINE_REPLAY",
+  "scope": "Full-workflow extra-brace fault recovery on Java and Sidecar using genuine reviewed Muse-medium correction responses",
+  "normalization": "caseId only",
+  "mutations": [
+    "One explicitly labeled extra closing brace on original comparison content; captured correction responses unedited"
+  ],
+  "verifications": [
+    {
+      "capture": "evidence/full-correction-offline-20261002-172055",
+      "review": "evidence/review-full-correction-offline-20261002-172055/review.json",
+      "reviewSha256": "427c136043f12abbbf08ee894d456822750676cd4324c958a342b62c164936e7",
+      "junit": "evidence/review-full-correction-offline-20261002-172055/workflow-junit.xml",
+      "junitSha256": "1b11fdee63eae0ebd87df6b6b5ea522d95f46be57d7d9161f801a9a7dd24f8b0",
+      "evidenceChecks": 42,
+      "workflowAssertions": 8
+    }
+  ],
+  "limitations": [
+    "Parent completion envelopes explicitly copy actual completed child; no new parent model reasoning",
+    "Two observed corrective calls do not establish a model reliability rate",
+    "Historical rejected captures retain their original dispositions"
+  ]
+}

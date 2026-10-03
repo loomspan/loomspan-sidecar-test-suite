@@ -25,8 +25,10 @@ def inspect(directory):
         text='\n'.join(m.get('content','') for m in correction_request.get('messages',[]) if m['role']=='user')
         marker='Rejected assistant response (JSON string): '
         replay=json.JSONDecoder().raw_decode(text.split(marker,1)[1])[0] if marker in text else ''
-        check(path,'actual feedback retains parser reason, omissions and offending tail',
-              'Unexpected close marker' in text and 'omitted ' in replay and replay.endswith(candidate[-128:]) and len(replay)<8500)
+        complete=replay==candidate
+        historical_excerpt='omitted ' in replay and replay.endswith(candidate[-128:]) and len(replay)<8500
+        check(path,'actual feedback retains parser reason and complete candidate or historical bounded excerpt',
+              'Unexpected close marker' in text and (complete or historical_excerpt))
         check(path,'correction uses selected Muse/medium',correction_request.get('model')==manifest['model'] and correction_request.get('reasoning_effort')=='medium')
         check(path,'one explicit live correction only' if live else 'no provider calls',
               sum(e.get('provenance')=='live OpenRouter' for e in responses)==(1 if live else 0))
@@ -56,6 +58,7 @@ def inspect(directory):
               all(t['outcome']=='SUCCEEDED' for t in x['traces']))
         check(path,'no fixture or transport rejection',not any(e['event'] in ['model-rejected','provider-transport-failure'] for e in local))
         paths[path]={'caseId':case,'injectedRequestId':injected['requestId'],
+                     'candidateReplayMode':'complete' if complete else 'historical bounded excerpt',
                      'correctionRequestId':correction['requestId'] if correction else None,
                      'correctionResponse':corrected,'rejectionEvents':rejected,'toolStartEvents':calls,'toolCompletionEvents':finished,
                      'durationSeconds':x['durationSeconds'],'liveCost':x['reportedProviderCost'],

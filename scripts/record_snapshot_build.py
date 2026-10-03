@@ -37,6 +37,8 @@ def main():
     result['frameworkCorrectionSourceSha256']={path.name:hashlib.sha256(path.read_bytes()).hexdigest()
         for path in (ROOT.parent/'loomspan-framework/src/main/java/ai/loomspan/internal/runtime/step').glob('*.java')
         if path.name in {'StepActionCorrection.java','StepLoopMissionExecutionEngine.java','StepPromptBuilder.java'}}
+    schema_advisor=ROOT.parent/'loomspan-framework/src/main/java/ai/loomspan/internal/outputschema/OutputSchemaCallAdvisor.java'
+    result['frameworkCorrectionSourceSha256'][schema_advisor.name]=hashlib.sha256(schema_advisor.read_bytes()).hexdigest()
     for name,path in [('java',ROOT/'apps/java/target/equipment-java-1.0.jar'),
                       ('sidecar',ROOT/'.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/target/loomspan-sidecar-1.0.0-beta.2.jar')]:
         with zipfile.ZipFile(path) as jar:

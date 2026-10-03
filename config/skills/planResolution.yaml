@@ -31,7 +31,15 @@ prompt: 'Use selectedOption names expedited, standard, loaner, replacement, defe
   evidence, uncertainty, question and citation. Do not summarize, paraphrase, omit
   qualifiers, expand citations or reconstruct this object. Its exact decoded value
   must match the assessment child result retained by the root. Include the full received
-  assetContext and source applicability metadata too. Ordinary task results cannot
+  assetContext and source applicability metadata too. During each compareOptions assignment,
+  transfer equipmentAssessment, referenceEvidence, serviceHistory, serviceTerms and
+  assetContext as immutable data inside toolArguments.context only, never as fields
+  at the toolArguments top level. Copy each entire received value from the canonical
+  mission input without omitted records, regenerated text or paraphrases. Keep candidate-strategy
+  reasoning in separate fields. The referenceEvidence collection must contain every
+  source object exactly once with unchanged text, revision, issuer and applicability;
+  do not replace complete sources with the assessment citations or selected snippets.
+  Ordinary task results cannot
   be retrieved using a made-up $ref task identifier; supply their complete explicit
   values. Preserve caseId and assetId in every child input and result. Pass full relevant
   upstream evidence in context, including authoritative assetContext, using resolved

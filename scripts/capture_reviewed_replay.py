@@ -1,5 +1,5 @@
 """Run reviewed captured workflows through both Framework paths without provider access."""
-import argparse, hashlib, json, pathlib, time, uuid
+import argparse, hashlib, json, pathlib, subprocess, time, uuid
 import httpx
 from baseline import baseline
 from capture import collect, wait
@@ -9,6 +9,15 @@ from login import login
 from readiness import ready
 from curate_business_replay import CASE, ROOT, digest, derive
 from capture_business_diagnostic import normalized
+from recovery_replay import recovery_steps
+
+def require_offline_provider():
+    result = subprocess.run(['docker', 'exec', 'equipment-acceptance-fixtures-1', 'python', '-c',
+        "import os; print('disabled' if not os.getenv('OPENROUTER_API_KEY') else 'enabled')"],
+        capture_output=True, text=True, check=True)
+    if result.stdout.strip() != 'disabled':
+        raise RuntimeError('Offline capture requires fixture provider credential disabled via compose.offline.yaml')
+    return True
 
 def verify_source(sample):
     source=ROOT/'evidence'/sample['sourceCapture']
@@ -20,15 +29,19 @@ def verify_source(sample):
     if derive(source, sample['sourcePath'], ROOT/sample['semanticReview']) != sample:
         raise ValueError('Fixture differs from reviewed source; recurate explicitly')
 
-def run(scenario):
+def run(scenario, recovery=False):
     ready()
+    require_offline_provider()
     build = baseline()
     diagnostic_file = ROOT / 'fixtures/replay/business-reviewed-v1.json'
     diagnostic = json.loads(diagnostic_file.read_bytes())
+    approval = json.loads((diagnostic_file.parent / 'business-reviewed-v1-approval.json').read_bytes())
+    if approval['status'] != 'APPROVED_FOR_SCOPED_OFFLINE_REPLAY' or approval['fixtureSha256'] != digest(diagnostic_file):
+        raise ValueError('Reviewed fixture approval/hash mismatch')
     samples = diagnostic['scenarios'][scenario]
     for sample in samples.values():
         verify_source(sample)
-    out = ROOT / 'evidence' / ('business-reviewed-'+scenario+'-' + time.strftime('%Y%m%d-%H%M%S'))
+    out = ROOT / 'evidence' / (('full-workflow-recovery-' if recovery else 'business-reviewed-'+scenario+'-') + time.strftime('%Y%m%d-%H%M%S'))
     out.mkdir()
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_text())
     token = login('maya')
@@ -42,6 +55,8 @@ def run(scenario):
                 cases.append(case)
                 sample = samples[path]
                 steps = normalized(sample['steps'], CASE, case)
+                if recovery:
+                    steps = recovery_steps(steps)
                 candidate = normalized(sample['expected'], CASE, case)
                 registration = {'mode': 'replay', 'path': path, 'steps': steps}
                 (out / (path + '-registration.json')).write_text(json.dumps(registration, indent=2), encoding='utf-8')
@@ -67,8 +82,10 @@ def run(scenario):
             (out / 'manifest.json').write_text(json.dumps({**build, 'mode': 'offline reviewed business replay', 'scenario': scenario,
                 'sources': {p: {k: v for k, v in sample.items() if k not in ['steps','input','expected']} for p,sample in samples.items()},
                 'diagnosticSha256': hashlib.sha256(diagnostic_file.read_bytes()).hexdigest(),
+                'recovery': recovery,
+                'providerDisabledAtStart': True,
                 'results': results, 'approved': False, 'paidCalls': 0,
-                'scope': 'Unedited reviewed Muse stages; case-ID normalization only; candidate pending offline evidence review'}, indent=2), encoding='utf-8')
+                'scope': ('Full-workflow extra-brace comparison mutation with offline original-content correction; no new model judgment' if recovery else 'Unedited reviewed Muse stages; case-ID normalization only; candidate pending offline evidence review')}, indent=2), encoding='utf-8')
             finalize(out)
             print(out, flush=True)
     return out
@@ -77,4 +94,5 @@ def run(scenario):
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scenario', choices=['baseline','priority'], required=True)
-    args=parser.parse_args(); run(args.scenario)
+    parser.add_argument('--recover', action='store_true')
+    args=parser.parse_args(); run(args.scenario, args.recover)

@@ -6,6 +6,11 @@ Run directories are generated and ignored by Git. They include actual Framework 
 
 | Evidence | Use and disposition |
 | --- | --- |
+| [Fresh complete live workflows](review-fresh-live-20261002/summary.md) | Final baseline/priority on both applications pass 256 process checks, 16 assertions and six focused tests with real Muse/medium at every stage. Actual native parents preserve full results. Semantic constraints pass; Java priority responsiveness remains qualified. All seven attempts/failures retained, provider disabled, no new service requests or replay approval. |
+| [Latest consolidated offline acceptance](acceptance-offline-20261002-172357-b0ee31/summary.md) | Prior checkpoint: 311 checks, 56 assertions and 76 focused tests with approved genuine corrections. Not rerun after fresh-live prompt clarifications. Controlled parent completions explicitly copy actual child results. |
+| [Consolidated offline acceptance](acceptance-offline-20261002-123044-813154/summary.md), [artifact index](review-acceptance-offline-20261002-123044-813154/artifact-index.md) | Six fresh scenario groups on both paths pass 310 independent checks/56 assertions/64 focused tests, no skips or paid calls. Archives retained around authorization changes; normal runtime restored. Complete-delivery audit remains qualified for correction provenance and workspace/live scope. |
+| [Full-workflow recovery](review-full-workflow-recovery-20261002-121334/summary.md) | Both paths pass41 checks/eight assertions: injected extra brace, actual parser feedback/retry, unchanged reviewed offline correction, successful full assessment and no commitments. |
+| [Gated overlap/isolation](review-gated-isolation-20261002-121509/summary.md) | Both paths pass 100 checks/16 assertions; Maya's gated baseline blocks while Luis's distinct priority completes, then resumes with exact source results and identity. Initial different-selection false-negative retained; review-final.json is current. 50 focused tests; zero paid calls. |
 | [Valid-approval nested pair](review-nested-authorization-offline-20261002-115456/summary.md) | Both paths pass 32 checks/eight assessment assertions. Maya filtered/no creation; Luis one actual creation and preserved parent receipt. Normal configuration restored; no paid calls. |
 | [Partial nested115131](review-nested-authorization-offline-20261002-115131/summary.md), [115313](review-nested-authorization-offline-20261002-115313/summary.md) | Harness matcher/envelope failures, retained unapproved. Real115313 receipts and traces preserved. |
 | [Service creation/recovery](review-service-requests-offline-20261002-114412/summary.md) | Both paths pass 53 checks/eight assessment assertions: one approved durable request, direct denial, real lost-result transport recovery and expiry/idempotency. Zero paid calls. |
@@ -56,3 +61,15 @@ still match. Captures, journals, actual traces and source work remain intact.
 Latest cleanup: 33 disposable files and seven empty cache directories removed;
 original134 hashes and finalized live capture checksums match. See
 [report](review-live-20261002-102148/cleanup.json).
+Latest full-workflow correction review:
+[revised scoped pair](review-full-correction-live-20261002-130627/summary.md).
+Both workflows complete and preserve original child assessments, but outer
+citations fail fidelity; sources are rejected for curation. The initial rejected
+pair, revised rehearsal, actual journals/traces and durable records remain local.
+Provider access is disabled; no approved genuine full-correction fixture exists.
+
+Complete correction-context preservation is verified in actual requests on both
+applications, for schema and step-action correction. The previous truncation
+finding is historical; no new paid model check or correction-fixture approval
+follows from this offline result. See
+[Correction-context review and actual artifacts](review-complete-correction-context-20261002/summary.md).

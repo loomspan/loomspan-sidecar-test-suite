@@ -1,10 +1,10 @@
 # Loomspan Framework: customer-facing claims
 
-These are the capabilities we want to demonstrate to customers. They are starting claims for this integration suite to prove, not statements that the suite has already verified. We will define the scenarios and operating limits together.
+These claims describe Loomspan Framework as a whole and the capabilities we want to demonstrate to customers. They are starting claims for this integration suite to prove, not statements that the suite has already verified. We will define the scenarios and operating limits together.
 
-1. **Complex planning:** Executes complex, nested skill plans while respecting dependencies.
+1. **Complex planning:** Executes complex, nested skill plans while respecting dependencies and preserving the mission objective and required evidence through completion.
 2. **Concurrent steps:** Executes independent plan steps concurrently.
-3. **Structured output:** Enforces output contracts and supplies LLM hints to encourage proper structure on retry.
+3. **Structured output and recovery:** Enforces output contracts and supports correction of invalid model output while preserving required evidence and citations. Invalid output does not proceed as a successful result.
 4. **Mixed capabilities:** Combines model reasoning with deterministic Java and REST operations.
 5. **Authorization:** Enforces caller permissions throughout nested and parallel execution.
 6. **Failure handling:** Handles provider errors, retries, and timeouts without corrupting execution state.
@@ -21,3 +21,7 @@ These are the capabilities we want to demonstrate to customers. They are startin
 - Validate and publish configuration while those executions are running.
 
 The emphasis is on interactions and operating conditions that isolated unit tests cannot establish convincingly.
+
+Individual observations establish only the scenarios and operating conditions
+documented with their evidence. Successful controlled replay does not by itself
+establish fresh model reasoning or a universal recovery guarantee.

@@ -1,6 +1,6 @@
 # Loomspan Sidecar: customer-facing claims
 
-These are the capabilities we want to demonstrate to customers. They are starting claims for this integration suite to prove, not statements that the suite has already verified. We will define the scenarios and operating limits together.
+These claims describe Loomspan Sidecar as a whole and the capabilities we want to demonstrate to customers. They are starting claims for this integration suite to prove, not statements that the suite has already verified. We will define the scenarios and operating limits together.
 
 1. **Application integration:** Makes Loomspan execution available to applications through an authenticated asynchronous API.
 2. **Concurrent callers:** Supports many simultaneous callers while keeping their executions isolated.
