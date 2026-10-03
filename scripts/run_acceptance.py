@@ -1,4 +1,5 @@
 """One offline acceptance command; preserve runtime, review evidence and restore normal hosts."""
+from replay_selection import business_fixture, approval_file as business_approval
 import environment as target_env
 import hashlib
 import json
@@ -32,7 +33,7 @@ FOCUSED = ['test_recovery_replay', 'test_reviewed_replay', 'test_fixture_replay'
            'test_fixture_clock', 'test_capture_review', 'test_business_output', 'test_quote_publication',
            'test_workflow_generation', 'test_comparison_mutation', 'test_nested_authorization_fixture',
            'test_business_workflow_replay', 'test_acceptance_report', 'test_full_correction', 'test_correction_context',
-           'test_fresh_live_review', 'test_fresh_live_audit', 'test_environment', 'test_runtime_startup']
+           'test_fresh_live_review', 'test_fresh_live_audit', 'test_environment', 'test_runtime_startup', 'test_run_modes']
 COMPOSE = target_env.compose()
 
 
@@ -53,9 +54,9 @@ def runtime_state(build):
 
 
 def provenance_preflight():
-    file = ROOT/'fixtures/replay/business-reviewed-v1.json'
+    file = business_fixture()
     bundle = json.loads(file.read_bytes())
-    approval = json.loads((file.parent/'business-reviewed-v1-approval.json').read_bytes())
+    approval = json.loads(business_approval().read_bytes())
     if approval['status']!='APPROVED_FOR_SCOPED_OFFLINE_REPLAY' or approval['fixtureSha256']!=digest(file):
         raise ValueError('Reviewed fixture approval mismatch')
     for samples in bundle['scenarios'].values():
@@ -68,7 +69,7 @@ def provenance_preflight():
             actual = subprocess.check_output(target_env.execute(service,'sha256sum','/app/'+name),text=True).split()[0]
             if actual!=digest(ROOT/name):
                 raise ValueError('Running '+service+' source differs: '+name+'; preserve evidence before rebuilding')
-    return {'fixtureSha256':digest(file), 'approvalSha256':digest(file.parent/'business-reviewed-v1-approval.json'),
+    return {'fixtureSha256':digest(file), 'approvalSha256':digest(business_approval()),
             **correction_approval()}
 
 

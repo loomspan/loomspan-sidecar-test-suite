@@ -1,4 +1,5 @@
 """Review offline replay fidelity and Framework behavior against reviewed Muse sources."""
+from replay_selection import business_fixture, approval_file as business_approval
 import argparse
 import hashlib
 import json
@@ -61,9 +62,10 @@ def inspect(directory):
                 actual=json.JSONDecoder().raw_decode(message.split('Canonical mission input:\n',1)[1].lstrip())[0]
                 return actual==step['missionInputEquals']
             except (StopIteration,KeyError,IndexError,ValueError): return False
-        bundle=json.loads((ROOT/'fixtures/replay/business-reviewed-v1.json').read_bytes())
-        approval=json.loads((ROOT/'fixtures/replay/business-reviewed-v1-approval.json').read_bytes())
-        fixture_digest=hashlib.sha256((ROOT/'fixtures/replay/business-reviewed-v1.json').read_bytes()).hexdigest()
+        selected_fixture = business_fixture(manifest.get('businessFixture', 'fixtures/replay/business-reviewed-v1.json'))
+        bundle=json.loads(selected_fixture.read_bytes())
+        approval=json.loads(business_approval(selected_fixture).read_bytes())
+        fixture_digest=hashlib.sha256(selected_fixture.read_bytes()).hexdigest()
         check(path, 'fixture hash matches scoped approval and captured manifest',
               approval['status']=='APPROVED_FOR_SCOPED_OFFLINE_REPLAY' and
               approval['fixtureSha256']==manifest['diagnosticSha256']==fixture_digest)

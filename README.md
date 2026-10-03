@@ -1,5 +1,138 @@
 # Loomspan reference applications and acceptance suite
 
+This project tests the same equipment-service business process through two real
+Loomspan integrations: an embedded Java application and a Python/FastAPI application
+using Loomspan Sidecar. Use deterministic replay to check Framework behavior,
+live models to find compatibility and reasoning failures, and reviewed captures
+to refresh the normal mock responses.
+
+## Run the suite
+
+Run the following PowerShell commands from the repository root in an initialized
+workspace with Docker Compose services running and the Python virtual environment
+installed. For initial setup, see the [operator runbook](docs/on-prem-runtime.md)
+or [local development instructions](docs/local-run.md). Run one mode at a time;
+the modes share runtime services and business records.
+
+Modes 2–4 require `LOOMSPAN_OPENROUTER_API_KEY` in the process environment and make
+real provider calls. Their default model is **Muse Spark Contributor**
+(`meta/muse-spark-1.3-contributor`) with **medium** reasoning. In the examples,
+replace `provider/model` with the exact OpenRouter model ID. Use `--reasoning none`
+to omit the reasoning parameter; other accepted settings are `minimal`, `low`,
+`medium`, `high`, and `xhigh`. The selected provider/model must support the setting.
+
+### 1. Mock acceptance — Java and Sidecar
+
+```powershell
+.venv/Scripts/python.exe scripts/run_suite.py mock
+```
+
+Runs the complete deterministic acceptance suite against **both integrations**:
+baseline assessment, changed operational priority, malformed-output recovery,
+service creation/recovery, gated concurrent-case isolation, and nested authorization,
+plus focused tests. Model stages use the active reviewed business fixtures and
+static fault/authorization scripts through the real Framework provider client.
+There are **zero live model calls**, and provider access must be disabled.
+The suite also audits retained live evidence without contacting the provider.
+
+Use this mode to check repeatable Framework and application behavior. Success means
+all required scenario checks and assertions passed; unexpected requests or mismatched
+replay stages fail rather than falling back to a live model.
+
+### 2. Live workflows — Java and Sidecar
+
+```powershell
+# Default: Muse Spark Contributor, medium reasoning.
+.venv/Scripts/python.exe scripts/run_suite.py live
+
+# Choose another model and its reasoning setting.
+.venv/Scripts/python.exe scripts/run_suite.py live --model provider/model --reasoning none
+```
+
+Runs baseline and changed-priority assessments through **both integrations**, with
+every planner, assignment, child-model stage, and parent completion answered by the
+selected live model. Checks cover evidence transfer, exact quotes, citations,
+published results, identities, and Framework traces. A valid live baseline is then
+used for service approval, direct permission denial, lost-result recovery,
+idempotency, and expiry checks; those service operations need no additional model calls.
+
+This is the live business-workflow track. Deliberately scripted malformed-output
+and nested-authorization cases, and gated isolation, remain in mock mode. Live mode
+does not replay mock answers to get a failing model through the workflow.
+
+### 3. Model evaluation — one integration
+
+```powershell
+# Java is the default integration, with fewer transport layers to debug.
+.venv/Scripts/python.exe scripts/run_suite.py evaluate --model provider/model --reasoning medium
+
+# Choose Sidecar instead.
+.venv/Scripts/python.exe scripts/run_suite.py evaluate --path sidecar --model provider/model --reasoning none
+```
+
+Runs the same live business scenarios as mode 2, but submits test executions only
+to **Java or Sidecar**, selected with `--path java|sidecar`. Use this mode to explore
+which models handle the example and inspect where they fail, without duplicating
+the model workload across both integrations. Shared readiness and evidence
+preservation still inspect the installed stack; the other integration need not
+be removed or isolated.
+
+### 4. Capture and refresh the normal mock responses
+
+```powershell
+.venv/Scripts/python.exe scripts/run_suite.py capture --model provider/model --reasoning medium
+```
+
+Runs the live scenarios on **both integrations** and retains the model responses
+as potential sources for a new deterministic business fixture set. If automated
+checks pass, the output directory includes `semantic-review-template.json`.
+Capture alone **does not replace the active fixtures**.
+
+Review the actual outputs for evidence fidelity, uncertainty, commercial terms,
+feasible alternatives, and response to changed priority. Save a completed copy as
+`semantic-review.json`, preserving its checksum bindings and recording a rationale
+and `SUITABLE_FOR_REPLAY_CURATION` status for each suitable scenario/integration.
+Then run the refresh phase, replacing `RUN` with the capture run's directory suffix
+and choosing a new version name:
+
+```powershell
+.venv/Scripts/python.exe scripts/refresh_replay.py --suite evidence/capture-suite-RUN/report.json --semantic-review evidence/capture-suite-RUN/semantic-review.json --version model-name-v1
+```
+
+The refresh phase verifies the source and review, derives versioned normal business
+responses, and runs the **complete mock suite** against that candidate. Only a
+successful validation activates it. Previous versions remain available for rollback;
+failed captures or candidates leave the active selection unchanged.
+
+Static malformed-output and unauthorized-action scripts stay unchanged, including
+the existing correction bundle's original business context. Where a normal live
+stage needed correction, curation uses its final valid response and explicitly
+records the earlier attempts omitted from normal replay. Original captures remain
+intact. See the [detailed refresh and rollback procedure](docs/run-modes.md#replacing-business-fixtures).
+
+### Results and runtime behavior
+
+The runner prints the evidence/report location. Runs retain a Markdown summary,
+JSON results, JUnit XML, request/response journals, business records, and actual
+Framework traces. Live reports also record provider failures, malformed responses,
+returned model IDs, and reported cost. A failed run returns a nonzero exit code;
+inspect `$LASTEXITCODE` in PowerShell.
+
+Live success is labeled `AUTOMATED_CHECKS_PASS`: semantic review is still required
+before fixture refresh. Completion alone does not establish business correctness
+or reliability across repeated runs. Live modes preserve runtime evidence, load
+temporary model configuration, and restore normal configuration with provider
+access disabled when they exit normally or handle an error. Existing databases
+are preserved. For further details, see [run modes](docs/run-modes.md).
+
+## Latest verification and historical checkpoints
+
+**Model run modes verified (2026-10-03):**
+The [final mock run](evidence/acceptance-offline-20261003-102249-5763db/summary.md)
+passes 311 checks, 56 assertions and 110 focused tests. A new live Muse baseline
+passes both paths; changed-priority runs expose a Sidecar step-action failure and
+a Java citation-validation failure. Those captures remain unapproved for refresh.
+
 **On-prem Compose installation verified (2026-10-02):** a separate project with
 fresh credentials/databases passes **311 checks, 56 assertions and 96 focused
 tests**, with zero paid calls. Follow the [operator runbook](docs/on-prem-runtime.md)

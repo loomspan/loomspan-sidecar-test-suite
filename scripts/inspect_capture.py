@@ -45,7 +45,7 @@ def preserves_applicability(request, source):
     return contains(body)
 
 
-def inspect(directory, paths=('java', 'sidecar')):
+def inspect(directory, paths=('java', 'sidecar'), expected_profile=None):
     directory=Path(directory).resolve()
     checks=[]; hashes={}
     def check(name,passed,path=None):
@@ -63,8 +63,10 @@ def inspect(directory, paths=('java', 'sidecar')):
     events=read('journal.json',[])
     index=read('trace-index.json',[])
     identities=read('running-identities.json',{})
-    check('explicit selected live model and reasoning',manifest.get('mode')=='live' and
-          manifest.get('model') in {'openai/gpt-6.1-sol','meta/muse-spark-1.3-contributor'} and manifest.get('reasoning')=='medium')
+    profile = expected_profile or {'model': manifest.get('model') if manifest.get('model') in
+              {'openai/gpt-6.1-sol', 'meta/muse-spark-1.3-contributor'} else None, 'reasoning': 'medium'}
+    check('explicit selected live model and reasoning', manifest.get('mode') == 'live' and
+          bool(profile['model']) and all(manifest.get(k) == v for k, v in profile.items()))
     for path,storage in [('java','java'),('sidecar','python')]:
         if path not in paths: continue
         selected=[r for r in manifest.get('results',[]) if r.get('path')==path]
@@ -87,7 +89,7 @@ def inspect(directory, paths=('java', 'sidecar')):
                   c.get('finish_reason') != 'error' and not c.get('error')
                   for c in e['response']['choices']) for e in responses), path)
         check('every request uses selected model/reasoning',requests and all(e['request'].get('model')==manifest.get('model')
-              and e['request'].get('reasoning_effort')=='medium' for e in requests),path)
+              and e['request'].get('reasoning_effort')==profile['reasoning'] for e in requests),path)
         for skill in ['assessEquipment','compareOptions']:
             calls=[e for e in requests if mission(e['request'],skill)]
             check(skill+' model responsibility reached',bool(calls),path)

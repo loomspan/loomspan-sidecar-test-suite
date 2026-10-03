@@ -28,6 +28,10 @@ def finalize(directory):
         target=configuration/source.relative_to(ROOT)
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_text(redact(source.read_text(encoding='utf-8')),encoding='utf-8')
+    if os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
+        active=configuration/'active-model';active.mkdir(exist_ok=True)
+        for source in pathlib.Path(os.environ['LOOMSPAN_MODEL_CONFIG_DIRECTORY']).glob('*.yaml'):
+            (active/source.name).write_text(redact(source.read_text(encoding='utf-8')),encoding='utf-8')
     for path in ['java','python']:
         db=ROOT/'.runtime'/path/'equipment.db'
         if not db.exists():continue

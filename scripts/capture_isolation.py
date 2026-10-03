@@ -1,4 +1,5 @@
 """Two complete reviewed cases per application, with independently observed read gates."""
+from replay_selection import business_fixture, approval_file as business_approval
 import environment as target_env
 import json
 import time
@@ -21,9 +22,9 @@ def run():
     ready()
     require_offline_provider()
     build = baseline()
-    fixture = ROOT / 'fixtures/replay/business-reviewed-v1.json'
+    fixture = business_fixture()
     bundle = json.loads(fixture.read_bytes())
-    approval = json.loads((fixture.parent / 'business-reviewed-v1-approval.json').read_bytes())
+    approval = json.loads(business_approval().read_bytes())
     if approval['fixtureSha256'] != digest(fixture) or approval['status'] != 'APPROVED_FOR_SCOPED_OFFLINE_REPLAY':
         raise ValueError('Reviewed fixture approval/hash mismatch')
     for scenario in ['baseline', 'priority']:
@@ -116,6 +117,7 @@ def run():
                 (d / 'business-records-after.json').write_text(json.dumps(after, indent=2))
                 (d / 'manifest.json').write_text(json.dumps({**build, 'mode': 'offline reviewed business replay',
                     'scenario': scenario, 'diagnosticSha256': digest(fixture), 'approved': False, 'paidCalls': 0,
+                    'businessFixture': fixture.relative_to(ROOT).as_posix(),
                     'results': items, 'scope': 'Two-case gated isolation, unchanged reviewed source; baseline Maya, priority Luis',
                     'sources': {p: {k:v for k,v in s.items() if k not in ['steps','input','expected']}
                                 for p,s in bundle['scenarios'][scenario].items()}}, indent=2))

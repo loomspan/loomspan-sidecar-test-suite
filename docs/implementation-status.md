@@ -1,5 +1,59 @@
 # Implementation and observed status — 2026-10-02
 
+## Four model run modes — implementation and validation 2026-10-03
+
+`scripts/run_suite.py` provides mock, paired live, single-integration evaluation,
+and paired capture modes. Model/reasoning overrides use temporary Compose and skill
+configuration; normal authored files remain unchanged. Java is the evaluation
+default. Live checks compare actual outbound requests against the selected model,
+retain failed captures, and restore provider-disabled normal services.
+
+Live modes cover baseline, changed priority, and direct service creation/recovery
+using the real live baseline. Gated isolation, static malformed-output recovery,
+and scripted nested authorization remain in the full mock suite. This is an
+explicit coverage boundary, not a claim of live conversion of every scripted case.
+
+`scripts/refresh_replay.py` binds semantic review to captures, recomputes mechanical
+checks, derives versioned business fixtures, validates the candidate with full mock
+acceptance, and activates it only after success. Earlier natural correction attempts
+may be omitted from normal replay only with explicit Framework correction feedback;
+their IDs and original source responses remain preserved. Static fault bundles and
+hand-authored authorization stages remain unchanged. No new fixture was activated.
+
+Observed validation:
+
+- [Final full mock acceptance](../evidence/acceptance-offline-20261003-102249-5763db/summary.md)
+  passes **311 scenario checks, 56 workflow assertions and 110 focused tests**,
+  with zero paid calls. All six scenario groups pass; runtime restoration,
+  provider-disabled state, original evidence integrity and record preservation
+  are verified. The 14 new focused tests cover model/profile selection, single-path
+  routing, restoration, correction normalization, immutable source selection and
+  failed/successful activation boundaries.
+
+- [Paired capture report](../evidence/capture-suite-20261003-100115-0216dc/summary.md):
+  the baseline passes 128 mechanical checks. Sidecar required one natural JSON
+  correction and Java two. The changed-priority pair fails: Sidecar exhausts two
+  valid-step-action attempts at root step 6, and Java completes but fails the
+  citation-source validation check. This is retained model-evaluation evidence,
+  not a successful live acceptance or permission to relax expectations.
+- [Separate live-source service validation](../evidence/service-live-validation-20261003-final.json)
+  passes 61 checks, including zero additional model calls, exact approval/receipt,
+  direct denial, response loss, idempotency and expiry recovery. This phase was
+  verified separately after adding it to the runner. The original service capture
+  counts referenced baseline responses in its older `paidCalls` field; the supplemental
+  report explains this, and new captures distinguish referenced responses from new calls.
+- The retained Python container was refreshed after preserving its evidence because
+  its startup code differed from the already-fixed repository source. Both mock
+  baseline/priority paths passed. An early offline attempt subsequently failed
+  during trace download with `RemoteProtocolError`; its evidence is retained at
+  `evidence/acceptance-offline-20261003-095559-57c609`. A separate complete correction
+  capture succeeded at `evidence/full-correction-offline-20261003-100003`.
+
+See [run commands and fixture procedure](run-modes.md). Existing accepted fixtures,
+historical source captures, and prior databases are preserved. Full delivery remains
+undeclared; live failures and end-to-end activation of a newly reviewed model fixture
+remain distinct from runner/unit verification.
+
 ## On-prem Compose installation — verified with explicit qualifications
 
 The user replaced VM provisioning with a separate Compose project on this host,

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import os
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -43,6 +44,8 @@ def compose():
         if not overlay.is_file():
             raise ValueError('Isolated Compose overlay missing; refusing default ports')
         command += ['-f', str(overlay)]
+    if os.getenv('LOOMSPAN_RUN_OVERLAY'):
+        command += ['-f', os.environ['LOOMSPAN_RUN_OVERLAY']]
     return command
 
 

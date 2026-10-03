@@ -1,4 +1,5 @@
 """Run reviewed captured workflows through both Framework paths without provider access."""
+from replay_selection import business_fixture, approval_file as business_approval
 import environment as target_env
 import argparse, hashlib, json, pathlib, subprocess, time, uuid
 import httpx
@@ -27,16 +28,16 @@ def verify_source(sample):
     if digest(ROOT/sample['semanticReview'])!=sample['semanticReviewSha256']:
         raise ValueError('Semantic review changed; recurate explicitly')
     if any(s.get('live') for s in sample['steps']): raise ValueError('Live stage prohibited')
-    if derive(source, sample['sourcePath'], ROOT/sample['semanticReview']) != sample:
+    if derive(source, sample['sourcePath'], ROOT/sample['semanticReview'], sample.get('normalizeCorrections',False)) != sample:
         raise ValueError('Fixture differs from reviewed source; recurate explicitly')
 
 def run(scenario, recovery=False):
     ready()
     require_offline_provider()
     build = baseline()
-    diagnostic_file = ROOT / 'fixtures/replay/business-reviewed-v1.json'
+    diagnostic_file = business_fixture()
     diagnostic = json.loads(diagnostic_file.read_bytes())
-    approval = json.loads((diagnostic_file.parent / 'business-reviewed-v1-approval.json').read_bytes())
+    approval = json.loads(business_approval().read_bytes())
     if approval['status'] != 'APPROVED_FOR_SCOPED_OFFLINE_REPLAY' or approval['fixtureSha256'] != digest(diagnostic_file):
         raise ValueError('Reviewed fixture approval/hash mismatch')
     samples = diagnostic['scenarios'][scenario]
@@ -83,6 +84,7 @@ def run(scenario, recovery=False):
             (out / 'manifest.json').write_text(json.dumps({**build, 'mode': 'offline reviewed business replay', 'scenario': scenario,
                 'sources': {p: {k: v for k, v in sample.items() if k not in ['steps','input','expected']} for p,sample in samples.items()},
                 'diagnosticSha256': hashlib.sha256(diagnostic_file.read_bytes()).hexdigest(),
+                'businessFixture': diagnostic_file.relative_to(ROOT).as_posix(),
                 'recovery': recovery,
                 'providerDisabledAtStart': True,
                 'results': results, 'approved': False, 'paidCalls': 0,

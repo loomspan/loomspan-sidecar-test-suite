@@ -1,6 +1,26 @@
 # Project agreement and conversation handoff
 
-Last updated: 2026-10-02.
+Last updated: 2026-10-03.
+
+### Accepted model execution and fixture refresh modes — 2026-10-03
+
+The user authorized implementation of four explicit modes: (1) complete mock
+acceptance on Java and Sidecar together; (2) fully live model workflows on both
+integrations with a specified OpenRouter model, defaulting to
+`meta/muse-spark-1.3-contributor`; (3) live model evaluation on one integration,
+defaulting to Java with Sidecar selectable; (4) capture a specified model's normal
+business responses and replace the active deterministic business fixture set
+after semantic review and full offline validation. Live model failures are findings,
+not permission to weaken business expectations. Reasoning settings must be explicit.
+
+Deliberately authored malformed-output and unauthorized-action scripts remain
+static. Preserve their fault behavior and provenance; adjust dependent references
+only where needed. The existing fully bound correction fixture may keep its original
+business context. A new business fixture set must not rewrite that historical source.
+Keep old fixture versions and failed captures for comparison and rollback.
+
+These are accepted requirements, not observed passing results. See
+[run modes](run-modes.md) for implemented commands and their coverage boundaries.
 
 ### Accepted on-prem runtime installation and later release sequence — 2026-10-02
 

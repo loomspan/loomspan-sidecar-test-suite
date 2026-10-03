@@ -1,4 +1,5 @@
 """Controlled valid-approval nested denial and Luis positive control; no provider calls."""
+from replay_selection import business_fixture, approval_file as business_approval
 import environment as target_env
 import copy, hashlib, json, subprocess, time, uuid
 import httpx
@@ -48,8 +49,8 @@ def creation_calls():
 def run():
     require_offline_provider()
     ready();build=baseline();secrets=json.loads((ROOT/'.runtime/secrets.json').read_bytes());tokens={u:login(u) for u in ['maya','luis']}
-    fixture=ROOT/'fixtures/replay/business-reviewed-v1.json';bundle=json.loads(fixture.read_bytes())
-    approval_file=ROOT/'fixtures/replay/business-reviewed-v1-approval.json';approval_record=json.loads(approval_file.read_bytes())
+    fixture=business_fixture();bundle=json.loads(fixture.read_bytes())
+    approval_file=business_approval();approval_record=json.loads(approval_file.read_bytes())
     if hashlib.sha256(fixture.read_bytes()).hexdigest()!=approval_record['fixtureSha256']:raise ValueError('Unapproved fixture')
     out=ROOT/'evidence'/('nested-authorization-offline-'+time.strftime('%Y%m%d-%H%M%S'));out.mkdir()
     def save(name,value):(out/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')

@@ -33,7 +33,34 @@ def dependencies(steps):
             finals[skill]=i
     return steps
 
-def derive(source, path, review_file):
+def successful_stage_calls(calls):
+    """Use the final attempt of each normal stage; retain omitted attempt IDs as provenance."""
+    groups = {}
+    for i, call in enumerate(calls):
+        skill = next(s for s in ['resolveEquipment','planResolution','assessEquipment','compareOptions'] if mission(call['request'],s))
+        text = system(call['request'])
+        if 'All required plan tasks are already COMPLETE.' in text:
+            stage = 'final'
+        elif 'Exact capability/tool: ' in text:
+            stage = 'action:' + text.split('Exact capability/tool: ',1)[1].splitlines()[0].strip()
+        elif 'Create an ordered flight plan' in text:
+            stage = 'plan'
+        else:
+            stage = 'model'
+        key = (skill,stage)
+        correction = 'YOUR PREVIOUS ACTION WAS INVALID' in text or any(
+            m.get('role') == 'user' and m.get('content','').startswith((
+                'The previous response could not be parsed as JSON.',
+                'The previous response is valid JSON but does not satisfy the configured output_schema.'))
+            for m in call['request'].get('messages',[]))
+        if key in groups and not correction:
+            raise ValueError('Repeated model stage without explicit Framework correction feedback')
+        groups[key] = i
+    selected = set(groups.values())
+    return [c for i,c in enumerate(calls) if i in selected], [c['requestId'] for i,c in enumerate(calls) if i not in selected]
+
+
+def derive(source, path, review_file, normalize_corrections=False):
     source,review_file=Path(source),Path(review_file)
     review=json.loads(review_file.read_bytes()); disposition=review.get('paths',{}).get(path,review)
     if disposition.get('status')!='SUITABLE_FOR_REPLAY_CURATION':
@@ -47,7 +74,10 @@ def derive(source, path, review_file):
     expected=json.loads(terminal['result'])
     if terminal['status']!='COMPLETED' or expected['caseId']!=old: raise ValueError('Incomplete source')
     events=json.loads((source/'journal.json').read_bytes()); steps=[]
-    for call in [e for e in events if e['event']=='model-request' and e.get('path')==path and e.get('caseId')==old]:
+    calls=[e for e in events if e['event']=='model-request' and e.get('path')==path and e.get('caseId')==old]
+    omitted=[]
+    if normalize_corrections: calls,omitted=successful_stage_calls(calls)
+    for call in calls:
         replies=[e for e in events if e['event']=='model-response' and e.get('requestId')==call['requestId'] and e.get('path')==path and e.get('caseId')==old]
         if len(replies)!=1 or replies[0].get('status')!=200 or replies[0].get('provenance')!='live OpenRouter': raise ValueError('Invalid source response')
         response=replies[0]['response']; choice=response['choices'][0]
@@ -75,7 +105,9 @@ def derive(source, path, review_file):
     outputs=[json.loads(v['finalResponse']) if isinstance(v.get('finalResponse'),str) else v.get('finalResponse',v) for v in outputs]
     wanted=normalized(expected,old,CASE)
     if len(outputs)!=3 or any(v!=wanted for v in outputs): raise ValueError('Published child/parent mismatch')
-    return {'sourceCapture':source.name,'sourcePath':path,'originalCaseId':old,
+    return {**({'normalizeCorrections':True,'omittedCorrectionAttemptIds':omitted,
+                'correctionNormalization':'Final captured response per normal stage; earlier attempts remain in original capture; no response wording edits'} if normalize_corrections else {}),
+            'sourceCapture':source.name,'sourcePath':path,'originalCaseId':old,
             'sourceSha256':{name:digest(source/name) for name in [*checks,'checksums.json']},
             'semanticReview':review_file.relative_to(ROOT).as_posix(),'semanticReviewSha256':digest(review_file),
             'sourceManifest':manifest,'input':normalized(body,old,CASE),'expected':wanted,'steps':dependencies(steps)}

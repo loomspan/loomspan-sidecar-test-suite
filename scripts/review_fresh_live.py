@@ -99,9 +99,10 @@ def planning_checks(plan, skill):
     }
 
 
-def review(directory, before_directory):
+def review(directory, before_directory, paths=('java', 'sidecar'), expected_profile=None):
     directory, before_directory = Path(directory).resolve(), Path(before_directory).resolve()
-    base = inspect(directory)
+    selected_paths = tuple(paths)
+    base = inspect(directory, selected_paths, expected_profile)
     checks = base['checks']
     def check(path, name, passed):
         checks.append({'path': path, 'check': name, 'passed': bool(passed)})
@@ -112,11 +113,13 @@ def review(directory, before_directory):
         (directory / name).resolve().is_relative_to(directory) and
         hashlib.sha256((directory / name).read_bytes()).hexdigest() == expected
         for name, expected in read('checksums.json').items()))
-    check(None, 'two distinct complete live cases', len(manifest['results']) == 2 and
-          {r['path'] for r in manifest['results']} == {'java', 'sidecar'} and
-          len({r['caseId'] for r in manifest['results']}) == 2)
-    check(None, 'selected live profile is Muse with medium reasoning',
-          manifest.get('model') == 'meta/muse-spark-1.3-contributor' and manifest.get('reasoning') == 'medium')
+    check(None, 'two distinct complete live cases' if len(selected_paths) == 2 else 'one selected live case',
+          len(manifest['results']) == len(selected_paths) and
+          {r['path'] for r in manifest['results']} == set(selected_paths) and
+          len({r['caseId'] for r in manifest['results']}) == len(selected_paths))
+    check(None, 'selected live profile matches requested model and reasoning' if expected_profile else 'selected live profile is Muse with medium reasoning',
+          all(manifest.get(k) == v for k, v in (expected_profile or
+              {'model': 'meta/muse-spark-1.3-contributor', 'reasoning': 'medium'}).items()))
     try:
         provenance = inventory(directory)
     except (StopIteration, KeyError, AssertionError, ValueError) as error:
