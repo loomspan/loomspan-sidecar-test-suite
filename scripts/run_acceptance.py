@@ -33,7 +33,8 @@ FOCUSED = ['test_recovery_replay', 'test_reviewed_replay', 'test_fixture_replay'
            'test_fixture_clock', 'test_capture_review', 'test_business_output', 'test_quote_publication',
            'test_workflow_generation', 'test_comparison_mutation', 'test_nested_authorization_fixture',
            'test_business_workflow_replay', 'test_acceptance_report', 'test_full_correction', 'test_correction_context',
-           'test_fresh_live_review', 'test_fresh_live_audit', 'test_environment', 'test_runtime_startup', 'test_run_modes']
+           'test_fresh_live_review', 'test_fresh_live_audit', 'test_environment', 'test_runtime_startup', 'test_run_modes',
+           'test_run_diagnostics']
 COMPOSE = target_env.compose()
 
 

@@ -1,5 +1,62 @@
 # Implementation and observed status — 2026-10-02
 
+## Diagnostic summary classification — 2026-10-03
+
+Live/evaluate/capture summaries now separate observed execution failures from
+provider errors/protocol failures, provider timeouts/transport, mission deadlines
+or budgets, exhausted model corrections, and completed workflows with failed
+business checks. Framework defect candidates require unexpected exceptions with
+a Framework-origin stack, rather than merely an exception propagated by Framework.
+Recovery counters, retry decisions, evidence links and next-investigation guidance
+appear before the retained failed-check list. Incomplete or corrupt diagnostic
+evidence leaves answer quality inconclusive. Original acceptance status and JUnit
+failures remain unchanged; semantic approval is still separate.
+
+`scripts/report_run.py` produces a new offline diagnostic view of retained suites
+without changing originals or contacting a provider. The classifier has been
+checked against eight scenario captures: Qwen's rate limits, Nemotron's missing
+completion envelope and provider timeout, GPT-OSS before the null-handling fix,
+and GPT-OSS after it. Expected classifications matched and original report/capture
+bytes were unchanged. See [verification](../evidence/diagnostic-reports-final-20261003/verification.json)
+and the [latest GPT-OSS diagnostic view](../evidence/diagnostic-reports-final-20261003/gpt-oss-after-fix/summary.md).
+
+[Focused verification](../evidence/diagnostic-report-tests-final-20261003.xml)
+passes 60 tests covering diagnostic attribution, chunked traces, recovery,
+missing/tampered evidence, paired-path isolation, report preservation, existing
+run modes and capture/business reviewers. No new live run or consolidated runtime
+acceptance was performed for this reporting change. Diagnostics are investigation
+guidance, not an automated verdict on model intelligence or confirmed bug ownership.
+
+## GPT-OSS Framework diagnostic rerun — 2026-10-03
+
+After Framework PR 17 and local Maven installation, both reference host packages
+were rebuilt offline and deployed with the exact installed Framework snapshot
+`22e1c1a305480c23c1ab0f3f7c2aed0b373a3a0c61abdc3da1543bb16f910a87`
+(Framework checkout `b32c5d5`). Prior packages, traces, runtime configuration and
+business records were preserved before replacement. Live evaluation targeted Java
+only, with `openai/gpt-oss-120b` and medium reasoning.
+
+The [evaluation](../evidence/evaluate-suite-20261003-152818-9597f9/summary.md)
+completed baseline and priority, with successful Framework terminal traces and no
+recorded Framework error/step-failure/tool-failure events. The scenarios made 18
+and 19 provider calls respectively, without provider HTTP or transport failures.
+Each recovered from one truncated JSON response. Business validation still failed
+13 baseline checks and 18 priority checks involving evidence transfer, planning,
+preservation and citations. Service approval was not exercised because baseline
+validation failed; no fixture refresh or acceptance approval follows.
+
+No null-bearing tool arguments occurred in either live scenario, so this rerun
+does not reproduce the exact PR 17 trigger. The existing Maven report separately
+shows the new null-handling regressions passing; those tests were observed, not
+rerun here. No new Framework defect was identified in this pair.
+
+[Diagnostic findings](../evidence/framework-null-followup-20261003/findings.json)
+retain build identity, trace outcomes, failed checks and preservation verification.
+All prior Java/Python business rows remain, with two new Java assessments, four
+quotes and no service requests. Normal services and disabled provider access were
+restored. This diagnostic pair is not a consolidated offline acceptance rerun or
+a full-delivery declaration.
+
 ## Four model run modes — implementation and validation 2026-10-03
 
 `scripts/run_suite.py` provides mock, paired live, single-integration evaluation,

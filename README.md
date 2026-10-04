@@ -118,6 +118,15 @@ Framework traces. Live reports also record provider failures, malformed response
 returned model IDs, and reported cost. A failed run returns a nonzero exit code;
 inspect `$LASTEXITCODE` in PowerShell.
 
+Live/evaluate/capture summaries separate suspected Framework defects, provider
+errors, request timeouts, execution limits, exhausted model corrections, and
+completed workflows that fail business checks. They show recovered retries and
+corrections separately, with evidence links and a suggested next investigation.
+Incomplete evidence leaves answer quality inconclusive. These categories guide
+triage; they do not prove root cause or replace semantic review. To generate the
+new diagnostic view of an old run without rerunning models or changing original
+evidence, use [offline re-reporting](docs/run-modes.md#diagnostic-summary).
+
 Live success is labeled `AUTOMATED_CHECKS_PASS`: semantic review is still required
 before fixture refresh. Completion alone does not establish business correctness
 or reliability across repeated runs. Live modes preserve runtime evidence, load

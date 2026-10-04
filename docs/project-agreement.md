@@ -2,6 +2,29 @@
 
 Last updated: 2026-10-03.
 
+### Accepted diagnostic run summaries — 2026-10-03
+
+The user requested summaries that distinguish Framework exceptions/defect
+candidates, provider errors, timeouts/retries/correction outcomes, and completed
+workflows whose business answers fail validation. The purpose is to decide whether
+to investigate Framework behavior, provider availability/protocol, or model and
+prompt suitability. Preserve observations separately from inferred responsibility;
+an exception propagated by Framework is not automatically a Framework defect, and
+failed business checks alone do not prove insufficient model intelligence.
+Retain existing acceptance checks and semantic-review requirements. Historical
+reports can be reanalyzed offline into new files without altering their evidence.
+
+### Accepted model evaluation for Framework defect discovery — 2026-10-03
+
+After the Framework null-handling ticket was completed and installed locally with
+Maven, the user requested another GPT-OSS-120B evaluation to look for further
+Framework defects, even if the model fails the business checks. Use the installed
+fix in the actual packaged hosts, preserve prior packages and run evidence, and
+retain the same Java evaluation model/reasoning settings for comparison. Review
+Framework failures separately from model output, provider errors, and business
+acceptance failures. This diagnostic purpose does not weaken checks or approve
+replay fixtures. Restore provider-disabled normal services after the run.
+
 ### Accepted model execution and fixture refresh modes — 2026-10-03
 
 The user authorized implementation of four explicit modes: (1) complete mock

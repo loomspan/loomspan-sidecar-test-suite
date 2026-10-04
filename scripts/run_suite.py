@@ -17,6 +17,7 @@ from capture import run as capture
 from finalize_evidence import finalize
 from readiness import ready
 from review_fresh_live import review
+from run_diagnostics import diagnose, render
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MODEL = 'meta/muse-spark-1.3-contributor'
@@ -114,6 +115,14 @@ def observations(directory):
     responses = [e for e in events if e['event'] == 'model-response']
     malformed = []
     for event in responses:
+        body = event.get('response') or {}
+        choices = body.get('choices') if isinstance(body, dict) else None
+        if not isinstance(body, dict) or event.get('status') != 200 or body.get('error') or not choices:
+            continue
+        if not isinstance(choices, list) or not isinstance(choices[0], dict):
+            continue
+        if choices[0].get('error') or choices[0].get('finish_reason') == 'error':
+            continue
         try:
             json.loads(event['response']['choices'][0]['message']['content'])
         except (KeyError, IndexError, ValueError, TypeError):
@@ -129,6 +138,13 @@ def observations(directory):
 
 
 def summary(out, report):
+    for stage in report['stages']:
+        if stage['scenario'] in ['baseline', 'priority'] and 'diagnostics' not in stage:
+            try:
+                stage['diagnostics'] = diagnose(stage['capture'], report['paths'], stage['review'])
+            except (OSError, ValueError, KeyError, TypeError, IndexError, AttributeError) as error:
+                # Diagnostic gaps must never prevent the original results being written.
+                stage['diagnosticError'] = type(error).__name__
     write(out / 'report.json', report)
     suite = ET.Element('testsuite', name=report['mode'])
     lines = ['# ' + report['mode'] + ': ' + report['status'], '',
@@ -136,18 +152,36 @@ def summary(out, report):
              'All model responses in live captures come from the selected provider model.',
              'Controlled fault/authorization regression scripts remain in mock acceptance.',
              'Passing automated checks still requires semantic review before fixture replacement.', '']
+    if report.get('diagnosticReanalysis'):
+        source = Path(report['diagnosticReanalysis']['sourceReport']).as_posix()
+        lines += ['Offline diagnostic reanalysis of [the original report](<' + source + '>). '
+                  'No new execution or semantic review. Restoration status below is historical.', '']
+    lines += ['Runtime restoration: ' + ('confirmed; provider access disabled' if report.get('runtimeRestored')
+                                       else 'not confirmed (run in progress or runner failed)'), '',
+              '## Diagnostic overview', '',
+              'Read each scenario\'s investigation category before its assertion list. '
+              'Provider errors and exhausted corrections can propagate as Framework exceptions; '
+              'that alone does not make them Framework defects. Timeouts identify a limit, not who is at fault.', '']
     for stage in report['stages']:
         lines += ['## ' + stage['scenario'], '', 'Capture: ' + stage['capture'], '']
+        lines += render(stage)
+        if stage.get('diagnosticError'):
+            lines += ['Diagnostic analysis failed: ' + stage['diagnosticError'] + '. Attribution is unknown.', '']
+        failed = sum(not c['passed'] for c in stage['review']['checks'])
+        lines += ['Automated checks: ' + str(len(stage['review']['checks']) - failed) + ' passed, '
+                  + str(failed) + ' failed.', '', '<details>', '<summary>All failed checks (including downstream consequences)</summary>', '']
         for check in stage['review']['checks']:
             name = str(check.get('path') or 'run') + ': ' + check['check']
             test = ET.SubElement(suite, 'testcase', classname=stage['scenario'], name=name)
             if not check['passed']:
                 ET.SubElement(test, 'failure', message=name)
                 lines.append('- FAIL: ' + name)
+        lines += ['', '</details>', '']
     if report.get('errorType'):
         test = ET.SubElement(suite, 'testcase', name='runner completed and restored runtime')
         ET.SubElement(test, 'error', message=report['errorType'])
-        lines += ['', 'Runner error: ' + report['errorType'] + ': ' + report.get('error', '')]
+        lines += ['', 'Runner / environment / restoration error (separate from model quality): '
+                  + report['errorType'] + ': ' + report.get('error', '')]
     suite.set('tests', str(len(suite)))
     suite.set('failures', str(sum(t.find('failure') is not None for t in suite)))
     suite.set('errors', str(sum(t.find('error') is not None for t in suite)))

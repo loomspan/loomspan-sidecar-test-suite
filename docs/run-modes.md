@@ -58,6 +58,53 @@ Failed/incomplete captures produce a nonzero exit. A passing live run is labeled
 `AUTOMATED_CHECKS_PASS`, with semantic review pending. Completion alone is not
 business correctness or model reliability; repeated evaluations are separate runs.
 
+## Diagnostic summary
+
+The live/evaluate/capture summary separates execution from business correctness.
+Each scenario and integration has a diagnostic category, the public execution
+status, a business-check status, the next investigation, and links to observed
+provider responses or Framework exceptions. The original failed assertions remain
+in an expandable list and JUnit; diagnostic classification never changes pass/fail.
+
+| Category | Meaning |
+| --- | --- |
+| Suspected Framework defect | An unexpected exception originates in Framework code; reproduce and investigate before declaring a defect. |
+| Provider error / response protocol | HTTP failure, error inside HTTP 200, missing completion envelope, or provider SDK error. |
+| Provider request timeout / connection | Provider attempt timed out or transport failed; the network, proxy, provider and configured limit need investigation. |
+| Execution deadline / budget | A mission/polling deadline or usage budget was reached. |
+| Model output rejected; correction exhausted | Framework rejected the model's action/output and could not obtain a valid replacement. This is different from an internal crash. |
+| Completed; business checks failed | Execution completed, but evidence transfer, planning, fidelity, citations or other business checks failed. Inspect outputs, prompts, sources and application publication; this alone does not prove limited model intelligence. |
+| Completed; automated checks passed | The recorded automated checks passed; business judgment still needs semantic review. |
+| Unclassified failure / evidence gap | Available evidence cannot support reliable attribution. |
+
+Recovery counters distinguish actual recorded provider retries from model
+correction requests, rejected step actions, truncated responses and invalid JSON.
+A provider error envelope is not counted as malformed model JSON. Failed provider
+calls or rejected actions followed by a response or validated action are reported
+as recovered, even if a later tool execution fails; attempts exhausted
+does not necessarily mean any retry was permitted. Concurrent parent propagation
+of the same failure ID is not counted as a separate defect. Multiple causes remain
+visible rather than being hidden by the primary investigation category.
+
+Business quality is `NOT_ASSESSED` when execution or required diagnostic evidence
+is incomplete; cascaded failed assertions are retained. Service checks blocked by
+the invalid baseline are explicitly `NOT RUN`. Runner/environment/restoration
+errors appear separately. Categories are conservative diagnostic suggestions,
+not automatic bug findings or semantic model ratings. Missing/corrupt traces or
+checksum mismatches cannot produce a clean diagnostic result.
+
+Regenerate a historical live suite report offline into a **new** directory:
+
+```powershell
+.venv/Scripts/python.exe scripts/report_run.py evidence/evaluate-suite-RUN/report.json --output evidence/diagnostic-view-RUN
+```
+
+This command makes no provider calls, writes a new summary/JSON/JUnit view, and
+preserves the original report and captures. Output cannot be inside the original
+suite or capture directories and cannot overwrite an existing output directory.
+The new JSON binds its source report by checksum. Recorded runtime restoration is
+historical; this command does not inspect or change the current runtime.
+
 ## Replacing business fixtures
 
 Capture mode writes `semantic-review-template.json` next to `report.json` after
