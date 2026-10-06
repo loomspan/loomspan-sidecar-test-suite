@@ -1,5 +1,7 @@
 # Clean Windows setup validation
 
+> Historical proposal: the user selected a separate Docker Compose project instead. This VM plan is not the current execution target. See [current status](implementation-status.md).
+
 **Superseded historical plan:** the user selected Docker Compose only and a
 separate project on this host, installed as an on-prem operator would use it.
 Follow [the verified runtime procedure](on-prem-runtime.md) and

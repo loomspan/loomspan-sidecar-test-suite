@@ -6,10 +6,12 @@ Current artifacts are the explicitly pinned local Framework beta.8 snapshot and
 Sidecar beta.2 host. After installation verification, new Framework/Sidecar releases
 will provide published assets; that publication and migration have not occurred.
 
-The [isolated installation check](../evidence/clean-compose-20261002/summary.md)
-passes 311 checks, 56 assertions and 96 focused tests. Python initializes its
-empty database schema before health becomes ready. Both host JARs retain their
-approved identities; replay and acceptance criteria are unchanged.
+The historical [isolated installation check](../evidence/clean-compose-20261002/summary.md)
+passed 311 checks, 56 assertions and 96 focused tests for its recorded artifacts.
+Python initializes its empty database schema before health becomes ready. The normal
+skill contracts have since changed; that result does not establish current replay
+or installation acceptance. See [current status](implementation-status.md) before
+selecting a distribution. Rebuild and verify supplied assets for the desired baseline.
 
 ## Prerequisites and supplied files
 

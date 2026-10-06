@@ -83,4 +83,5 @@ def test_shared_decision_schema_rejects_original_java_quote_id(diagnostic, skill
     assert {'standard', 'loaner', 'replacement', 'defer', 'undecided'} <= set(allowed)
     # Existing quote and authoritative-context/unit contracts stay present.
     assert config['output_schema']['properties']['quotes']['items']['additionalProperties'] is False
-    assert 'integer USD cents' in config['prompt'] and 'authoritative assetContext' in config['prompt']
+    assert 'integer USD cents' in config['prompt']
+    assert config['input_schema']['properties']['context']['additionalProperties'] is True

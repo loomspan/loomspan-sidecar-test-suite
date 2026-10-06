@@ -67,10 +67,9 @@ def test_correction_prompt_recovers_exact_child_from_full_canonical_input():
     from author_workflow import DECISION_PROMPTS, COMMON
     prompt=yaml.safe_load((ROOT/'config/skills/compareOptions.yaml').read_text())['prompt']
     assert ' '.join(prompt.split())==' '.join((DECISION_PROMPTS['compareOptions']+COMMON).split())
-    for marker in ['exact decoded-object copy','including chronology, hypotheses',
+    for marker in ['exact decoded-object copy', 'canonical mission input context',
                    'questions and citations arrays in their original order',
-                   'recover the full equipmentAssessment from canonical mission input context',
-                   'not from the truncated candidate and not from a new assessment']:
+                   'This requirement applies on correction too']:
         assert marker in ' '.join(prompt.split())
 
 

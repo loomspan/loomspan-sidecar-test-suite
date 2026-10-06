@@ -139,7 +139,7 @@ async def model(path:str,request:Request):
     if case.get('mode')=='live' or (case.get('mode')=='controlled-live' and step.get('live')):
         key=os.getenv('OPENROUTER_API_KEY')
         if not key: raise HTTPException(503,'provider credential unavailable')
-        client=httpx.AsyncClient(timeout=240)
+        client=httpx.AsyncClient(timeout=float(os.getenv('MODEL_UPSTREAM_TIMEOUT_SECONDS', '510')))
         try:
             upstream=client.build_request('POST','https://openrouter.ai/api/v1/chat/completions',json=body,headers={'Authorization':'Bearer '+key})
             response=await client.send(upstream,stream=True)

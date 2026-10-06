@@ -7,6 +7,8 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from review_forwarding import resolution_forwarding
+from review_output_bindings import output_assemblies
 
 
 def system(request):
@@ -116,7 +118,20 @@ def inspect(directory, paths=('java', 'sidecar'), expected_profile=None):
                     if item['skillName'] in ['compareOptions','planResolution']:
                         finals[item['skillName']]=json.loads(item['result'])
             except (KeyError,TypeError,ValueError): check('parse final synthesis evidence',False,path)
-        check('both native final synthesis stages reached',set(finals)=={'compareOptions','planResolution'},path)
+        forwarded = resolution_forwarding(directory, path, case)
+        assembled = output_assemblies(directory, path, case)
+        if forwarded is not None:
+            check('declared resolution forwarding replaces its final synthesis', forwarded['valid'], path)
+            if forwarded['valid']:
+                finals['compareOptions'] = json.loads(forwarded['result'])
+            if assembled is not None:
+                if assembled['valid']:
+                    finals['planResolution'] = assembled['resolveEquipment']['result']
+                check('declared output assemblies preserve sources and replace root synthesis', assembled['valid'], path)
+            else:
+                check('root synthesis receives forwarded resolution result', 'planResolution' in finals, path)
+        else:
+            check('both native final synthesis stages reached',set(finals)=={'compareOptions','planResolution'},path)
         terminal=read(path+'-assessment.json',{})
         check('completed immutable application assessment',terminal.get('status')=='COMPLETED' and
               terminal.get('assessmentVersion') and selected[0].get('status')=='COMPLETED',path)

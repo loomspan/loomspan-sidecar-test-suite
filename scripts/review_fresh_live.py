@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 from inspect_capture import inspect, mission, system
 from review_correction_capture import review as inventory
+from review_forwarding import resolution_forwarding
+from review_output_bindings import output_assemblies
 
 
 def canonical(request):
@@ -48,6 +50,15 @@ def source_ids(node):
     return found
 
 
+def citation_is_known(citation, source_identifiers, issued_quote_ids, token_pattern):
+    # Quotes have issued identifiers, not the source-pack ID grammar. Only exact
+    # identifiers from this case's independently persisted quotes are accepted.
+    if citation in issued_quote_ids:
+        return True
+    tokens = token_pattern.findall(citation)
+    return bool(tokens) and all(token in source_identifiers for token in tokens)
+
+
 def final_response_matches(envelope, expected):
     """Native final synthesis can return the result directly or an action envelope."""
     if not isinstance(envelope, dict) or not isinstance(expected, dict):
@@ -61,6 +72,16 @@ def planning_checks(plan, skill):
     tasks = plan.get('tasks', []) if isinstance(plan, dict) else []
     by_id = {t['taskId']: t for t in tasks}
     by_skill = {t['capabilityName']: t for t in tasks}
+    # Framework executes consecutive same-group tasks as one joined unit. List
+    # order supplies sequencing; dependsOn additionally declares dataflow.
+    units = {}
+    unit, previous_group = -1, None
+    for task in tasks:
+        group = task.get('parallelGroup')
+        if not group or group != previous_group:
+            unit += 1
+        units[task['capabilityName']] = unit
+        previous_group = group
     def ancestors(name):
         pending = list(by_skill.get(name, {}).get('dependsOn', []))
         seen = set()
@@ -73,7 +94,7 @@ def planning_checks(plan, skill):
         return {by_id[i]['capabilityName'] for i in seen if i in by_id}
     def parallel(names):
         group = [by_skill.get(n, {}).get('parallelGroup') for n in names]
-        return all(group) and len(set(group)) == 1 and all(
+        return all(group) and len(set(group)) == 1 and len({units.get(n) for n in names}) == 1 and all(
             not (ancestors(n) & set(names)) for n in names)
     if skill == 'resolveEquipment':
         evidence = ['serviceHistory', 'referenceEvidence', 'serviceTerms']
@@ -81,7 +102,7 @@ def planning_checks(plan, skill):
             'root plans all required business responsibilities': set(by_skill) ==
                 {'assetContext', *evidence, 'assessEquipment', 'planResolution'} and len(tasks) == 6,
             'independent evidence reads share a parallel group after asset scope': parallel(evidence) and
-                all(ancestors(n) == {'assetContext'} for n in evidence),
+                'assetContext' in units and all(units[n] > units['assetContext'] for n in evidence),
             'technical assessment depends on technical evidence without commercial reads':
                 ancestors('assessEquipment') == {'assetContext', 'serviceHistory', 'referenceEvidence'},
             'resolution waits for assessment and commercial terms':
@@ -150,6 +171,9 @@ def review(directory, before_directory, paths=('java', 'sidecar'), expected_prof
         comparisons = calls('compareOptions')
         comparison = next((v for e in reversed(comparisons)
                            if isinstance(v := decoded_response(e), dict)), None)
+        assembled = output_assemblies(directory, path, case)
+        if assembled is not None:
+            comparison = assembled['compareOptions']['result'] if assembled['valid'] else None
         for skill in ['resolveEquipment', 'planResolution']:
             plans = [v for e in calls(skill) if isinstance(v := decoded_response(e), dict) and 'tasks' in v]
             for name, passed in planning_checks(plans[-1] if plans else {}, skill).items():
@@ -157,10 +181,12 @@ def review(directory, before_directory, paths=('java', 'sidecar'), expected_prof
         check(path, 'all four model responsibilities use live responses', all(calls(s) for s in
               ['resolveEquipment', 'assessEquipment', 'planResolution', 'compareOptions']) and
               all(e.get('provenance') == 'live OpenRouter' for e in responses.values()))
+        forwarded = resolution_forwarding(directory, path, case)
         check(path, 'both parents genuinely return unchanged actual comparison', comparison and
-              all(any('All required plan tasks are already COMPLETE.' in system(e['request']) and
+              (forwarded is None or forwarded['valid'] and json.loads(forwarded['result']) == comparison) and
+              (assembled['valid'] if assembled is not None else all(any('All required plan tasks are already COMPLETE.' in system(e['request']) and
                       final_response_matches(decoded_response(e), comparison) for e in calls(skill))
-                  for skill in ['planResolution', 'resolveEquipment']) and value == comparison)
+                  for skill in (['resolveEquipment'] if forwarded is not None else ['planResolution', 'resolveEquipment']))) and value == comparison)
         for kind in ['assetContext', 'serviceHistory', 'referenceEvidence']:
             check(path, 'complete ' + kind + ' reaches actual assessment input',
                   kind in returned and calls('assessEquipment') and all(
@@ -181,11 +207,11 @@ def review(directory, before_directory, paths=('java', 'sidecar'), expected_prof
         citations = value.get('citations', [])
         child_citations = assessment.get('citations', []) if assessment else []
         citation_tokens = re.compile(r'(?:MAN-\d+\.\d+|SB-\d+|[WS]-\d+|WO-\d+|NOTE-\d+|MAINT-\d+|INCIDENT-\d+|ASSET-\d+|AUTH-NB|SITE-WEST|CONTACT-[A-Z]+|WC-\d+|SA-NB-\d+|RATE-\d+|PARTS-\d+|SLOT-(?:EXP|STD)-\d+|LOAN-\d+|REPLACE-\d+|RESOURCES-\d+|CONTINUITY-\d+|FINDINGS-\d+)')
-        references = [token for citation in citations + child_citations for token in citation_tokens.findall(citation)]
+        issued_quote_ids = {row['id'] for row in read(storage + '-business-records.json')['quotes']
+                            if row['id'].startswith(case + '-')}
         check(path, 'cited source identifiers exist in actual returned evidence',
-              citations and child_citations and references and
-              all(citation_tokens.findall(c) for c in citations + child_citations) and
-              all(token in ids for token in references))
+              citations and child_citations and all(citation_is_known(c, ids, issued_quote_ids, citation_tokens)
+                                                    for c in citations + child_citations))
         check(path, 'commercial citation coverage independently present', all(
               any(clause in citation_tokens.findall(c) for c in citations)
               for clause in ['W-2', 'W-5', 'S-3', 'S-4', 'S-5']))

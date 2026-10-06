@@ -1,5 +1,12 @@
 # Model run modes
 
+Start at [README](../README.md). Use `scripts/run_suite.py` as the supported
+evaluation entry point on the [post-PR-20 baseline](post-pr20-baseline.md). Other
+capture/review scripts below are implementation or maintenance helpers, not alternate
+comparison workflows. Historical mock replay remains incompatible; replay migration
+and full mock acceptance are separate future work. Commands below describe capabilities,
+not authorization to execute paid runs or refresh fixtures during cleanup.
+
 Run from the initialized workspace using `.venv/Scripts/python.exe` on Windows.
 The suite uses the configured Compose project and preserves databases. Run one
 mode at a time; `run-suite.lock` prevents overlapping new runner operations.
@@ -33,6 +40,14 @@ No model catalogue compatibility is assumed. An unsupported profile should fail.
 The evaluation mode submits executions and collects model traces only for the
 chosen integration. Shared runtime readiness/preservation still inspects the
 installed stack; this is not a standalone installation of one integration.
+
+## Current compatibility boundary
+
+The normal contracts were strengthened on 2026-10-04. Historical business and fault
+replay payloads are incompatible with parts of this baseline. Until a suitable new
+capture and explicit replay migration pass full acceptance, mock mode is not an
+accepted current baseline. Preserve historical fixtures and their source evidence.
+See [current results](implementation-status.md).
 
 ## Coverage and results
 
@@ -133,7 +148,9 @@ change any deliberately authored fault script or fabricate a model answer.
 Refresh affects normal baseline/priority business responses, including those used
 to prepare service, isolation and nested authorization cases. Hand-authored nested
 authorization actions and the original, provenance-bound full-correction bundle
-remain unchanged. Mock runs therefore deliberately contain mixed model provenance.
+remain unchanged by that command. Contract changes require separate compatibility
+review and migration of these fixtures and any retained-evidence audits before full
+acceptance can pass. Mock runs deliberately contain mixed model provenance.
 
 The activation record retains the previous fixture path and the successful
 acceptance checksum. To inspect an old version without activation, set

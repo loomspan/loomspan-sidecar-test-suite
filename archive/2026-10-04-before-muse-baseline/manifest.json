@@ -1,0 +1,30 @@
+{
+  "archive": "previous-documentation-and-experiments.zip",
+  "sha256": "13f696a3f4fd07753d0edf2281d3e60da274db533f6407da62a178c33764bf05",
+  "files": {
+    "README.md": "0122e882f44e5a8d072521224555fdcd9f82205d4692f01babbd303ec8ae0b71",
+    "evidence/README.md": "2061f209e6496803625565e08c5d8c9df25a21ad821613f71fd75362715a7f10",
+    "docs/clean-compose-setup.md": "d53c2a6ee635370a5ee6d216beb20fdc744756657a43f6392ac42517f9527c90",
+    "docs/clean-windows-setup.md": "6e1e9aabf2f0723f495f501f8ec417e744167c1e3ed451b7c96c9b56c346a655",
+    "docs/correction-context-finding.md": "88b8cc28b7f3fc03dedc26a63f08e5c28bb117a0bd21132f2bd8a8bdbec54c97",
+    "docs/equipment-service-design-draft.md": "9aa09fdf5558ece8a3db331cef8e36579c5b8a408af8ae456cca8ba2a4455110",
+    "docs/equipment-service-resolution.md": "00cde91619ae5565597fd81de5c554c495fbcff991f0027f96453c236d8ecc0b",
+    "docs/equipment-service-source-pack.md": "299bc6a231875d52555b2909150037a20a3dddde78cadf1b1bf6c767aef9d50d",
+    "docs/implementation-handoff.md": "931bbb96e232469b856132b816206d819d42e191bb0d24a7c749c266fb6acda5",
+    "docs/implementation-status.md": "aa4a3dec8b52173467d362f5d41c6cb831e686148c29341d1045929e6577f619",
+    "docs/input-contract-audit.md": "5a4baa8671177cf9491ea7ede0ab86dc206f83de0776b0144f6ba064e27e09f7",
+    "docs/local-run.md": "1f44abac5dd285e445e0ec0f3e112be3349a0da8770248fe5fb9d40b5c6e622f",
+    "docs/loomspan-framework-claims.md": "b5ff3a46d9a9b9e0040f3528907b66abf0e64d1e8af3f6c9eaeeb266d8c07ad0",
+    "docs/loomspan-sidecar-claims.md": "992a200aa805633020009b7b0a7377662457d0d42865cf1873000a96c9b813e8",
+    "docs/muse-json-failure-review.md": "1f107bb0b8a4fe0b36971d624bc09cd26917e8f5819560dc43dfa554f07bc8b7",
+    "docs/on-prem-runtime.md": "643c0fc46fb042b747350a9eff4b216eaf794e9a1b1eeaf9150aaed74bcdac16",
+    "docs/project-agreement.md": "2a7c538e55e23074bdedf30cca48cbdb772d007b641ce30466cde49302f86fd1",
+    "docs/run-modes.md": "158e6185e6f334f3de376df17ce340a00deac037e522d5bcb0300f197107b955",
+    "experiments/input-contracts/README.md": "19da6a86f3a537c816a414f5046f2d5dfea94873df2cd6bfb0cc26a94da76841",
+    "experiments/input-contracts/run_evaluation.py": "df26be80fa28c49d88f228c2ce96d6c83b787cfe04fcb36ac22724acfc9c688b",
+    "experiments/input-contracts/closed-sources/skills/assessEquipment.yaml": "0b6d1656f91258fd84c0a2839b34cbcf352aef3f21e158f0742e03c86ee2d6e3",
+    "experiments/input-contracts/closed-sources/skills/compareOptions.yaml": "eb75588ea5a304caaaee2541f4bde83cc92fda2b2dfc8f3d9e4d1abc36f533de",
+    "experiments/input-contracts/closed-sources/skills/planResolution.yaml": "4473de27afb4347c0c5a56e18259890f0f994886c66935e77dbe20cfbf776ad1",
+    "experiments/input-contracts/closed-sources/skills/resolveEquipment.yaml": "2af1bdcb55d93c23adc00b7737201605e5a1a5eb9ec7fa276f3278b7d18e2c5e"
+  }
+}

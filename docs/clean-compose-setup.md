@@ -1,5 +1,7 @@
 # Isolated Compose setup validation
 
+> Historical setup verification for the artifacts recorded here. This does not verify the subsequently strengthened contracts or current replay baseline. See [current status](implementation-status.md).
+
 The user selected a **separate Compose project on this host**, replacing the VM
 requirement, then clarified that installation must follow a documented on-prem
 operator workflow. Docker Compose is the only environment manager. The selected

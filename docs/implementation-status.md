@@ -1,1125 +1,316 @@
-# Implementation and observed status — 2026-10-02
-
-## Diagnostic summary classification — 2026-10-03
-
-Live/evaluate/capture summaries now separate observed execution failures from
-provider errors/protocol failures, provider timeouts/transport, mission deadlines
-or budgets, exhausted model corrections, and completed workflows with failed
-business checks. Framework defect candidates require unexpected exceptions with
-a Framework-origin stack, rather than merely an exception propagated by Framework.
-Recovery counters, retry decisions, evidence links and next-investigation guidance
-appear before the retained failed-check list. Incomplete or corrupt diagnostic
-evidence leaves answer quality inconclusive. Original acceptance status and JUnit
-failures remain unchanged; semantic approval is still separate.
-
-`scripts/report_run.py` produces a new offline diagnostic view of retained suites
-without changing originals or contacting a provider. The classifier has been
-checked against eight scenario captures: Qwen's rate limits, Nemotron's missing
-completion envelope and provider timeout, GPT-OSS before the null-handling fix,
-and GPT-OSS after it. Expected classifications matched and original report/capture
-bytes were unchanged. See [verification](../evidence/diagnostic-reports-final-20261003/verification.json)
-and the [latest GPT-OSS diagnostic view](../evidence/diagnostic-reports-final-20261003/gpt-oss-after-fix/summary.md).
-
-[Focused verification](../evidence/diagnostic-report-tests-final-20261003.xml)
-passes 60 tests covering diagnostic attribution, chunked traces, recovery,
-missing/tampered evidence, paired-path isolation, report preservation, existing
-run modes and capture/business reviewers. No new live run or consolidated runtime
-acceptance was performed for this reporting change. Diagnostics are investigation
-guidance, not an automated verdict on model intelligence or confirmed bug ownership.
-
-## GPT-OSS Framework diagnostic rerun — 2026-10-03
-
-After Framework PR 17 and local Maven installation, both reference host packages
-were rebuilt offline and deployed with the exact installed Framework snapshot
-`22e1c1a305480c23c1ab0f3f7c2aed0b373a3a0c61abdc3da1543bb16f910a87`
-(Framework checkout `b32c5d5`). Prior packages, traces, runtime configuration and
-business records were preserved before replacement. Live evaluation targeted Java
-only, with `openai/gpt-oss-120b` and medium reasoning.
-
-The [evaluation](../evidence/evaluate-suite-20261003-152818-9597f9/summary.md)
-completed baseline and priority, with successful Framework terminal traces and no
-recorded Framework error/step-failure/tool-failure events. The scenarios made 18
-and 19 provider calls respectively, without provider HTTP or transport failures.
-Each recovered from one truncated JSON response. Business validation still failed
-13 baseline checks and 18 priority checks involving evidence transfer, planning,
-preservation and citations. Service approval was not exercised because baseline
-validation failed; no fixture refresh or acceptance approval follows.
-
-No null-bearing tool arguments occurred in either live scenario, so this rerun
-does not reproduce the exact PR 17 trigger. The existing Maven report separately
-shows the new null-handling regressions passing; those tests were observed, not
-rerun here. No new Framework defect was identified in this pair.
-
-[Diagnostic findings](../evidence/framework-null-followup-20261003/findings.json)
-retain build identity, trace outcomes, failed checks and preservation verification.
-All prior Java/Python business rows remain, with two new Java assessments, four
-quotes and no service requests. Normal services and disabled provider access were
-restored. This diagnostic pair is not a consolidated offline acceptance rerun or
-a full-delivery declaration.
-
-## Four model run modes — implementation and validation 2026-10-03
-
-`scripts/run_suite.py` provides mock, paired live, single-integration evaluation,
-and paired capture modes. Model/reasoning overrides use temporary Compose and skill
-configuration; normal authored files remain unchanged. Java is the evaluation
-default. Live checks compare actual outbound requests against the selected model,
-retain failed captures, and restore provider-disabled normal services.
-
-Live modes cover baseline, changed priority, and direct service creation/recovery
-using the real live baseline. Gated isolation, static malformed-output recovery,
-and scripted nested authorization remain in the full mock suite. This is an
-explicit coverage boundary, not a claim of live conversion of every scripted case.
-
-`scripts/refresh_replay.py` binds semantic review to captures, recomputes mechanical
-checks, derives versioned business fixtures, validates the candidate with full mock
-acceptance, and activates it only after success. Earlier natural correction attempts
-may be omitted from normal replay only with explicit Framework correction feedback;
-their IDs and original source responses remain preserved. Static fault bundles and
-hand-authored authorization stages remain unchanged. No new fixture was activated.
-
-Observed validation:
-
-- [Final full mock acceptance](../evidence/acceptance-offline-20261003-102249-5763db/summary.md)
-  passes **311 scenario checks, 56 workflow assertions and 110 focused tests**,
-  with zero paid calls. All six scenario groups pass; runtime restoration,
-  provider-disabled state, original evidence integrity and record preservation
-  are verified. The 14 new focused tests cover model/profile selection, single-path
-  routing, restoration, correction normalization, immutable source selection and
-  failed/successful activation boundaries.
-
-- [Paired capture report](../evidence/capture-suite-20261003-100115-0216dc/summary.md):
-  the baseline passes 128 mechanical checks. Sidecar required one natural JSON
-  correction and Java two. The changed-priority pair fails: Sidecar exhausts two
-  valid-step-action attempts at root step 6, and Java completes but fails the
-  citation-source validation check. This is retained model-evaluation evidence,
-  not a successful live acceptance or permission to relax expectations.
-- [Separate live-source service validation](../evidence/service-live-validation-20261003-final.json)
-  passes 61 checks, including zero additional model calls, exact approval/receipt,
-  direct denial, response loss, idempotency and expiry recovery. This phase was
-  verified separately after adding it to the runner. The original service capture
-  counts referenced baseline responses in its older `paidCalls` field; the supplemental
-  report explains this, and new captures distinguish referenced responses from new calls.
-- The retained Python container was refreshed after preserving its evidence because
-  its startup code differed from the already-fixed repository source. Both mock
-  baseline/priority paths passed. An early offline attempt subsequently failed
-  during trace download with `RemoteProtocolError`; its evidence is retained at
-  `evidence/acceptance-offline-20261003-095559-57c609`. A separate complete correction
-  capture succeeded at `evidence/full-correction-offline-20261003-100003`.
-
-See [run commands and fixture procedure](run-modes.md). Existing accepted fixtures,
-historical source captures, and prior databases are preserved. Full delivery remains
-undeclared; live failures and end-to-end activation of a newly reviewed model fixture
-remain distinct from runner/unit verification.
-
-## On-prem Compose installation — verified with explicit qualifications
-
-The user replaced VM provisioning with a separate Compose project on this host,
-installed as an on-prem operator would use it. Project `equipment-onprem` at
-`C:\opendev\clean-validation\20261002\equipment` uses fresh credentials, databases,
-network/volume and offset ports. A checksummed distribution supplies exact approved
-Java/Sidecar JARs, source/configuration and an installer requiring no neighboring
-checkouts, local Java or Maven. See the [operator runbook](on-prem-runtime.md).
-
-The first acceptance attempt exposed a real bootstrap defect: Python returned
-healthy before its SQLite database existed. Application lifespan now initializes
-the schema, fails startup on unusable storage and preserves existing rows. The
-fix was deployed only to the new project; no acceptance assertion was relaxed.
-An overlapping manual PKCE helper attempt also failed; sequential login succeeded
-and the failure remains retained. The corrected project began acceptance with
-both schemas present and zero business rows.
-
-[Fresh acceptance](../evidence/acceptance-offline-20261002-214147-5a4252/summary.md)
-passes **311 checks, 56 workflow assertions and 96 focused tests**, without
-failures/skips or paid calls. Both seeded-user PKCE logins succeeded. The live
-audit separately revalidated 256 retained checks/16 retained assertions; imported
-evidence remains explicitly classified as an input. Normal configuration was
-restored after nested authorization. All original container IDs, package hashes,
-durable rows and 134 protected files remain unchanged. The retained Python image
-still has its original code; the startup fix is active only in the new project.
-
-[Setup evidence](../evidence/clean-compose-20261002/summary.md) records prerequisites,
-commands, failure/fix, exact distribution identities and 11 exported fresh-result
-directories. This verifies the supplied-artifact runtime installation on a host
-with existing Windows/Docker/toolchain/cache prerequisites. It does not verify a
-virgin Windows installation, a source rebuild or published assets. No VM/cloud
-resources were created. The user will release Framework/Sidecar next, after which
-published assets can be selected and revalidated with explicit provenance.
-Java's stronger priority response remains inconclusive; first delivery remains
-undeclared. Broader load/publication/restart/shutdown/CI remain outside scope.
-The [earlier VM/input preparation](../evidence/clean-setup-preparation-20261002/summary.md)
-is historical; no VM action remains required by the user's current decision.
-
-## Current post-live consolidated offline acceptance — verified
-
-The [new consolidated report](../evidence/acceptance-offline-20261002-204252-34a71c/summary.md)
-passes all six paired groups on the committed business configuration: **311
-independent scenario checks, 56 workflow assertions and 86 focused offline tests**,
-with no failures, errors or skips. Baseline/priority each contribute 39 checks,
-genuine correction replay 42, direct service creation/recovery 59, gated isolation
-100 and nested authorization 32. No application/configuration regression was
-observed and no approved replay fixture or approval was changed.
-
-The focused suite now includes all five fresh-live reviewer tests and four audit
-binding/disposition tests, alongside the existing generation and regression tests.
-The [read-only live audit](../evidence/acceptance-offline-20261002-204252-34a71c/fresh-live-audit.json)
-revalidates the original review bundle, all seven phase captures and preservation
-archives, semantic source bindings, matching package/configuration identities,
-256 process checks and 16 retained workflow assertions. These live counts are
-separate from the new offline counts. No new provider execution, semantic approval,
-curation or replay approval occurred. The audit now recognizes observed genuine
-native parent completion; controlled correction replay's parent envelopes still
-explicitly copy actual completed child results.
-
-Zero paid calls. Normal configuration is restored and all five services are ready
-with provider access disabled and packages unchanged. Integrity verifies 134
-protected original files and 139 suite/configuration/review files unchanged,
-preserves all prior durable rows and records exactly two new expected Luis
-`PENDING_DISPATCH` requests per application. Runtime journals and actual traces
-were archived before both authorization configuration changes. Earlier failed
-attempts and all original captures retain their dispositions.
-
-First delivery remains undeclared. Sidecar explicitly escalates for continuity
-priority; Java retains a defensible parallel pre-expiry loaner decision but stronger
-priority responsiveness remains inconclusive. Clean-workspace reproducibility is
-unverified. The concrete next step is the
-[separate Windows VM setup validation](local-run.md#next-validation-clean-setup-in-a-separate-environment-not-yet-run),
-using fresh credentials/databases, pinned build inputs and a checksummed retained
-evidence bundle with provider access disabled. Exact package identity and evidence
-prerequisites must be verified rather than bypassed. This workspace was not recreated
-or discarded. Broader load, publication, restart, shutdown and CI remain outside
-this phase. Older sections below preserve their original checkpoint scope.
-
-## Fresh complete live workflows — verified with a priority-response qualification
-
-The [fresh live review](../evidence/review-fresh-live-20261002/summary.md) covers
-baseline and continuity-priority workflows through both applications, with real
-Muse/medium at every model stage. Final matching captures `201004` and `201657`
-pass 256 process checks, 16 workflow assertions and six focused reviewer/generation
-tests. Actual dependency graphs, full source evidence, exact original child results,
-authoritative quotes, native parent preservation, citations and durable records
-pass review. Both parents genuinely invoke Muse and retain the actual comparison;
-this supplies fresh completion evidence beyond the controlled replay's explicit
-copying envelopes.
-
-Semantic review finds equivalent defensible expedited-plus-loaner-decision outcomes
-and preserved technical/commercial constraints. Sidecar explicitly increases urgency
-for continuity priority. Java retains a parallel pre-expiry loaner decision but does
-not clearly demonstrate stronger escalation than baseline, so priority-sensitive
-ranking on both paths remains unverified. Selection need not change when the
-rationale remains defensible. Do not collapse this qualification into a blanket pass.
-
-Seven paired attempts made 244 real calls (provider-reported cost 0.394641186);
-13 of 14 executions completed. Earlier completed runs exposed a commercial dependency,
-an omitted source passage, a paraphrased child sentence and an added empty contact
-field. A Sidecar action/schema correction exhausted its limit and published no
-assessment. All originals and rejected findings remain in the ledger. Workflow
-instructions were clarified for technical dependencies, immutable complete source
-copying and `toolArguments.context` placement. Acceptance was not weakened to
-admit those defects. Native direct-object final responses and FINAL_RESPONSE
-envelopes are both recognized, with exact business-object equality required.
-
-All five services are ready, normal configuration and provider-disabled access
-restored, packages unchanged. Every prior durable row, all phase capture hashes and
-134 protected historical hashes are preserved. This phase adds seven Java and six
-Python assessments, fourteen quotes per application and no service requests.
-No new replay fixture/approval was created. The latest consolidated offline result
-remains 311/56/76 from before these prompt clarifications; no new consolidated run
-is claimed. First delivery, clean-workspace setup and broad model reliability remain
-undeclared. Broader load/publication/restart/shutdown/CI remains outside this phase.
-
-## Genuine malformed-output correction and approved fault replay — verified
-
-The [new consolidated run](../evidence/acceptance-offline-20261002-172357-b0ee31/summary.md)
-passes all six groups with genuine correction replay included: 311 independent
-checks, 56 workflow assertions and 76 focused tests, no failures or skips and
-zero paid calls in that rerun. Normal configuration is restored, all services
-ready, provider access disabled and package bytes unchanged. All 134 protected
-source-evidence hashes and 92 executing source/configuration/fixture hashes match.
-Prior durable records are preserved, with exactly the expected two new Luis
-pending-dispatch receipts per application. The audit now marks full-workflow
-genuine correction provenance VERIFIED; first delivery remains undeclared under
-the other historical-live and retained-workspace setup qualifications.
-
-The [new controlled live pair](../evidence/review-full-correction-live-20261002-171741/summary.md)
-passes 40 mechanical checks and independent semantic review. Each application
-uses one real Muse/medium correction to the extra-brace comparison fault, with
-the complete malformed candidate in its actual request. Java preserves every
-decoded field exactly; Sidecar changes only equivalent wording in rationale and
-one loaner alternative. Both keep the exact complete original child assessment,
-authoritative quotes, selected decision and full comparison citations in original
-order. Actual parents and persisted assessments preserve the genuine correction,
-and no service request is created. Provider-reported total cost is 0.0040975 for
-the two calls; provider access is disabled afterward.
-
-Citation review now distinguishes coverage from ordering. Missing, additional or
-duplicated references still fail; reordering alone is not evidence loss. Both
-new responses pass even exact ordering. Historical source captures and rejection
-records remain untouched. The acceptance policy change is explicit and does not
-retroactively approve old captures.
-
-`fixtures/replay/full-correction-reviewed-v1.json` preserves the genuine corrected
-envelopes, normalizing case IDs only. Its [offline replay review](../evidence/review-full-correction-offline-20261002-172055/review.json)
-passes 42 checks and eight workflow assertions. The separate approval record
-binds the fixture, genuine source/reviews, offline capture and JUnit by hashes.
-Curation tests reject altered captured correction content. Consolidated acceptance
-now fails closed unless this approval verifies, and its recovery group uses genuine
-corrected responses. Parent envelopes explicitly echo actual child results;
-new parent-model reasoning and broad model reliability are not claimed.
-
-## Complete correction context — verified offline
-
-The [Consolidated offline process verification](../evidence/acceptance-offline-20261002-153543-a71ccc/summary.md)
-passes all six paired scenario groups: 310 independent checks, 56 workflow
-assertions and 73 focused offline tests, with no failures or skips. Zero paid
-calls. Normal configuration is restored, all services ready and provider access
-disabled. Original evidence and prior durable records remain intact, with the
-expected two new Luis pending-dispatch receipts per application. Complete first
-delivery remains undeclared because genuine corrected-output provenance and
-the other existing audit qualifications remain separate from this runtime fix.
-
-Both hosts are rebuilt against the user-installed Framework at
-`900cc86bc2ba619d38647688008b138a07108af6`, SHA256
-`57824a5ffa711b5eef0a5d35b4af95820efdc2a1741bb62354ea33e8286610ef`.
-Installed correction classes match current compilation, and both host packages
-embed exactly those bytes. Previous runtime evidence and host packages are
-archived before replacement. Maven packaging is offline with tests skipped;
-runtime verification is independently recorded.
-
-[Paired correction-context review](../evidence/review-complete-correction-context-20261002/summary.md)
-passes complete candidate preservation for both correction types on both real
-integrations. Actual schema corrective requests contain the exact full 14274 and
-15409 code-point malformed comparison responses; actual step-action requests
-contain the exact full 15903 and 15921 code-point rejected tool responses. The
-original malformed tails remain intact, with no candidate truncation notice.
-Full business recovery and isolated tool rejection/recovery pass independent
-reviews, actual trace checks and durable-record checks. The step tool executes
-exactly once after valid correction. Thirteen focused context/recovery checks pass.
-
-Provider access stays disabled and no paid calls occur. Normal hosts are restored
-after exporting the isolated diagnostic runtime. These corrections are explicitly
-scripted offline; prior rejected genuine model responses keep their original
-disposition. The candidate-truncation defect is resolved in these tested paths,
-but improved real-model citation fidelity has not been measured. No approved
-genuine full-correction fixture or complete first-delivery declaration follows.
-
-## Scoped full-workflow live correction — fidelity gap remains
-
-The [subsequent full offline rerun](../evidence/acceptance-offline-20261002-130917-a9bcef/summary.md)
-passes all six paired scenario groups: 310 independent checks, 56 workflow
-assertions and 69 focused tests. It makes zero paid calls, restores normal
-configuration, preserves original evidence and prior durable records, and leaves
-provider access disabled. Its recovery still uses explicitly original valid
-reviewed comparison content. This regression success does not approve either
-rejected genuine correction pair.
-
-The user authorized two initial Muse/medium correction calls, then explicitly two
-revised calls after their rejection. Every other stage remained strict replay;
-both parent completion envelopes copied the actual corrected child. All four
-full workflows completed through actual Framework paths, but neither pair is
-approved for fault replay. The initial pair rewrote the original child assessment
-and comparison citations. The revised application prompt preserves the complete
-child assessment exactly on both paths; Java still drops 11 of 24 comparison
-citations and Sidecar reorders all 20. Recommendation fields also change despite
-the syntax-only extra-brace fault. Exact fidelity checks remain enforced.
-
-See [revised review and artifact links](../evidence/review-full-correction-live-20261002-130627/summary.md).
-Framework `OutputSchemaCallAdvisor` truncates the malformed assistant candidate
-to 8192 Unicode code points; complete original child evidence remains in canonical
-input. No supported setting for that internal limit was located. The revised
-comparison prompt explicitly requires copying that complete original child during
-correction. Its offline rehearsal passes; 16 prompt/workflow/business checks and
-five full-correction tests pass, including rejection of both live sources by curation.
-No neighboring source or package bytes were changed.
-
-Actual journals, full traces, rejected published assessments and prior durable
-records are preserved. No new service request was made by these workflows.
-The revised pair reports total cost 0.0042234; exactly the two additional authorized
-calls were used. Provider access is disabled again and all five services are ready.
-No approved full-correction fixture exists; consolidated recovery continues using
-original valid reviewed content. First delivery remains incomplete. The next
-target is supported preservation of complete invalid-candidate correction context,
-verified offline before considering further live calls.
-
-## Consolidated offline acceptance — verified 2026-10-02
-
-[Single-command run](../evidence/acceptance-offline-20261002-123044-813154/summary.md)
-passes all six scenario groups freshly on Java and Python/Sidecar. There are
-310 independent scenario checks, 56 workflow assertions and 64 focused offline
-tests, with zero assertion failures, environment failures or skips. Zero paid calls.
-The aggregate report links each capture and independent review, preserves workflow
-and focused JUnit, and records source identity, runtime restoration, integrity and
-a separately qualified delivery-boundary audit.
-
-The paired counts are baseline 39, priority 39, recovery 41, service-request 59,
-isolation 100 and nested-authorization 32. The direct service reviewer now correlates
-every admitted Sidecar operation using public event frame IDs when sessionId is
-omitted, matching the already verified nested correlation rule. Thus the fresh
-service run has six additional Sidecar trace checks compared with the historical
-53-check report; no old capture or report was rewritten.
-
-The runner fails closed on enabled fixture provider credentials, changed source
-provenance/image files, package identities, missing scenario/path checks, empty or
-failed reviews, skipped assertions and unsuccessful normal-runtime restoration.
-Provider-disable guards also protect standalone direct and nested capture commands.
-Baseline/priority/fault, direct creation/recovery and gated isolation use normal
-configuration. Only the nested pair loads the explicit authorization overlay.
-Actual runtime traces and the fixture journal are archived before enabling it and
-again before normal hosts are recreated. No package or fixture rebuild is needed.
-
-All five services are ready afterward, normal skill locations/mounts restored,
-provider access disabled and Framework package bytes unchanged. All134 protected
-source-evidence hashes and 83 executing suite source/configuration hashes match.
-Prior quotes, assessments and requests remain intact. Exactly two new durable
-PENDING_DISPATCH requests per application are expected and observed: one direct
-and one nested Luis positive control. All scenario capture checksums match.
-
-The machine-readable audit sets firstDeliveryComplete=false. Complete workflow
-recovery is verified offline, but the corrective response is unchanged original
-valid reviewed content rather than a reviewed new model response to the injected
-full-workflow fault. Historical genuine step/schema corrections retain isolated
-diagnostic scope. Optional live mode is supported by the existing reviewed live
-source captures and was deliberately not rerun. Setup/run verification covers this
-documented retained snapshot workspace; Git alone does not supply ignored build,
-runtime and source-provenance files. No clean-workspace bootstrap was exercised.
-
-The requested consolidation is complete. Further work must respect the current
-offline restriction and these audit dispositions; do not silently fill model
-provenance gaps with paid calls, approve historical rejected corrections, or expand
-into publication/load/CI scope.
-
-The [artifact index](../evidence/review-acceptance-offline-20261002-123044-813154/artifact-index.md)
-links each scenario's journals, actual trace index and durable database records.
-Final cleanup removed 23 bytecode cache files and verified 479 finalized evidence
-files, including both runtime preservation archives. See the
-[cleanup/integrity report](../evidence/review-acceptance-offline-20261002-123044-813154/cleanup-integrity.json).
-
-## Full-workflow recovery and gated isolation — verified 2026-10-02
-
-[Recovery pair](../evidence/review-full-workflow-recovery-20261002-121334/summary.md)
-passes 41 independent evidence checks and eight assessment/planning assertions.
-One extra closing brace is appended to the approved comparison response content;
-all surrounding workflow stages and valid provider envelopes retain reviewed source
-provenance. Actual Framework traces report INVALID_JSON/RETRYING, deliver parser
-feedback to the corrective request, then report PASSED on attempt 2 and successful
-root completion. Correction reuses unchanged reviewed content offline, rather than
-claiming a new Muse answer. Exact comparison, asset/approval context, original child
-assessment, authoritative quotes and USD cents survive both native parents. One
-immutable assessment per case persists; no invalid intermediate assessment or new
-service request appears. Every replay response matches its actual trace content.
-
-[Gated isolation](../evidence/review-gated-isolation-20261002-121509/summary.md)
-passes 100 independent checks and 16 assessment/planning assertions. On each path,
-Maya's serviceHistory and referenceEvidence reads both enter before either gate
-releases. Luis's complete continuity-priority case finishes while Maya's case is
-observed RUNNING behind the closed gates. Releases precede both read returns; Maya
-then completes. Cases retain distinct inputs, complete expected evidence, quotes,
-recommendation details, durable owners and uniquely correlated actual root traces
-without the other case's data. Cross-caller polling returns 404 both ways.
-
-The initial isolation reviewer incorrectly required different selectedOption values;
-the approved source recommendations both select expedited while their rationale,
-accepted risk and next decision differ. Its false-negative report is retained; the
-corrected final report checks these distinctions plus exact source fidelity. No
-captured bytes or business expectations were rewritten to accommodate execution.
-
-Fifty focused offline tests pass, including strict corrective-stage dependencies,
-feedback matching and fail-closed provider-disable checks. Zero paid calls. The
-normal stack remains ready, provider credential disabled, snapshot/package bytes
-unchanged; no host recreation or neighboring repository modification was needed.
-All 134 protected source hashes and finalized new evidence checksums were verified.
-Journals, actual Framework traces and existing durable records remain local.
-
-This verifies the requested recovery and overlap/isolation scenarios, not new model
-judgment, universal capacity, configuration publication under load or complete
-first-delivery acceptance. Next consolidate the accepted scenario evidence and
-reproducible run instructions before making any complete-delivery claim.
-
-## Valid-approval nested authorization — verified 2026-10-02
-
-[Controlled offline pair](../evidence/review-nested-authorization-offline-20261002-115456/summary.md)
-passes 32 independent evidence checks, eight assessment/planning assertions and
-46 focused offline tests. Fresh reviewed baseline assessments provide complete
-matching approvals: the same approval is presented first under Maya, then Luis.
-Both controlled planners are accessible; only the real creation leaf is restricted.
-
-Actual Maya nested capability lists omit creation; an intentionally unavailable-child
-proposal receives real linter feedback and fails without leaf invocation or request
-writes. Sidecar access logs independently show zero creation-endpoint calls. Luis
-sees the same real restricted leaf, invokes it once and persists one matching request
-per path, preserving verified identity, authoritative quote/scope/USD cents and full
-approval. The actual leaf receipt survives both native parent completion stages.
-The extra plan/action/final responses are explicitly hand-authored authorization
-scaffolding; finals echo actual completed-task evidence, not invented business receipts.
-No paid calls or new Muse judgment; original reviewed business fixtures are unchanged.
-
-Java correlates terminal session ID directly to its actual trace. Sidecar omits that
-field, so all public execution event frame IDs correlate uniquely to the root trace.
-The initial read-only review falsely required Sidecar sessionId; the retained corrected
-report uses actual frame IDs and verifies outcomes/leaf events. No capture was rewritten.
-Partial115131 matcher and115313 missing-model envelope runs remain unapproved;
-actual requests created during115313 remain intact. The fixture now checks replay
-extension only after existing stages are consumed, forbids live stages and validates
-unique completed-task evidence before returning a model-compatible echo envelope.
-
-Runtime restored to normal configuration with no authorization test mount/override;
-all five services ready. Actual active traces/journal were archived before recreation;
-application/Framework package bytes are unchanged and provider access remains disabled.
-
-Cleanup removed30 bytecode cache files and four empty directories. All 134
-protected original hashes and finalized source/new capture checksums match.
-An initial19-test subset passed with a Windows pytest cache-write warning; final46
-checks and eight assertions disable the cache provider and pass without warnings.
-See [integrity report](../evidence/review-nested-authorization-offline-20261002-115456/cleanup-integrity.json).
-
-Next: full-mission malformed-output correction using labeled mutations of reviewed
-replay, then gated overlap/two-case isolation. First delivery remains incomplete;
-broader configuration-update/load demonstrations remain later scope.
-
-## Approval-bound creation and recovery — verified 2026-10-02
-
-[Offline paired verification](../evidence/review-service-requests-offline-20261002-114412/summary.md)
-passes all 53 independent evidence checks, eight assessment/planning assertions
-and 44 focused offline tests. Fresh reviewed baseline assessments feed the actual
-restricted createServiceRequest skill on both applications. Exactly one new durable
-PENDING_DISPATCH request per path matches Luis's verified identity, assessment
-version, exact quote, attendance, scoped repair approval and integer USD cents.
-No model call is made for any commitment operation; no paid calls in this phase.
-
-Missing explicit approval, altered cap, same-key content conflict and a new request
-at the exact11:00 expiry boundary fail without request writes. Otherwise-valid Maya
-submission receives403 at the public Framework boundary before admission on both
-paths (Java empty response body, Sidecar structured response); no denial trace is
-expected before admission. Each admitted creation/failure/retry has a correlated
-actual Framework trace. Maya receipt lookup is also denied.
-
-A deliberate local HTTP proxy observes completed creation then drops the result
-response, producing actual RemoteProtocolError. Authorized lookup and same-content
-retry at expiry return the original receipt without a second record. This verifies
-asynchronous **result-response loss**, not loss of the initial submission response.
-Existing quotes, assessments and requests remain intact. Application/Framework
-packages are unchanged; a rebuilt fixture adds authenticated per-case clock control,
-with timezone/invalid-input/isolation checks and recorded running source equality.
-Provider credential remains disabled via the offline overlay.
-
-Two partial harness runs are retained and unapproved:114112 assumed JSON on Java's
-empty403, and114221 used an image without the new clock route. The latter's one
-actual Java request is preserved. Neither substitutes for the paired passing run.
-
-Cleanup removed33 regenerated cache files and seven empty directories. All 134
-protected original hashes and finalized source/new capture checksums match. Actual
-Framework traces, fixture journals and durable requests remain intact. See the
-[cleanup report](../evidence/review-service-requests-offline-20261002-114412/cleanup-integrity.json).
-
-Next first-delivery work: controlled nested authorization with otherwise-valid Maya
-approval and a real Luis creation positive control; full-mission malformed-output
-recovery; gated overlap/two-case isolation. Broader configuration updates/load remain
-later scope. No complete first-delivery acceptance is claimed.
-
-## Reviewed deterministic assessment replay — verified 2026-10-02
-
-Versioned [business-reviewed-v1.json](../fixtures/replay/business-reviewed-v1.json)
-is approved for the baseline and continuity-priority **assessment replay scope**
-through both applications. Its [approval record](../fixtures/replay/business-reviewed-v1-approval.json)
-binds the exact fixture hash to external evidence reviews. All four workflows complete
-with provider access disabled: baseline and priority each pass 34 evidence checks
-and eight workflow assertions. Thirty-nine focused offline tests pass.
-
-The fixtures preserve unedited Muse responses, native final envelopes and complete
-asset/approval/quote context. Only execution-specific case IDs, including nested
-quote IDs, are normalized; no fault mutations or synthetic corrections are included.
-Each source's original configuration/Framework/model identity, journal/trace hashes,
-semantic review and response provenance remain explicit. Different source generations
-are not described as one live pair. Exact canonical input matching, skill/stage
-matching and plan dependencies reject altered input, replay exhaustion and unexpected
-stages without a provider fallback. Independent branch order may vary.
-
-[Baseline evidence](../evidence/review-business-reviewed-baseline-20261002-112945/summary.md)
-and [priority evidence](../evidence/review-business-reviewed-priority-20261002-113035/summary.md)
-verify unchanged actual child assessments and parent results, exact authoritative
-quotes/integer USD cents, existing records and zero service commitments. Runtime
-traces and fixture journal were preserved before fixture recreation. No paid calls
-were made; `compose.offline.yaml` is active and disables the provider credential.
-
-Cleanup removed 33 regenerated cache files and seven empty directories. All 134
-protected original hashes and all finalized new evidence checksums match; fixture
-and approval/report hashes match. Journals and actual Framework traces are retained.
-See [integrity report](../evidence/review-business-reviewed-priority-20261002-113035/cleanup-integrity.json).
-
-This completes replay curation, not first-delivery acceptance. Valid approval and
-service-request creation, full-mission injected recovery and remaining accepted
-isolation/update/load scenarios still need their scoped demonstrations. Earlier
-rejected/hand-edited captures retain their original dispositions.
-
-## Earlier verified business-fix checkpoint
-
-The latest [Java priority verification](../evidence/review-live-20261002-102148/summary.md)
-completes and passes all31 mechanical checks and four scoped assertions. Manual
-review finds correct commercial wording and exact original assessment preservation,
-including citation order. Thirty-four focused offline tests pass on the deployed
-root-copy instruction. No Framework/application package change was needed.
-
-Suitable sources for **curation**, with original manifests/configuration retained:
-
-| Scenario | Java source | Sidecar source |
-| --- | --- | --- |
-| Baseline | [093632](../evidence/review-live-20261002-093632/summary.md) | [092503](../evidence/review-live-20261002-092503/summary.md) |
-| Continuity priority | [102148](../evidence/review-live-20261002-102148/summary.md) | [095046](../evidence/review-live-20261002-095046/summary.md) |
-
-Cleanup removed 33 disposable files and seven empty cache directories. All 134
-protected original source files and the finalized live capture checksums still
-match. Source journals and actual Framework traces remain intact. See
-[cleanup/integrity report](../evidence/review-live-20261002-102148/cleanup.json).
-
-These were captured on different configuration generations; their manifests are
-mandatory provenance. Rejected intermediate outputs remain rejected. Next work is
-versioned strict offline replay curation and validation, followed by remaining
-accepted first-delivery scenarios. No shared replay approval, measured reliability,
-full-mission injected recovery or first-delivery completion is claimed.
-
-## Muse business verification and refinements — 2026-10-02
-
-The user authorized useful Muse calls without further spending confirmation.
-Fixture provider access was restored without the offline overlay. The unchanged
-installed Framework recovery and mission-prompt implementation and Muse/medium remain selected; authorization does
-not approve captures or alter business criteria.
-
-Fresh [baseline](../evidence/review-live-20261002-085034/summary.md) and
-[continuity-priority](../evidence/review-live-20261002-085100/summary.md) pairs each
-completed both paths. All 74 responses are HTTP 200 and exactly match actual
-Framework trace content. Eight capture assertions pass per pair. The outputs
-address the five earlier wording findings and urgently escalate loaner approval
-when continuity is prioritized, but both pairs remain **REJECTED_FOR_REPLAY**.
-Manual review found known bulletin eligibility labeled unknown, premium/total-cap
-ambiguity, elapsed-work/repair-cap conflation, unnecessary reapproval on coverage
-change, overbroad warranty review and unsupported standard after-hours wording.
-Initial mechanical checks missed Java baseline's dropped bulletin metadata;
-strengthened actual-child review now detects it. Original captures are unchanged.
-
-Revised prompts require forwarding complete applicability objects, evaluating the
-inclusive registered serial range separately from diagnosis, preserving known
-commercial facts in every field, avoiding premium double-counting and respecting
-routine item-level coverage within an approved scope/cap. Generator regeneration
-preserves all four model contracts. **34 focused offline tests pass**. Eight active
-actual traces were archived before YAML-only host recreation; package bytes were
-identified without creating a redundant JAR archive. All five services became ready.
-
-The controlled [offline comparison rehearsal](../evidence/review-comparison-correction-offline-20261002-090841/summary.md)
-and [real Muse correction](../evidence/review-comparison-correction-live-20261002-090917/summary.md)
-each pass **28 evidence checks**. The harness reuses complete real comparison
-content with case-ID-only normalization and deliberately removes `nextDecision`.
-Both actual Framework paths reject it and accept the missing-field correction;
-quotes/equipment assessments remain identical and no assessment/request is created.
-Real mode uses exactly one Muse/medium HTTP 200 call per path, combined reported
-cost 0.005049. The real correction retains unrelated source wording defects: it
-proves schema recovery and fidelity, not semantic repair or approved business replay.
-The rehearsal response is explicitly synthetic. No parent/final envelopes are used
-in this direct comparison diagnostic; it does not establish full-mission recovery.
-
-The subsequent [baseline](../evidence/review-live-20261002-090948/summary.md)
-and [priority](../evidence/review-live-20261002-091031/summary.md) full pairs also
-complete. All mechanical checks, including actual-child applicability and exact
-published equipment-assessment fidelity, pass; eight capture assertions pass per
-pair. Prior pricing/coverage/elapsed-work defects improve. Conservative shared
-replay review still rejects omissions/ambiguities in separate loaner after-hours
-handoff and the temporal relationship between loaner expiry and later diagnostic
-results. The final prompt requires both access arrangements in nextDecision,
-verified Priya approval when loaner is pursued, decision before expiry/attendance,
-and newly checked offers for later restoration failure. Thirty-four offline checks
-pass after that change. Current runtime packages/Framework are unchanged; active
-traces were preserved before YAML-only recreation. A preparatory priority launch
-failed PKCE callback before creating a case or calling the provider; authentication
-was retried after baseline submission, without concurrent callback-port use.
-
-The next [baseline pair](../evidence/review-live-20261002-092503/summary.md) completes
-both paths, but Java adds a disputed-coverage re-quote contradiction and malformed
-date. The [priority pair](../evidence/review-live-20261002-092554/summary.md) completes
-Sidecar and fails Java on Framework MAX_USAGE_UNITS: 206,892 exceeds 200,000. All 19
-Java provider responses are HTTP 200 and match actual traces; seven assertions pass
-and one fails on completion. Java recovers spontaneous assessment INVALID_JSON and
-an extra-brace step action: rejection 313, real correction response 348, entitlement
-start 357/completion 364. The later quota failure prevents a successful full-mission
-recovery claim and publishes no assessment. Sidecar's baseline output passes manual review and is suitable for replay curation.
-The priority output's commercial wording improves, but its unchanged-assessment
-check rejects shortening in planResolution's compareOptions assignment. The initial
-commercial review overstated full readiness; the corrected disposition is recorded
-without rewriting the source capture. Neither pair approves shared replay.
-
-Supported session quota is now 400,000 equally on both hosts (documented Framework
-property); other safety/time limits remain. Business caps remain USD cents as before.
-The prompt also forbids automatically re-quoting disputed findings within unchanged
-scope/cap and requires copying complete authoritative expiry dates. Thirty-four
-offline checks pass; active traces are preserved before recreation. Java-only
-baseline/priority follow-ups address these remaining gaps, without repeating the
-already suitable Sidecar cases. One-path review reports explicitly disclose scope
-and verify the actual root quota against the recorded baseline.
-
-The Java-only [baseline](../evidence/review-live-20261002-093632/summary.md) and
-[priority](../evidence/review-live-20261002-093706/summary.md) follow-ups both complete;
-four Java capture assertions pass per run, with four Sidecar assertions intentionally
-deselected. Actual root trace quota 400000 matches the recorded manifest; full
-assessment and quote fidelity pass. The baseline is suitable for replay curation;
-priority remains rejected for ambiguous risk wording about approval failure and
-excluded diagnosis. The latest prompt clarifies contingent loaner cost and keeps
-unknown diagnosis distinct from item-level warranty coverage, with diagnosis/travel
-included even if coverage is denied.
-
-The Sidecar priority preservation finding was localized: the root passed the full
-assessment to planResolution, which then shortened questions, uncertainty,
-hypotheses and citations before compareOptions. PlanResolution now explicitly
-requires copying every assessment field unchanged, and forbids invented task-result
-`$ref` retrieval (the Framework docs support no such task-reference mechanism).
-Thirty-four focused offline checks pass after these refinements; current Framework
-and application package bytes remain unchanged. Only the priority pair is rerun to
-verify the remaining findings; complete baseline captures remain preserved.
-
-The [priority preservation verification](../evidence/review-live-20261002-095046/summary.md)
-completes Sidecar with exact assessment preservation and suitable business wording;
-Java fails on an OpenRouter HTTP 200 error completion (choice 502, provider_unavailable)
-at assessEquipment. Partial content is not accepted. Six assertions pass and two
-fail on Java completion/final synthesis. Mechanical review now detects provider
-error completions inside HTTP 200, independently of transport status.
-
-The Java-only [retry](../evidence/review-live-20261002-100123/summary.md) completes and
-passes four scoped assertions, with correct commercial wording. Its exact-child
-check still rejects one added MAN-4.4 citation. Localization shows the change occurs
-in resolveEquipment's planResolution assignment; nested forwarding now preserves
-its received object correctly. Root instructions now explicitly copy every original
-assessment field and array in order, placing extra evidence beside it. All 34 focused
-offline checks pass; no application/Framework package change. Only Java priority
-is rerun on the new root instruction. Both current baseline candidates and complete
-Sidecar priority are retained with explicit original provenance. No shared replay
-baseline or first-delivery completion is approved yet.
-
-## Earlier deployed offline workflow verification — 2026-10-02
-
-Revised Java/Python publication guards and all three decision contracts are deployed.
-`author_workflow.py` now regenerates the same fixed contracts rather than erasing
-them; its regression passes. Java clean packaging succeeded offline on the unchanged
-installed Framework `4313a7f`, SHA-256
-`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
-Unchanged Sidecar beta.2/snapshot package bytes are verified against the recorded
-baseline; Sidecar was recreated to load revised YAML. Deployed Python/fixture source
-hashes match authored files. All five services are ready. `compose.offline.yaml`
-explicitly disables the fixture provider credential; every diagnostic case uses
-strict replay registration without live stages or provider fallback.
-
-[Predeployment preservation](../evidence/pre-business-diagnostic-20261002-074427/manifest.json)
-retains prior package, logs, identities, records, baseline and fixture journal.
-The active trace APIs returned zero items before recreation; historical actual traces
-remain in their preserved captures. Mounted configuration copies reflect authored
-files, not a claim about the old loaded generation; prior baseline hashes and old
-trace prompts identify that history. No neighboring source checkout was modified.
-
-The first [offline attempt](../evidence/review-business-workflow-offline-20261002-074647/summary.md)
-completed Sidecar but failed Java because replay incorrectly required the captured
-arrival order of independent parallel actions. Framework offered serviceHistory/
-serviceTerms before the captured referenceEvidence action; strict fixture rejection
-returned 409. This was a harness ordering defect. Registration dependencies now
-follow the captured task graph, with reversed independent action order tested offline.
-The deployed hosts were not changed for the rerun.
-
-The [corrected pair](../evidence/review-business-workflow-offline-20261002-075008/summary.md)
-completes both full workflows: Java 19 model requests/4.065 seconds; Sidecar 18
-requests/4.256 seconds. These are calls to the local scripted fixture, **not paid
-Muse calls**. Thirty focused offline pytest checks and **32 evidence checks pass**.
-Both paths reject the intentional quote-ID selectedOption, issue real schema feedback
-and accept the synthetic option-name correction. Actual trace sequences are Java
-488 rejection/512 acceptance and Sidecar 443/467. The real parent synthesis inputs
-retain the complete corrected comparison, including commercial citations, explicit
-submission before expiry, work/access uncertainty, quote equality and cent amounts.
-Every response content matches reassembled actual Framework trace content.
-
-Each corrected diagnostic persists one immutable, case-labeled assessment and exactly
-two authoritative quotes, with no invalid intermediate publication. All prior records
-remain intact, and no service-request records change. Case names explicitly identify
-diagnostic data. This is actual Framework execution using captured stages and
-hand-edited comparison/final responses, **not approved business replay or new model
-judgment**. Original full captures remain REJECTED_FOR_REPLAY; all **134 preserved
-source-evidence hashes match**. No paid calls, model substitution or capture approval.
-
-Revised deployed schema correction and evidence preservation are now verified for
-these scripted responses. Remaining gaps include real-model adherence to the wording
-fixes, full-mission recovery, comparison-output real correction, changed-priority
-responsiveness, approved replay and creation/recovery/authorization/isolation
-acceptance. First delivery remains incomplete. A later specifically scoped live phase
-must explicitly restore provider access; this phase leaves it disabled.
-
-Housekeeping: the [evidence index](../evidence/README.md) separates current offline
-checks from historical rejected full captures and the isolated correction diagnostic.
-Cleanup is now verified: disposable checker classes, temporary test databases and
-Python/pytest caches are absent. Broad automated deletion was initially blocked;
-explicit file deletions succeeded and the user completed directory cleanup.
-[Verification](../evidence/business-output-offline-20261002/cleanup.json) confirms
-all eight scratch paths are absent and all 134 preserved source-evidence hashes
-match. Captures, journals, actual traces and source work remain intact.
-
-## Offline business-output fixes — 2026-10-02
-
-No paid calls were made. Revised `compareOptions` separates arrival from completion:
-16:00 arrival plus the 2–4 hour estimate may reach 20:00, requiring dispatch/Luis
-later-access arrangements or a work limitation. The two chargeable repair hours
-remain a scope cap. The prompt requires explicit approved-request submission before
-quote expiry (S-5), keeps the separate loaner deadline, cites applicable commercial
-clauses alongside technical sources, and states diagnosis/travel remain included
-even if unresolved (S-3), with the expedited premium payable on attendance (S-4).
-Parent prompts preserve these details and unchanged comparison output.
-
-All three decision schemas and both application publication guards now require
-option names (`expedited`, `standard`, `loaner`, `replacement`, `defer`, `undecided`),
-rejecting quote IDs without silently normalizing selection. Exact authoritative
-quote guards, asset/approval authority and integer USD-cent values are preserved.
-No old database records or capture bytes were rewritten.
-
-[Versioned offline examples](../fixtures/replay/business-output-diagnostic-v1.json)
-reuse the actual comparisons from `live-20261002-000544`, with paired request IDs,
-Muse/medium identity, original content/request hashes and source-file hashes.
-Every hand-authored field change records before/after/reason. Original quotes,
-equipment assessments and case/asset identifiers remain identical. These are
-**OFFLINE_HAND_EDITED_DIAGNOSTIC**, `approved: false`; not model correction answers,
-Framework executions, complete replay scripts or acceptance evidence. Original
-full captures remain **REJECTED_FOR_REPLAY**. The isolated recovery diagnostic
-retains its distinct limited claim, including optional-context omission.
-
-[Focused evidence](../evidence/business-output-offline-20261002/summary.md):
-**27 pytest checks pass**, including six noncanonical-selection publication
-rejections, five damaged-quote publication cases, diagnostic/provenance preservation
-and existing capture-review/fixture tests. **10 Java local publication checks pass**
-against newly compiled application classes using temporary databases and a scripted
-caller: selection/altered-quote rejection plus a local positive control for each
-source example. These do not test token enforcement, HTTP boundaries or Framework
-orchestration. Offline Maven compilation on beta.8-SNAPSHOT succeeds (tests skipped;
-no Maven test-success claim). Initial two example-wording assertion failures and
-the PowerShell Maven argument-parsing failure are retained beside passing results.
-SHA-256 integrity of all **134 preserved evidence files** was checked after the work,
-including both full/controlled capture journals and actual traces plus prior failures.
-Previous compiled Java classes were archived before compilation.
-
-At that earlier offline-only checkpoint, no service restart, deployment, neighboring
-checkout change or packaged-JAR rewrite had occurred. Running hosts then used the
-pre-fix configuration/application bytes. Revised prompt
-adherence, deployed Framework schema correction, full-mission recovery,
-comparison-output controlled mutation, changed-priority responsiveness, approved
-replay and remaining business acceptance are unverified. First delivery is incomplete.
-
-**Latest Muse verification (2026-10-02):** both paths COMPLETED on the installed
-Framework recovery and mission-prompt snapshot, Muse/medium. Both actual traces SUCCEEDED; authoritative
-quotes, asset/approval context and monetary checks pass. Java exercised ordinary
-output-schema correction; neither path exercised invalid step-action correction or
-emitted malformed JSON. Semantic findings keep the complete captures unapproved
-for replay. See [full review](../evidence/review-live-20261002-000544/summary.md).
-
-## Controlled step-action failure and Muse recovery — 2026-10-02
-
-The user authorized an isolated injected fault rather than another full workflow.
-[Both-path diagnostic](../evidence/review-controlled-step-live-20261002-004937/summary.md)
-demonstrates real invalid step-action correction: the preserved extra-brace response is rejected,
-actual parser/tail feedback reaches Muse/medium, and its one live answer per path
-returns a valid assigned entitlement action. Both Framework traces and diagnostic
-executions succeed. All 25 evidence checks pass; exactly one entitlement invocation
-occurs after correction on each path, none before rejection. Independent source
-reads corroborate ordering; assessment/quote/request records remain unchanged.
-
-The original Java fault is reused on both paths with case-ID-only substitution.
-Temporary one-task plans and final completion markers are synthetic; only correction
-responses are new live output. Two calls total return HTTP 200, with reported cost
-0.0016351. Seven fixture tests and a both-host offline rehearsal passed first.
-Controlled-live mode permits one explicit matched provider stage and has no fallback.
-
-Muse reduces the optional context to `{}` in both corrected actions. The real leaf
-uses case/asset IDs and re-reads authoritative records, so these calls are valid.
-This demonstrates isolated recovery, not faithful recopying of the 15 KB context,
-original full-mission recovery, an A/B or a measured success rate. The source captures
-remain unchanged and unapproved. The new capture supports this labeled diagnostic,
-but is not an approved business replay baseline. Comparison-output mutation,
-changed-priority and remaining business acceptance remain outstanding.
-
-All 16 predeployment active Framework traces were archived, new diagnostic traces
-exported, existing capture checksums verified, and normal skill configuration
-restored. Both running hosts retain the same installed Framework bytes; all five
-services are ready. The invalid step-action recovery gap described in the earlier full-run section
-below is now filled for this isolated lookup only.
-
-## Installed recovery and mission-prompt verification — 2026-10-02
-
-Verified clean Framework source `4313a7fcdbad33ef358b6ee4d068ce610f3dee51`,
-including invalid step-action recovery and mission-objective prompting. The installed correction, step-loop and
-prompt-builder class bytes match fresh source compilation. Clean host rebuilds
-package identical installed Framework SHA-256
-`5a2657767b03ffdeb915dee30e7d8934e6d09a3ec72b8854bd65c5a0b9f38cbb`.
-Ordinary package initially reused old nested dependency bytes; prior packages are
-preserved, and clean rebuild resolved the mismatch before provider calls.
-Sidecar remains unchanged beta.2 source with the snapshot override. Running host
-hashes, source revisions/worktree state and configuration hashes are recorded.
-
-[Offline evidence](../evidence/step-correction-verification-20261002/build-baseline.json):
-148 focused Framework tests and 25 suite checks passed. Both captured extra-brace
-originals remain rejected; installed feedback retains bounded candidate head/tail,
-explicit omissions and actual parser reasons. Existing forensic and prior live
-capture checksums remain unchanged. Scripted recovery verifies Framework behavior,
-not Muse recovery. Both single-call Muse/medium
-[compatibility probes](../evidence/compatibility-20261002-000453/manifest.json) pass.
-
-Exactly one [new full workflow](../evidence/live-20261002-000544/manifest.json)
-per path was then run concurrently on separate cases. Java completed in 447.171 s
-with 18 calls; Sidecar completed in 397.659 s with 17 calls. All 35 responses are
-HTTP 200, actual Muse/medium requests are verified, and every provider content string
-matches the real Framework trace. Each path publishes one immutable assessment
-and no service commitment. Eight capture assertions and 53 mechanical checks pass;
-three reviewer regressions pass too. Initial reports with obsolete mission-prompt stage
-wording are preserved, and updated stage detection reran on identical captures.
-
-Java's valid-JSON equipment assessment omitted required hypothesis fields. Real
-output-schema feedback prompted a successful correction (trace rejection/retry
-160/161, corrected response 170, schema acceptance 176). Sidecar has no correction.
-Neither path exercises invalid step-action correction, malformed-JSON recovery, or the
-controlled mutation scenario. Improved feedback is proven offline; Muse recovery
-from the earlier trailing-brace failure remains unproven. Combined recovery and mission-prompt source
-and one pair of runs do not establish causality or reliability rates.
-
-Compared with `live-20261001-220102`, Java now reaches comparison/publication and
-both assessment inputs retain bulletin serial applicability. Sidecar now addresses
-the recoverable two-hour delay. Both preserve complete comparison through native
-synthesis, exactly two unmodified authoritative service quotes and USD-cent clarity.
-Business semantics still block replay approval: both imply expedited work fits site
-access despite potential work beyond 18:00; next-decision handoffs do not clearly
-require approved-request submission before expiry; Sidecar's commercial advice lacks
-service/warranty citations; Java has ambiguous diagnosis/travel wording and uses a
-quote ID rather than the option name as selectedOption. The current string schema
-permits that selection representation, but shared replay needs a settled convention.
-
-Both captures are complete but **REJECTED_FOR_REPLAY** as a business baseline.
-No extra paid run or prompt change was made. Changed-priority responsiveness,
-controlled malformed-output correction, approved replay, valid-approval
-creation/recovery, authorization positive control and gated isolation remain
-outstanding. First delivery remains incomplete. See the full review for precise
-field evidence, correction IDs, traces and provenance.
-
-Implementation is authorized by the user's current request. **First delivery is incomplete.** The active local test uses user-authorized Framework beta.8-SNAPSHOT in embedded Java and unchanged Sidecar beta.2 source. Workflow, permissions, provider and evidence requirements remain unchanged.
-
-## First full Muse baseline after offline fixes — 2026-10-01
-
-Follow-up [JSON failure investigation](muse-json-failure-review.md) verified the exact
-provider strings against Framework trace content and reproduced rejection using the
-packaged codec/type offline. Muse emitted extra closing braces, but Framework step-action
-recovery supplies only generic feedback without the failed candidate or parser details.
-The application also asks the model to copy large context into a deterministic lookup
-that only uses IDs. Prioritize recovery/contract improvements before attributing the
-failure to general model capability. No paid calls or runtime changes were made for
-this investigation; a causal prompt A/B remains unperformed.
-
-The user authorized one new baseline workflow per path. Both ran concurrently with
-separate cases on the existing snapshot stack. [Full review and evidence](../evidence/review-live-20261001-220102/summary.md)
-record **Java FAILED / Sidecar COMPLETED**, with **6 passing / 2 failing** focused
-capture assertions. All 32 provider calls returned HTTP 200 with Muse/medium verified
-in the actual requests; there was no access or timeout failure. Java used 14 calls
-and 364.43 seconds; Sidecar used 18 calls and 827.52 seconds. Both original Framework
-traces and independent journals/records are retained, and original capture hashes
-were verified unchanged. No second full run was made.
-
-Java exhausted two attempts to produce valid step-action JSON for the first nested
-resolution entitlement task. Its earlier root planner also omitted bulletin serial
-range metadata from equipment-assessment arguments despite receiving it in full.
-The model output then described bulletin eligibility and some supplied asset facts
-as unknown. No Java assessment or service request was persisted. This is observed
-model output/evidence behavior, not evidence of Framework truncation or a general
-integration-path difference.
-
-Sidecar completed all model responsibilities and native synthesis, persisted one
-immutable assessment, preserved exactly the two authoritative service quotes, and
-correctly expressed cent amounts as USD dollar prose. Full asset and approval
-context reaches comparison. Parent synthesis preserves comparison unchanged; no
-service commitment exists. However, nextDecision contradicts S-5 by suggesting
-approval alone preserves prices/the loaner offer, acceptedRisk ambiguously says risk
-is accepted pending approval, and the discussion incompletely addresses the two-hour
-recoverable delay and possible expedited work beyond site hours. This mechanical
-success is not approved semantic judgment.
-
-A spontaneous real malformed-output correction succeeded for Sidecar's equipment
-assessment; its original invalid response, actual feedback and corrected response
-are preserved for reviewed reuse. It is not yet the controlled mutation scenario.
-The two-path capture remains **REJECTED_FOR_REPLAY**. Next work should use these
-responses for offline reliability/source-preservation/wording diagnostics before
-another paid run. Changed-priority and remaining business acceptance are outstanding.
-
-## Muse access verified after account-setting change — 2026-10-01
-
-The user reported changing the account setting and requested another Muse check.
-The [small compatibility recheck](../evidence/compatibility-20261001-215426/manifest.json)
-passed on both embedded Java and Python/Sidecar. Each path made exactly one provider
-request, received HTTP 200 and the expected structured COMPATIBLE result. The actual
-requests specify `meta/muse-spark-1.3-contributor` with medium reasoning. Both actual
-Framework traces report success and are retained with hashes, provider journals,
-configuration, running artifact identities and independent records.
-
-The previously observed age/privacy access blockers are no longer present in this
-check. This verifies small-call access and structured-output compatibility only.
-No full live workflow was run; the semantic, full-workflow, changed-priority and real
-correction-response evidence gaps below remain. Existing captures stay unapproved.
-
-## Offline contract fixes and access recheck — 2026-10-01
-
-The two reference paths now expose `assetContext`, a scoped deterministic read of
-ASSET-017, serial/model/revision, SITE-WEST, AUTH-NB and named routing contacts.
-Root planning requires that read before the three parallel evidence reads and
-instructs propagation through equipment assessment and nested comparison. Manual
-and bulletin passages now carry model/revision applicability and the bulletin serial
-range. Certificate/contract bindings and continuity package/currency details are
-explicit. These are authoritative fixture facts, not model-issued permissions;
-existing verified identity, site/spending and explicit-approval enforcement remains.
-
-All three decision-output schemas now require complete closed service-quote objects
-with typed cent amounts; prompts place unquoted loaner/replacement offers in
-alternatives. Both application publication guards require the two case-specific
-quote IDs exactly once and compare every field with the stored authoritative quote.
-USD-cent units are explicit in prompts, quote descriptions, rates, offers and approval
-routing. The original numeric quote format is retained for provenance-compatible reuse.
-
-Offline checks passed:
-
-- [Initial 10 checks](../evidence/contract-offline-20261001-junit.xml), with
-  [run evidence](../evidence/checks-20261001-213958/manifest.json): both Frameworks
-  reject the captured Java comparison's extra quote objects, issue real schema
-  correction feedback, and accept the structurally valid captured Sidecar response.
-  Both deterministic asset-context reads reject spoofed context values as authority;
-  existing quote/permission/token checks also pass.
-- [Extended 19 checks](../evidence/contract-offline-extended-20261001-junit.xml), with
-  [run evidence](../evidence/checks-20261001-214046/manifest.json): repeat the four
-  contract/context checks with monetary prompt assertions, add two source-unit and
-  applicability checks, five isolated Python publication rejection cases (extra, missing,
-  duplicate, dollar-scaled and foreign-case quotes), and eight fixture/review tests.
-  This is 25 distinct checks across the two runs, not 29 distinct scenarios.
-- Actual Framework traces and independent journals are retained for both paths.
-  Java packages successfully against the installed snapshot (no Maven test sources).
-  An initial unsupported-schema-key startup rejection is retained under
-  `evidence/contract-schema-startup-20261001`; supported schema fields repaired it.
-  Exact count/value enforcement lives in the applications because the Framework
-  schema supports neither array cardinality nor numeric bounds.
-
-The [derived diagnostic](../fixtures/replay/quote-contract-diagnostic-v1.json) retains
-Sol provenance, paired request IDs, provider envelopes and source SHA-256 values.
-It normalizes only case IDs at execution. Deliberately sequencing two different
-captured responses is a synthetic contract diagnostic, **not real-model correction
-provenance or approved replay**. Both original comparisons lack authoritative
-context and use ambiguous raw monetary prose. The [new read-only review](../evidence/contract-capture-review-20261001.json)
-rejects the full capture. All original capture checksums still match. Predeployment
-logs, records, artifact identities and the prior build baseline are preserved in
-`evidence/pre-contract-deploy-20261001-213643` (its configuration copy reflects the
-newly authored files; the prior baseline records the old deployed configuration hashes).
-
-[Compatibility recheck](../evidence/compatibility-20261001-214110/manifest.json):
-exactly one provider request per path, both with Muse/medium verified in the actual
-request; both HTTP 404 `paid-model-training-violation-by-account`. The earlier
-age-confirmation error is no longer reported. Both failed Framework traces and the
-provider journal are retained. OpenRouter identifies its
-[privacy settings](https://openrouter.ai/settings/privacy) as the controlling account
-policy. No account setting or model was changed. Compatibility access has **not**
-passed; no full live workflow was run.
-
-Remaining evidence gaps: model-driven propagation of the new asset/approval context
-through the complete tree; accurate dollar prose and decision quality under the new
-contracts; selected-Muse full-workflow behavior; changed-priority responsiveness;
-and a genuine model response to actual malformed-output correction feedback.
-The corrected configuration and deterministic boundaries pass focused offline checks,
-but those checks do not fill these semantic/full-workflow gaps. Reserve new paid calls
-for those gaps after access is resolved, reusing captured responses where suitable.
-Reviewed full replay and the remaining first-delivery business scenarios stay incomplete.
-
-## Authorized beta.8-SNAPSHOT verification — timeout fix verified
-
-The user installed Framework `1.0.0-beta.8-SNAPSHOT` and authorized local testing of its provider request-timeout fix. Both hosts successfully package the installed artifact; SHA-256 comparison confirms that their nested Framework JARs match it. Framework source reference is `b7dbefee8ffca873e84efb455e5609234c59e119`. Sidecar is unchanged beta.2 tag source rebuilt with the dependency override, not the published binary. Neither neighboring checkout was modified and no release was published.
-
-`compose.snapshot.yaml` configures the supported 240-second provider request timeout for both paths. Both containers start and all five services pass readiness. Earlier timeout findings below describe beta.7.
-
-The [first snapshot live run](../evidence/live-20261001-203830/summary.md) proves successful calls beyond the old limit in **both** paths using independent provider timing and completed Framework model frames. Its assertions report **6 passed / 4 failed**: timeout and dependent-evidence checks pass; both missions hit the separate 600-second mission deadline before complete synthesis/publication. Both actual traces report `ABORTED` with `LoomspanMissionTimeoutException`. The captures are rejected for replay. Six deterministic compatibility checks also passed on the snapshot. The supported local mission budget was then increased to 1,200 seconds, keeping the provider budget at 240 seconds.
-
-The [longer-budget capture](../evidence/live-20261001-205953/summary.md) reports **9 passed / 1 failed**. Both Framework traces report `SUCCEEDED`; all four model responsibilities and both native final-synthesis stages were exercised on both paths. Provider timeout and dependent/final-synthesis evidence assertions pass. Sidecar publishes an immutable assessment with both authoritative quotes unchanged.
-
-Java's application correctly rejects the completed model result: its comparison includes the two correct service quotes **plus two non-authoritative loaner/replacement objects without quote IDs** in `quotes`. Parent synthesis preserves those additions. There is no longer an observed provider/mission timeout blocker in this capture; the failing assertion is Java immutable-assessment publication. No invalid assessment or service request was persisted. See the [quote review](../evidence/live-20261001-205953/quote-review.json) and original model journal. The two-path bundle is not approved for replay.
-
-Next application work: constrain `quotes` to issued authoritative quote objects and keep unquoted continuity/replacement alternatives in their appropriate fields; clarify integer-cent monetary units in model-facing contracts; supply/review the agreed authoritative asset and approval-context facts without treating them as model-granted permissions. Then capture/review again. The completed Sidecar result is mechanical execution evidence, not automatically approved model judgment. Changed-priority capture, real malformed-output correction, approved replay, valid-approval creation/recovery and the remaining first-delivery scenarios are still outstanding. Both snapshot containers remain running with the 240/1,200-second settings.
-
-## Resume verification and independent progress — 2026-10-01
-
-Read-only remote refs still show Framework beta.7 as the latest release, with main at `e35ab4488e5cac5e1cc6fef5f0f0797b5deb703d` (begin beta.8-SNAPSHOT development), and Sidecar beta.2 as its latest release. Tagged beta.7 `SpringAiProviderIntegration.openAi()` and its connection options still expose no request-timeout override. The required external dependency remains a supported longer OpenAI-compatible provider request timeout in a user-authorized release usable by both hosts. No unchanged live workflow was repeated, no release was substituted, and no owning-project source was changed.
-
-Independent progress:
-
-- Fixture journals now assign a request ID to each model request, response and failure. Newly registered live cases bind to their integration path. Replay matching can distinguish system-stage text from user/evidence text, retains dependency checks, rejects duplicate/ambiguous calls and has no provider fallback.
-- `scripts/inspect_capture.py` writes a new, read-only mechanical review report outside the source capture. It checks terminal publication, model provenance/pairing, comparison and native completion, persisted quotes/assessment, conditional amounts and trace integrity. It never approves semantic judgment or replay. Both previous beta.7 captures are rejected; their original files remain intact. Historical unpaired journals cannot establish unambiguous concurrent response provenance.
-- **8 focused tests passed** for proxy relay, replay ordering/dependency/isolation/rejection, fail-closed capture review and correct mission identification. These are fixture/tool tests, not business acceptance. The **6 deterministic compatibility checks also passed** after restoring normal configuration; permission checks now compare request records before/after rather than assuming an empty database, preserving future successful-request evidence.
-- **2 nested-denial diagnostics passed**, one per path, in [checks-20261001-132017](../evidence/checks-20261001-132017/summary.md). Both use explicit `compose.authorization.yaml` test configuration and handcrafted negative responses. Actual nested planner requests omit creation from available capabilities; the deliberate unavailable-child proposal receives `not an exact visible capability name` feedback, is repeated for the supported corrective attempt, and is rejected. Independent database records are unchanged; Sidecar's application access log shows no creation-endpoint call. Two downloaded Framework traces are retained with hashes.
-- Two earlier diagnostic attempts failed because the matcher first confused task-count constraints with available capabilities, then lacked the corrective-attempt response. Their evidence is retained. Neither was counted as a successful authorization check.
-
-The nested diagnostic uses incomplete approval and therefore **does not complete** the accepted valid-approval denial/Luis positive-control pair. Full base/changed-priority captures, real malformed-output correction, approved replay, creation/recovery and gated complete-case isolation remain unexecuted or blocked as listed below. Normal business configuration is restored after diagnostic execution; test skills remain available through the documented opt-in overlay.
-
-## Beta.7 / Sidecar beta.2 verification
-
-Both releases are available. The exact-tag source exports build, and both packaged Framework JARs match the released Maven Central SHA-1 `02f0969a50acbf06355c1391bf9a0449c90ae077`. See [build identities](../evidence/beta7-build-identities.json). Java and Sidecar containers were rebuilt on these versions.
-
-The first unchanged live workflow rerun is [live-20261001-122349](../evidence/live-20261001-122349/manifest.json). Four evidence assertions pass: on both paths, full history, reference evidence and service terms match the independent fixture returns in the actual dependent planner request; all five formerly missing markers reach the equipment-assessment child model. Thus the previous dependent-evidence truncation is no longer observed.
-
-Both executions subsequently fail on a model HTTP read timeout around 60 seconds: Java at `assessEquipment#mission-model`, Sidecar at `resolveEquipment#step-5-model`. Actual Framework traces retain `OpenAIIoException` with `SocketTimeoutException` while reading response headers. Four completion/final-synthesis assertions fail because these runs did not reach those stages. This is not evidence of continuing truncation, and not a successful first-delivery workflow.
-
-The recording proxy buffered the complete upstream response before returning headers. It has been changed to relay upstream headers and body chunks promptly, retaining any upstream whitespace keepalives, without changing request JSON or response JSON. An isolated transport test verifies that the first upstream bytes are forwarded before the remainder is consumed and that the complete JSON is recorded unchanged. The selected model and reasoning setting remain unchanged. The [relay retry](../evidence/live-20261001-123114/manifest.json) still times out on Java at `resolveEquipment#step-4-model` and Sidecar at `resolveEquipment#step-5-model`, after 60 seconds. Both Framework traces show `java.io.InterruptedIOException: timeout` from `okhttp3.internal.connection.RealCall.timeoutExit`, while consuming the chunked response body. This rules out response-header buffering as the only cause. The retry reports **3 passed / 5 failed**: both full-sibling-record assertions and the Sidecar child-input assertion pass; Java does not reach that child in this retry, and neither path reaches final synthesis or application completion. The first run already verified the Java child input. Both retry traces are retained, and both captures are rejected as complete replay baselines.
-
-Source inspection of the locally resolved Spring AI 2.0.0 source JAR confirms `AbstractOpenAiOptions.DEFAULT_TIMEOUT = Duration.ofSeconds(60)`, inherited by `OpenAiChatOptions` and applied as the OkHttp request timeout. Framework beta.7 `SpringAiProviderIntegration.openAi()` does not set a different timeout. Its public `ConnectionProperties` / `OpenAiOptions` expose no corresponding setting; the bundled connection documentation says unknown `loomspan.*` settings are rejected and `spring.ai.*` is not inherited. The configured mission timeout is already 600 seconds and does not override this provider request limit. No unsupported property, client replacement, or Framework patch was introduced.
-
-The concrete remaining unblock is a supported way to configure a longer OpenAI-compatible request timeout (for example, 180–240 seconds within the 600-second mission budget), made available to both embedded and Sidecar paths. This is a separate finding from the repaired evidence truncation. Final-synthesis evidence preservation still needs a complete live run.
-
-[Six deterministic regression checks](../evidence/checks-20261001-122409/junit.xml) passed on the new releases, covering the same limited compatibility scope as the historical run. These are not approval/recovery acceptance.
-
-## Historical beta.6 blocker: complete evidence did not reach dependent planners
-
-The pinned beta.6 planner builds each subsequent model request using the canonical original mission input, a summary truncated to **100 characters per completed task**, and the latest tool result truncated to **1,000 characters**. Earlier complete results are not provided to the dependent model. Final synthesis has the same latest-result limit. These are fixed implementation constants, not the configured output schema limit or provider context window.
-
-Source inspected from Framework commit `50fa1a7dcf1974a3e73ebde2a41bd7ee49a28542`:
-
-- `src/main/java/ai/loomspan/internal/runtime/step/StepPromptBuilder.java`: `MAX_LAST_RESULT_CHARS = 1000`, applied in assigned-step and final-response prompts.
-- `src/main/java/ai/loomspan/internal/runtime/step/StepLoopMissionExecutionEngine.java`: completed task summaries call `truncate(success.result(), 100)`.
-
-The live Java run retrieved the history, manufacturer passages and terms through real annotated skills. Its later equipment-assessment model explicitly reported unavailable history and guidance. Resolution planning inherited that gap. Comparison and native synthesis lost checked options and full quotes; native synthesis returned empty quote/citation arrays and described the truncated comparison. This is not a successful assessment, despite model/schema success. The application rejects missing or altered authoritative quotes before publishing an assessment.
-
-The Sidecar run also reached equipment assessment with incomplete upstream evidence. Its terminal failure was separately caused by a provider connection closing mid-response (`httpx.RemoteProtocolError`) during resolution planning; the fixture initially surfaced this as HTTP 500. It did **not** reach comparison/final synthesis, so that terminal failure is not attributed to truncation. Fixture error handling now journals transport failures explicitly and returns a bounded 502. Both original Framework traces are retained.
-
-The closed public API has no supported planner replacement or text-result storage/retrieval SPI. `ref://` resolution exists, but inspection and observed prompts did not establish an application-facing mechanism that automatically makes complete prior planner results available. Guessing reference paths, injecting fixture answers into provider requests, preloading all evidence into the root, or replacing Framework internals would defeat this demonstration. No such workaround or baseline change is made.
-
-At the time, required resolution was an owning-project supported mechanism for complete dependent-result and final-synthesis evidence, verified against this reproduction. No Framework/Sidecar source was changed, no issue was published, and no release was substituted. The subsequent user-authorized release update and its observed results are recorded above.
-
-## Implemented foundations
-
-- Exact-tag Sidecar beta.2 source export/build; embedded Java uses released beta.7 through Maven. Both compile successfully.
-- Compose deploys both apps, actual Sidecar, Keycloak 26.3.5 and separate FastAPI external fixtures.
-- Keycloak seeded accounts with top-level role and audience mappings; browser Authorization Code + S256 PKCE, isolated Playwright sessions, no password grant.
-- Independent receiving API token checks; Java security-context retention, Python/Sidecar original-token passthrough.
-- Four substantive model responsibilities, explicit parallel groups/dependencies, deterministic annotated Java/REST skills, and versioned fictional source records excluding evaluator notes.
-- SQLite authoritative quotes, immutable assessment versions, and atomic approval/request storage code. **Creation/recovery behavior has not yet passed end-to-end acceptance**, since the required valid assessment is blocked.
-- Fixture registration, strict per-case script matching, independent journals and gates; explicit live recording mode. Unregistered/ambiguous model requests fail visibly.
-- Supported Framework NDJSON artifact download, correlation and secret-value scan in both paths. No runner-generated substitute traces.
-
-## Engineering choices
-
-This local demonstration binds published ports to loopback and uses an isolated Compose bridge with HTTP inside that boundary. Keycloak runs development mode. This is a documented local transport choice, not a production/TLS deployment claim. Management authentication remains separate and is not used by the business caller.
-
-Per-app SQLite databases persist on host mounts. Idempotency keys are scoped to verified issuer/subject and retained with receipts for the local database lifetime. Approval binds assessment, quote, option, attendance, repair scope and exact cap. The recovery path reads the original record before checking quote expiry. Money uses integer USD cents. Fixture business time remains separate from JWT security time.
-
-Sidecar uses supported `configuration.mode=file`; publication and management-console workflows are outside this delivery. Provider calls use a recording proxy that forwards the actual Framework JSON request unchanged to OpenRouter; it never forwards application bearer tokens or records provider Authorization headers. Ordinary replay has no provider fallback.
-
-## Not completed or not claimed
-
-- Reviewed complete real-model baseline/changed-priority captures suitable for acceptance replay.
-- Real malformed-output correction capture and reviewed fault-derived replay.
-- Approved replay scripts, full base workflow acceptance, approval/creation/recovery acceptance.
-- Controlled nested authorization denial/positive control; gated two-case isolation acceptance.
-- Production TLS, broader management/publication/load/restart/shutdown, or CI.
-
-Captured evidence is reviewed as **rejected for baseline provenance** when required evidence is lost. A model call or a green build does not establish the business claim. See generated evidence directories and test results for exact executed checks.
-
-## Executed checks and retained evidence
-
-- [Live compatibility manifest](../evidence/compatibility-20261001-005049/manifest.json): both paths returned the requested structured result with the selected real model. This folder contains actual Framework-generated traces for each path. It does not exercise the complete workflow.
-- [Reviewed complete-workflow attempt](../evidence/live-20261001-005945/summary.md): both paths' actual requests/responses, independent downstream journal, two Framework traces and terminal results. Four [acceptance assertions failed](../evidence/live-20261001-005945/delivery-junit.xml); captures are rejected for replay baseline use. Sidecar's separate transport failure prevented its last responsibilities from running.
-- [Deterministic compatibility rerun](../evidence/checks-20261001-011456/junit.xml): **6 passed** after correcting Java policy declarations to supported JSR-250 `@RolesAllowed` and enabling that enforcement. Covers authoritative quote amounts without model calls, Maya's direct public-boundary permission precheck, and rejection of missing tokens, on both paths. The permission precheck uses an empty approval body and is expressly **not** the required otherwise-valid approval denial/nested positive-control acceptance scenario.
-- The successful rerun directory contains quote results, independent journals and database snapshots, current running artifact identities, build checksums, and real Framework traces for deterministic invocations. Original failed-run runtime image digests were not recovered after interruption/container removal; that gap is disclosed rather than filled using later artifacts.
-- Python sources compile; Java application and exact-tag Sidecar package successfully. Maven package commands used `-DskipTests`; no Maven test success is implied.
-
-The Docker stack is left running for inspection. No changes were made to neighboring Framework or Sidecar checkouts, no commits or issues were published, and the release baseline was updated with explicit user authorization.
+# Current results
+
+## Phase transition - 2026-10-05
+
+The user declared **Phase 1 complete**: the suite's first purpose was to exercise
+Framework, uncover bugs and identify useful features/refinements. **Phase 2 is now
+current:** investigate skill composition and optimization to help models succeed
+without requiring Sol-level capability. Long-term regression coverage and release
+confidence are Phase 3. This is an agreed direction, not a claim that Phase 2 results
+or exhaustive release acceptance already exist. Historical results below remain intact.
+
+## Sol and MiMo live PR24/25 verification - 2026-10-05
+
+Both authorized Java/medium evaluations completed. All four scenarios verify **eight
+direct dispatches, seven model calls, 43 exact input and 18 exact output bindings**,
+exact publication and no root synthesis. No corrections or provider failures. Optional
+prompts explicitly permit `{}`; MiMo priority uses it for all three optional steps.
+
+Sol passes 67/67 both scenarios; MiMo baseline 67/67, priority originally 63/67 due to
+a fenced-JSON reviewer mismatch. The accepted trace plan passes all four flagged checks
+in a separate supplemental review (67/67); original FAIL report remains unchanged.
+Both service suites pass 33/33. This is harness friction, not failed Framework planning.
+
+Sol reported total cost falls **67.68%** ($1.2971662 to $0.4192161) and trace time
+62.63% versus historical PR20; multiple contract changes differ. MiMo cost falls
+**39.91%** ($0.1177570446 to $0.0707621524), trace time 33.00%, versus PR23.
+These are single samples with changed responses, not isolated causal savings estimates.
+
+Sol retains the material access/commercial distinctions with a defensible changed
+strategy; no material contradiction identified. MiMo baseline still omits technician
+overrun and has additive premium wording. Priority fixes overrun but routes service
+approval to Priya and submission to unauthorized Maya; it also contradicts elapsed-work
+semantics in one uncertainty. Exact publication preserves these model-authored errors.
+No replay approval; historical Sol reference unchanged.
+
+[Full results and checksum-bound reviews](../evidence/pr25-sol-mimo-20261005/summary.md).
+Both suites restored ready/provider-disabled; 4,323 prior evidence files and previous
+business rows preserved. No replay refresh, commit, push or release.
+
+## Luna live PR24/25 verification - 2026-10-05
+
+One Java/medium evaluation passes **67/67 baseline, 67/67 priority, 33/33 service**.
+Each scenario verifies eight direct dispatches, seven model calls, 43 exact input
+and 18 exact output bindings, exact publication and no root synthesis. Three optional
+dispatch prompts each explicitly permit `{}`. No model corrections occurred.
+
+Compared with PR23 Luna, total reported cost falls **32.02%**, $0.032373435 to
+$0.022007910, and calls fall 31 to 14 (16 dispatch calls plus one old correction).
+Total trace duration rises 226.31 to 231.01 seconds. One sample does not isolate
+PR24 savings from response variation or establish Sol cost/latency.
+
+Baseline fixes its W-2 citation omission but loses explicit technician-overrun access
+planning; priority retains that gap. No replay approval. [Full report and bound
+semantic review](../evidence/pr25-luna-20261005/summary.md). All five services restored
+ready/provider-disabled; 4,083 prior evidence files and prior business rows preserved.
+No replay refresh, commit, push or release.
+
+## PR24/25 provider-free adoption - 2026-10-05
+
+Both hosts now embed installed Framework `7d47269`. Controlled diagnostics verify
+**eight automatic dispatches and seven remaining fixture-backed model calls per host**,
+43 exact input and 18 exact output bindings, exact publication and no root synthesis.
+Three retained optional dispatch prompts per host correctly permit `{}` without the
+old contradictory footer. Business contracts and evaluator remain unchanged.
+
+159 focused Framework, 36 suite offline and 10 deployed boundary checks pass. These are feature diagnostics
+using retained Luna text, not fresh model reasoning or replay approval.
+[Adoption report](../evidence/pr25-adoption-20261005/summary.md) and
+[new baseline](post-pr25-baseline.md). Provider remains disabled; no paid evaluation,
+replay refresh, commit, push or release.
+
+## MiMo on PR22/23 - 2026-10-05
+
+One Java/medium evaluation completed: **67/67 baseline, 67/67 priority, 33/33
+service checks**. Both scenarios verify **43 exact input and 18 exact output
+bindings**, exact comparison-to-publication preservation and no root synthesis.
+Baseline needs no correction; priority recovers one unsupported `uncategorized`
+argument field. No malformed JSON, provider errors, retries or timeouts.
+
+Compared with PR21, baseline now completes, but priority loses its explicit
+technician-overrun access plan. Both scenarios omit that contingency. Priority
+invents uncertainty over whether the $780 cap includes the $300 premium; both
+misroute service approval to Priya despite Luis's ceiling. Mechanical success is
+not semantic acceptance; **no replay approval**. [Full comparison and checksum-bound
+review](../evidence/pr23-mimo-20261005/summary.md).
+
+31 requests; reported cost **$0.1177570446**. All five services ready/provider-disabled;
+frozen sources, all 3,570 prior evidence files and prior durable records preserved.
+No replay refresh, commit, push or release. Sol remains the historical reference.
+
+## Luna on PR22/23 output bindings — 2026-10-05
+
+Both Java scenarios completed with **43 exact input bindings and 18 exact output
+bindings each**, no root final model call and exact comparison-to-publication
+preservation. Corrected offline review: **66/67 baseline, 67/67 priority**. Baseline
+omits W-2 from its citations array; priority retains the technician-overrun access
+gap. Baseline recovered one malformed optional candidateReasoning action. Service
+follow-up was skipped because baseline still fails citation coverage.
+
+My initial reviewer double-decoded chunked assembly payloads, creating three false
+failures in each original report (63/67 and 64/67). The parser is fixed and regression
+covered; original reports/evaluator remain preserved and no paid rerun occurred.
+Business criteria are unchanged. [Full review and evidence](../evidence/pr23-adoption-20261005/summary.md).
+
+31 requests; reported cost **$0.032373435**; root traces 121.970/104.339 seconds.
+36 offline and 10 deployed checks pass; both hosts rebuilt. Runtime restored/provider-
+disabled; pre-existing source work, frozen PR20/21 identities and original evidence
+preserved. [Active output-binding baseline](post-pr23-baseline.md). Sol remains the
+historical reference; no replay approval or further paid model run.
+
+## Two DeepSeek models on PR21 - 2026-10-05
+
+All four Java/medium scenarios completed with **43 exact bindings across 11 calls**
+each, no corrections or provider failures. Flash: **66/67 both scenarios**, missing
+W-2 in comparison citations; source contact errors did not recur, final preservation
+is exact, technician-access reasoning remains incomplete. Service skipped.
+
+Exact Pro alias returned V4 Pro 0813: **67/67 baseline, 64/67 priority, 33/33 service**.
+Baseline incorrectly treats approval as preserving prices/attendance and conflates
+arrival-window duration with work. Priority handles those issues more clearly but
+root makes minor edits to rationale and one assessment string, breaking preservation.
+Both suites remain **FAIL**; no replay approval.
+
+[Full comparison and evidence](../evidence/pr21-deepseek-20261005/summary.md).
+64 requests; reported cost **$0.4054322629** combined. Runtime restored/provider-disabled;
+frozen sources and original evidence verified unchanged. Sol remains the reference.
+
+## GLM-5.3-Flash on PR21 - 2026-10-05
+
+**Overall FAIL:** baseline completed **61/67**, priority failed at the unchanged
+480-second comparison timeout (**45/67 diagnostic checks**). All **43 bindings across
+11 calls** are exact in each scenario. Priority recovered one prohibited bound-field
+override; no provider retry. Service follow-up skipped.
+
+Four baseline planning failures arise from evaluator raw-JSON parsing of a fenced
+plan; the accepted trace plan satisfies the same four dependency predicates. The
+other two failures reflect real root rewriting of seven comparison field paths.
+Baseline still omits late technician access and blurs loaner/service approval.
+[Full review and evidence](../evidence/pr21-glm-flash-20261005/summary.md).
+32 requests; captured reported cost **$0.0257664666**, excluding unknown usage for
+the timeout. Runtime restored/provider-disabled; frozen sources and original evidence
+verified unchanged. Sol remains the reference; no replay approval or further run.
+
+## MiMo on PR21 - 2026-10-05
+
+MiMo V2.6 Pro / medium: **baseline FAILED before comparison; priority COMPLETED
+67/67**. Baseline recovered an XML-style assessment response, then exhausted correction
+on malformed optional candidate-reasoning JSON. Baseline verified 30 bindings across
+10 calls; priority verified 43 across 11, with exact final preservation and no
+corrections. Service follow-up was skipped because baseline did not qualify.
+
+Priority correctly handles calendar ordering and late technician access, but premium
+wording can suggest double-counting and elapsed-work chargeability is imprecise.
+Total: 32 requests, reported cost **$0.1415409364**. Overall **FAIL**; no replay approval.
+[Full review and evidence](../evidence/pr21-mimo-20261005/summary.md).
+Runtime restored/provider-disabled; frozen sources and evidence verified unchanged.
+The authorized GLM/Luna/MiMo PR21 set is complete. Discuss before further paid work
+or behavior changes; Sol remains the reference.
+
+## Luna on PR 21 — 2026-10-05
+
+Luna / medium completed both Java scenarios: **67/67 baseline, 65/67 priority**,
+plus **33/33** deterministic service checks. All 43 bound values across 11 calls
+per scenario are exact. No malformed JSON, corrections, retries or provider failures.
+The earlier invented contact name and reversed calendar ordering did not recur.
+Priority still omits possible technician access beyond 18:00. Its root final response
+makes two minor wording edits to the exact forwarded comparison, failing the unchanged
+preservation checks despite no apparent change in meaning. **Suite status: FAIL.**
+
+Total: 32 requests, reported cost **$0.03946022**.
+[Full review and evidence](../evidence/pr21-luna-20261005/summary.md).
+Sol remains the reference; no replay approval. Runtime restored/provider-disabled.
+MiMo was subsequently authorized and evaluated; see its newer result above.
+
+## PR 21 adoption and GLM first — 2026-10-05
+
+GLM-5.3 / medium completed baseline and priority on the new
+[PR 21 binding baseline](post-pr21-baseline.md): **67/67 each**, with **33/33**
+deterministic service checks. Both scenarios verified 43 exact bound values across
+11 child calls. Priority previously failed on malformed large resolution arguments;
+it now completes. Baseline needed one assessment-schema and one planning correction;
+priority needed none. Total: 34 requests, reported cost **$0.32208897**.
+
+Business review still finds access/expiry gaps and baseline coverage misinterpretation.
+The baseline errors already occur in optional candidate reasoning before comparison;
+source transfer and final preservation are exact. Sol remains the reference; no replay
+approval. [Full comparison and evidence](../evidence/pr21-adoption-20261005/summary.md).
+
+Both hosts now embed PR 21; old identities, captures and source snapshot are preserved.
+At the GLM checkpoint, the runtime was ready/provider-disabled and neither MiMo nor
+Luna had been rerun. Luna was subsequently authorized; see the newer result above.
+No commit, push, release or replay refresh.
+
+## Historical PR 20 comparison set
+
+Fresh Java evaluations on 2026-10-04 use the unchanged
+[post-PR-20 baseline](post-pr20-baseline.md), medium reasoning for all eight models.
+The user discarded older captures; they are no longer the working evidence baseline.
+[Full comparison and semantic review](../evidence/fresh-comparison-20261004/summary.md).
+The [Sol Java reference](model-reference.md) passed automated checks and was reviewed
+as suitable for comparison. MiMo, DeepSeek Pro, DeepSeek Flash, Luna, GLM, GLM Flash and Muse did not pass their complete suites.
+
+| Model / scenario | Execution observations | Evidence / contract fidelity | Business judgment |
+| --- | --- | --- | --- |
+| MiMo V2.6 Pro / baseline | FAILED; 7 requests, 6 captured responses; 480-second timeout at assessEquipment | 29/67 diagnostic checks; no completed assessment | Not assessed; no final recommendation |
+| MiMo V2.6 Pro / priority | FAILED; 15 requests; malformed compareOptions tool-call JSON, correction exhausted | 34/67 diagnostic checks; missing final brace in both attempts | Not assessed; compareOptions never reached |
+| DeepSeek V4 Pro 0813 via tilde alias / baseline | COMPLETED; 16 requests; no corrections or provider failures | 66/67; missing W-2, W-5 and S-3 citations; exact source transfer and forwarding pass | Loaner plus standard and access timing are reasonable; incorrectly extends service price-preservation language to loaner and blurs procurement/service process |
+| DeepSeek V4 Pro 0813 via tilde alias / priority | FAILED; 15 requests; Ionstream 502 network-loss error inside HTTP 200 | 45/67 diagnostic checks; Framework rejects error completion | Not assessed as a completed recommendation; provider failure, not a timeout |
+| DeepSeek V4.1 Flash / baseline | COMPLETED; 17 requests; missing required contact responsibility corrected | 66/67; added empty warranty-contact name at assessment input | Handles extended technician access, but post-repair loaner fallback does not resolve earlier offer expiry |
+| DeepSeek V4.1 Flash / priority | COMPLETED; 16 requests; no corrections or provider failures | 66/67; copied dispatch contact's name into warranty contact at assessment input | Correct loaner-before-production dates and priority response; omits extended technician access and has an impossible post-expiry/pre-expiry fallback |
+| GPT-6 Luna / baseline | COMPLETED; 17 requests; one malformed action corrected | 66/67; added dispatch contact's name to unnamed warranty contact in comparison input | Defensible expedited/early-loaner-contingency strategy; correctly handles elapsed work, late access and offer expiry |
+| GPT-6 Luna / priority | COMPLETED; 16 requests; no corrections or provider failures | 67/67; exact forwarding and final-result preservation passed | Responds with loaner plus expedited diagnosis, but repeatedly reverses loaner/production dates and omits late technician access |
+| GLM-5.3 / baseline | COMPLETED; 18 requests; two corrections recovered; no provider failures | 67/67; exact forwarding and final-result preservation passed | Defensible expedited choice, but contradictory access feasibility and after-diagnosis loaner fallback despite expiry |
+| GLM-5.3 / priority | FAILED; 9 requests; malformed planResolution tool call repeated unchanged after correction | 29/67 diagnostic checks; missing final JSON brace prevents resolution/comparison | Not assessed; no final recommendation |
+| Sol 6.1 / baseline — reference | COMPLETED; 16 requests; no corrections or provider failures | 67/67; exact forwarding and final-result preservation passed | Conditional loaner plus standard investigation; correctly accounts for work beyond 18:00, separate access/approval, expiry and uncertain restoration |
+| Sol 6.1 / priority — reference | COMPLETED; 16 requests; no corrections or provider failures | 67/67; exact forwarding and final-result preservation passed | Explicit continuity preference supports loaner plus standard; alternative expedited scope/access correctly qualified; same choice is defensible |
+| GLM-5.3-Flash / baseline | FAILED; 14 model requests; InferenceNet terminated a response stream inside HTTP 200 | Incomplete workflow; 31/67 diagnostic checks, many downstream failures | Not assessed; no final recommendation |
+| GLM-5.3-Flash / priority | FAILED; 9 requests; assessEquipment exhausted two corrections | Extra hypothesis fields, then malformed JSON, then extra fields again; 29/67 diagnostic checks | Not assessed; no final recommendation |
+| Muse Contributor / baseline | COMPLETED; 17 requests; recovered one malformed assessEquipment response | 66/67; missing required W-5 citation; exact forwarding and final-result preservation passed | Incorrectly says expedited attendance needs no special access arrangement despite 2–4 hours elapsed work possibly extending beyond 18:00 |
+| Muse Contributor / priority | COMPLETED; 16 requests; no corrections | 67/67; exact forwarding and final-result preservation passed | Selects loaner plus expedited diagnosis, but still fails to account for elapsed work extending beyond site access; not replay-approved |
+
+Counts include four shared capture checks and are diagnostic assertions, not model
+accuracy percentages. Incomplete execution produces downstream failures; do not
+interpret those counts as reasoning scores. These are single runs, not repeatability
+or reliability estimates.
+
+GLM [runner report](../evidence/evaluate-suite-20261004-165153-d92239/summary.md) and
+Muse [runner report](../evidence/evaluate-suite-20261004-170411-0026ff/summary.md) retain
+original traces, provider messages, configurations and checksum-bound capture files.
+The GLM/Muse review material is in `evidence/fresh-comparison-20261004/`.
+Sol [runner report](../evidence/evaluate-suite-20261004-174158-96022f/summary.md) and
+[semantic review](../evidence/sol-reference-20261004/summary.md) bind the reference.
+Sol cost $1.2971662 for 32 requests; baseline/priority root traces took
+537.534/492.740 seconds. Its option is a comparator, not a replacement for independent
+criteria. The offered loaner window is unreserved despite priority's word “scheduled.”
+
+Non-Flash GLM [review](../evidence/glm-5.3-comparison-20261004/summary.md) and
+[runner report](../evidence/evaluate-suite-20261004-181304-270057/summary.md): reported
+cost $0.45516234 for 27 requests. Baseline trace took 97.398 seconds; failed priority
+stopped after 39.678 seconds. Its faster baseline required schema/action correction
+and had weaker business consistency than Sol. These are single-run observations.
+
+Luna [review](../evidence/luna-comparison-20261004/summary.md) and
+[runner report](../evidence/evaluate-suite-20261004-182148-ad2ed2/summary.md): $0.0594806
+for 33 requests; baseline/priority traces 205.352/173.578 seconds. It completed both
+scenarios, but source invention and priority calendar/access errors keep Sol the
+stronger reference. The loaner arrives September 29 evening, before September 30
+morning production, contrary to Luna's repeated priority claim.
+
+DeepSeek [review](../evidence/deepseek-comparison-20261004/summary.md) and
+[runner report](../evidence/evaluate-suite-20261004-183335-748762/summary.md): $0.112007494
+for 33 requests; baseline/priority traces 334.431/257.784 seconds. Both completed,
+but assessment-input fidelity and continuity/access planning fall short of Sol.
+
+Pro [review](../evidence/deepseek-pro-tilde-comparison-20261004/summary.md) and
+[runner report](../evidence/evaluate-suite-20261004-194241-91fc4a/summary.md): requested
+`~deepseek/deepseek-pro-latest`, returned `deepseek/deepseek-v4-pro-0813` throughout.
+Reported cost $0.386480832812 for 31 requests; traces 1541.589/1477.174 seconds.
+The separate provider review identifies the nested 502 error that the frozen
+diagnostic label leaves unknown; original reports are preserved.
+
+MiMo [review](../evidence/mimo-comparison-20261004/summary.md) and
+[runner report](../evidence/evaluate-suite-20261004-204347-4a4ce0/summary.md): 22 requests;
+$0.0960876788 captured reported cost (timed-out call has no captured billing result).
+Baseline/priority traces: 566.811/644.309 seconds. Both failed before final judgment.
+
+## Boundaries
+
+The later `deepseek/deepseek-pro-latest` attempt was rejected by OpenRouter with
+HTTP 400 (invalid model ID) in both scenarios before any model completion.
+It is excluded from the eight-model quality comparison above. No cost was reported;
+service tests were skipped. [Attempt and catalog lookup](../evidence/deepseek-pro-comparison-20261004/summary.md).
+The user subsequently clarified that the tilde is intentional. The exact identifier
+`~deepseek/deepseek-pro-latest` is accepted and returns `deepseek/deepseek-v4-pro-0813`;
+that evaluation is now complete and recorded above. Removing the tilde was an
+assistant interpretation error. The earlier invalid-ID result remains unchanged. Runtime was
+restored provider-disabled; business records unchanged, all 139 frozen files and
+68 captured files verified. Free space after this attempt was about 16.97 GB.
+
+MiMo, DeepSeek Pro, DeepSeek Flash, Luna, GLM Flash and Muse did not meet the service-follow-up prerequisite; service checks were
+not run for them. Sol and non-Flash GLM each passed 33/33 deterministic service checks with zero additional
+model calls, including denials, approved creation, lost-result recovery and idempotency.
+No replay refresh
+or full mock acceptance was performed. Historical capture-dependent replay and
+audit checks are unavailable after the user-authorized reset; criteria remain unchanged.
+
+All 139 frozen source/configuration/fixture/evaluator files matched at preflight,
+and the 41 focused tests passed. Sidecar's beta.2 test constructor remains incompatible
+with PR 20; production was previously packaged with tests skipped. This comparison
+runs Java only and does not claim fresh Sidecar acceptance.
+
+## Final runtime and next work
+
+All five services are ready/provider-disabled; PR 20 artifacts, 139 frozen files and
+480/2400/510-second limits remain intact. MiMo's 68 captured files pass checksum
+verification; earlier captures were verified at completion. Prior business rows
+are intact: MiMo added two Java quotes, no assessments or requests; Python unchanged.
+C: has about 14.85 GB free. See its
+[final validation](../evidence/mimo-comparison-20261004/final-validation.json).
+
+GLM/Muse reported provider cost was $0.05784093 for 56 requests; Sol adds $1.2971662
+for 32 requests, non-Flash GLM adds $0.45516234 for 27 requests, and Luna adds
+$0.0594806 for 33 requests. DeepSeek Flash adds $0.112007494 for 33 requests and
+Pro adds $0.386480832812 for 31 requests. MiMo adds $0.0960876788 captured
+reported cost for 22 requests; the timed-out call has no captured billing result. The user-authorized exact-tilde retry
+followed the rejected identifier attempt; no extra successful-run repeats,
+Framework pipeline, commit, push or release was performed. These are single runs;
+completion differences do not establish a general model reliability ranking.
+
+The three additional models selected after Sol—non-Flash GLM, Luna and DeepSeek—are
+now evaluated on Java, followed by full Pro and the user-selected final MiMo run.
+The selected comparison set is complete. Review combined results before further paid work, with
+selected Sidecar confirmation and replay migration considered separately.
+Sol remains the designated reference.
+Keep this baseline fixed; a prompt/schema/evaluator change would require an
+explicit new baseline. Replay migration and full mock acceptance remain separate work.

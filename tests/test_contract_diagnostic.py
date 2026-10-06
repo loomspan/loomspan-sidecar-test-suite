@@ -9,8 +9,11 @@ from test_deterministic import invoke, register
 
 def test_authoritative_asset_and_approval_context(harness,target):
     path,api=target;h=harness;case=register(h,path)
-    value=invoke(h,api,'assetContext',{'caseId':case,'assetId':'NB-P240-017',
-                 'context':{'serial':'forged','approvalContext':{'luisMaximumCustomerExposure':99999999}}})
+    rejected=h['client'].post(api+'/v1/skills/assetContext/executions',
+        json={'caseId':case,'assetId':'NB-P240-017','context':{'serial':'forged'}},
+        headers={'Authorization':'Bearer '+h['tokens']['maya']})
+    assert rejected.status_code==400
+    value=invoke(h,api,'assetContext',{'caseId':case,'assetId':'NB-P240-017'})
     data=value['data']
     assert data['serial']=='AP24B-0517' and data['model']=='P240' and data['hardwareRevision']=='B'
     assert data['site']['siteId']=='NB-WEST' and data['approvalContext']['luisMaximumCustomerExposure']==100000
@@ -53,7 +56,7 @@ def test_captured_quote_contract_correction_diagnostic(harness,target):
 
 def test_source_money_units_and_applicability(harness,target):
     path,api=target;h=harness;case=register(h,path)
-    body={'caseId':case,'assetId':'NB-P240-017','context':{}}
+    body={'caseId':case,'assetId':'NB-P240-017'}
     terms=invoke(h,api,'serviceTerms',body)['data']
     offers=invoke(h,api,'continuityOptions',body)['data']
     passages=invoke(h,api,'referenceEvidence',body)['data']

@@ -2,17 +2,27 @@ name: compatibility
 description: Verify provider protocol and structured output through the real Framework.
 model: reasoning
 thinking_level: medium
-rbac_roles: [ASSESS_EQUIPMENT]
+rbac_roles:
+- ASSESS_EQUIPMENT
 prompt: Return the supplied caseId and status COMPATIBLE. Do not call tools.
 input_schema:
   type: object
   properties:
-    caseId: {type: string}
-  required: [caseId]
+    caseId:
+      type: string
+  required:
+  - caseId
+  additionalProperties: false
 output_schema:
   type: object
   properties:
-    caseId: {type: string}
-    status: {type: string, enum: [COMPATIBLE]}
-  required: [caseId, status]
+    caseId:
+      type: string
+    status:
+      type: string
+      enum:
+      - COMPATIBLE
+  required:
+  - caseId
+  - status
   additionalProperties: false

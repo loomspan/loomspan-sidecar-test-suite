@@ -8,11 +8,11 @@ input_schema:
   properties:
     caseId:
       type: string
+      description: Case correlation identifier supplied by the caller.
     assetId:
       type: string
-    context:
-      type: object
-      additionalProperties: true
+      description: Registered asset identifier; does not grant caller authority.
   required:
   - caseId
   - assetId
+  additionalProperties: false

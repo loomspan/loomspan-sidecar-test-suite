@@ -1,0 +1,53 @@
+{
+  "referenceId": "sol-6.1-medium-java-20261004",
+  "status": "CURRENT_COMPARISON_REFERENCE",
+  "designatedBy": "user",
+  "baselineId": "post-pr20-20261004",
+  "baselineManifest": "docs/post-pr20-baseline.json",
+  "baselineManifestSha256": "247c216649c212d572817c37264640e7089f33ec205e22fcf09043fe5d8c82a6",
+  "provider": "OpenRouter",
+  "model": "openai/gpt-6.1-sol",
+  "reasoning": "medium",
+  "integration": "java",
+  "suiteReport": "evidence/evaluate-suite-20261004-174158-96022f/report.json",
+  "suiteReportSha256": "1cbee969c304981264dbcff3fe2e829bc64386db2bc77b233df53f7e59349e4c",
+  "automatedStatus": "AUTOMATED_CHECKS_PASS",
+  "semanticReview": "evidence/sol-reference-20261004/semantic-review.json",
+  "semanticReviewSha256": "f11fe076698b53b7dff3a08e98e31e7f02d8fa248c090a65dbc463b7aa433126",
+  "validation": "evidence/sol-reference-20261004/final-validation.json",
+  "validationSha256": "03d9b925f92c45426a42eb89fd553317318a0b9d8330f66c00b197b8f5099fd6",
+  "modelRequests": 32,
+  "reportedProviderCostUsd": 1.2971662,
+  "replayApproved": false,
+  "fullMockAcceptance": false,
+  "runtimeRestored": true,
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "capture": "evidence/live-20261004-174230-92e559",
+      "checksumsSha256": "7c39f611ac60a38a4aac81f284e94487e7d6c0b3d05a00e2b5092ee924a3d3ad",
+      "checksPassed": 67,
+      "checksTotal": 67,
+      "modelRequests": 16,
+      "traceDurationSeconds": 537.534
+    },
+    {
+      "scenario": "priority",
+      "capture": "evidence/live-20261004-175200-75be7d",
+      "checksumsSha256": "93136d9c23ec7d595e614e73de5a7e0177bb78c35026ed738e4d1dd4b941b2af",
+      "checksPassed": 67,
+      "checksTotal": 67,
+      "modelRequests": 16,
+      "traceDurationSeconds": 492.74
+    },
+    {
+      "scenario": "service-requests",
+      "capture": "evidence/service-requests-live-20261004-180051",
+      "checksumsSha256": "4d1f7a36374d26ae8fa1e52f563f125bcf226904f2a58c2138ff8da077e0f8a9",
+      "checksPassed": 33,
+      "checksTotal": 33,
+      "modelRequests": 0,
+      "traceDurationSeconds": null
+    }
+  ]
+}
