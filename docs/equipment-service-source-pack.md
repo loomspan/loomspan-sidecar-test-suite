@@ -1,25 +1,15 @@
-# Equipment service resolution: fictional source pack
+# Equipment-service source pack
 
-Current implementation note (2026-10-01): implementation is authorized and underway on Framework beta.7 / Sidecar beta.2. This document retains domain/design history; any older release, authorization, “no captures,” or “not yet verified” statements describe that earlier planning stage. Apply the latest accepted decisions in [project agreement](project-agreement.md), resume from [implementation handoff](implementation-handoff.md), and use [implementation status](implementation-status.md) for observed results and remaining work.
+All equipment, organizations, people, records, prices and terms are fictional
+demonstration material. This is current domain evidence for both applications,
+not real machinery or service instructions.
 
-Draft 0.2 — 2026-09-30. Companion to the [working design](equipment-service-design-draft.md).
-
-**All equipment, organizations, people, records, prices, and contract terms below are fictional demonstration material.** The accepted decisions below establish part of the baseline; other details remain proposals. These are not instructions for real machinery or real legal/service terms. The manual is organized as five intended pages for review in Markdown; page layout and PDF production are later authoring tasks. Section IDs are proposed stable citation targets.
-
-### Accepted review decisions — 2026-09-30
-
-- Keep the carton sealer, recurring warm-up fault, inconclusive sensor-repair history, and conditional pricing. Source documents supply technical guidance and observations; case-specific interpretations belong in evaluator notes, not passages supplied as evidence to the model.
-- A production delay of up to two hours is recoverable; losing the morning shift threatens the shipment. The loaner offer expires before technician arrival, so availability after diagnosis cannot be assumed. Higher approval requirements restrict commitment, not recommendation.
-- Luis can authorize expedited diagnosis plus the specified conditional repairs with maximum customer exposure of $780 while coverage is pending. Technician findings justify the work; deterministic rules apply coverage to qualifying items. Partial coverage is possible. Work outside the approved scope or cap requires a new quote and approval.
-- Routine qualifying technician findings support deterministic warranty treatment. Disputed or incomplete findings go to the warranty reviewer; a model hypothesis cannot establish entitlement.
-
-Further accepted on 2026-09-30: this first example has no separate workmanship/callback guarantee; manufacturer warranty and service-plan benefits continue to apply. Missing maintenance records are an information gap and do not by themselves trigger warranty review, suspend coverage, or establish an exclusion. Incident-specific incomplete or disputed findings still require review.
-
-Also accepted on 2026-09-30: diagnosis and travel remain included even when the fault is unresolved. The $300 premium is payable when expedited attendance occurs. Only actual authorized repair labor and installed parts are chargeable, subject to warranty and the approved cap. A timely submitted approved service request preserves quoted prices, while resource availability remains unconfirmed. Changes to attendance, repair scope, or the approved cap require renewed approval.
-
-The baseline business snapshot is 2026-09-29 at 09:00 America/Los_Angeles (`2026-09-29T09:00:00-07:00`). Scenario variations must explicitly override the relevant baseline records. Amounts are USD; dates and clock times below use the site time zone unless stated otherwise.
-
-Accepted in the fresh review: restoration-risk preference is an explicit planning input and may be unspecified. The base case supplies no such preference, restoration probability, or monetary downtime value. Recommendations must address the expiring continuity decision and accepted risk without inventing those facts. Evaluator expectations, including defensible alternative strategies, remain in the working design rather than retrieved evidence.
+The active fixture business clock is September 29, 2026, 09:05 America/Los_Angeles.
+Dates and times below use site time unless stated otherwise. `fixtures/business.json`
+and `fixtures/base-case.json` contain the supplied records; `scripts/seed_sources.py`
+regenerates them from the passages and explicit source facts. Explanatory interpretations
+in this document are not included as worked answers in the retrieved passages.
+See [foundation](foundation.md) for the implemented application boundary.
 
 ## A. Manufacturer user manual — MAN-P240-R2, revision 2.0
 
@@ -183,23 +173,3 @@ Accepted planning constraint: the loaner offer expires before the expedited tech
 | REPLACE-017 v1 | Compatible new P240 revision B, $12,500 equipment price, estimated lead time ten business days; installation not yet quoted | A longer-term alternative, not a remedy for tomorrow's start |
 
 Do not hide the access issue in the expedited or loaner option. Site access arrangements are a specific handoff item. The 2–4 hour work estimate includes diagnosis and possible repair; the quote allows at most two chargeable repair hours, with additional repair work requiring a new approval. Do not treat the estimate as a guaranteed diagnosis or repair duration.
-
-## H. Decision and action records: accepted boundary, proposed details
-
-The assessment record should preserve which versions of A–G were consulted, the supported alternatives, selected option, quoted amounts, uncertainty, questions, required authority, and next contact. It should cite source IDs and sections, not fabricated URLs.
-
-For the base example, Maya's assessment ends awaiting approval without creating business commitments. In one later authenticated submission, Luis explicitly approves the expedited scoped option with $780 maximum exposure and requests service-request creation while the quote remains valid. His verified approval is recorded with the request; there is no separate approval-management workflow. The created service request includes the incident, evidence references, approved attendance, requested parts to bring, pending coverage status, repair scope/cap, and site-access question. The application's action ends at a durable `PENDING_DISPATCH` receipt. It does not say “technician booked,” “warranty approved,” or “machine repaired.”
-
-Dispatch confirmation, technician findings, and changed offers remain fixture records. They may inform assessments or demonstrate the need for renewed approval, but the first reference does not manage dispatch, repair, or post-creation amendment lifecycles. The boundary and single approval/creation submission were accepted on 2026-09-30; exact fields and error contracts remain to be designed.
-
-A repeated commitment with the same idempotency key and same approved content returns that receipt. Reuse with different content must not create or silently substitute another request. The exact error/status contract remains to be designed.
-
-## I. What remains to author after review
-
-### Service-term review status
-
-The identified callback, missing-record, unsuccessful-visit, and submission/dispatch terms are settled for this example in W-4 and S-3 through S-7. This is a scoped demonstration contract, not a complete billing system. Exact action contracts, dispatch representation, and scenario assertions remain to be reviewed before building.
-
-Keep these initial documents small. We still need a reviewed version of the fictional manual/terms; machine-readable mirrors for dates, compatibility and prices; separate scenario deltas for the [example portfolio](equipment-service-design-draft.md#7-planning-step-4-a-robust-example-portfolio); independent expected results; and scripted model responses that check the actual evidence received.
-
-Add only artifacts that change a decision or establish an observable claim. A diagram of machine components could improve a later presentation, but realistic drawings, a full maintenance ERP, and a document-search platform are not prerequisites for the first demonstration.

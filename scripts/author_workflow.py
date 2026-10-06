@@ -66,7 +66,7 @@ DECISION_PROMPTS = {
 }
 
 def input_bindings(parent, child):
-    """PR 21 JSON Pointer selectors; models do not copy authoritative input values."""
+    """Declared JSON Pointer selectors; models do not copy authoritative input values."""
     bindings = {f'/{key}': {'from': 'input', 'path': f'/{key}'}
                 for key in ['caseId', 'assetId']}
     def supplied(destination, path):

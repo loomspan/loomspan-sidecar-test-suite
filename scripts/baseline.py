@@ -9,8 +9,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 def baseline():
     file=ROOT/'.runtime/build-baseline.json'
     if not file.exists():
-        return {'framework':'1.0.0-beta.7','frameworkCommit':'0778065ef5bafc9c8ea979093e5e0e48d7e1e687',
-                'sidecar':'1.0.0-beta.2','sidecarCommit':'da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7'}
+        raise RuntimeError('Record the current packages with scripts/record_snapshot_build.py before checking runtime identity')
     result=json.loads(file.read_text())
     for path,jar in [('java','/app/app.jar'),('sidecar','/app/loomspan-sidecar.jar')]:
         actual=subprocess.check_output(target_env.execute(path,'sha256sum',jar),text=True).split()[0]

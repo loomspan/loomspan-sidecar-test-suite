@@ -33,16 +33,6 @@ def main():
             'providerRequestTimeoutSeconds':request_timeout,'missionTimeoutSeconds':mission_timeout,
             'sessionMaxUsageUnits':usage_limits[0],
             'installedFrameworkSha256':digest,'artifacts':{},'configurationSha256':{}}
-    result['suiteCommit']=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
-    result['sourceWorktreeStatus']={name:subprocess.check_output(
-        ['git','-C',str(directory),'status','--porcelain'],text=True).splitlines()
-        for name,directory in [('suite',ROOT),('framework',ROOT.parent/'loomspan-framework'),
-                               ('sidecar',ROOT.parent/'loomspan-sidecar')]}
-    result['frameworkCorrectionSourceSha256']={path.name:hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in (ROOT.parent/'loomspan-framework/src/main/java/ai/loomspan/internal/runtime/step').glob('*.java')
-        if path.name in {'StepActionCorrection.java','StepLoopMissionExecutionEngine.java','StepPromptBuilder.java'}}
-    schema_advisor=ROOT.parent/'loomspan-framework/src/main/java/ai/loomspan/internal/outputschema/OutputSchemaCallAdvisor.java'
-    result['frameworkCorrectionSourceSha256'][schema_advisor.name]=hashlib.sha256(schema_advisor.read_bytes()).hexdigest()
     for name,path in [('java',ROOT/'apps/java/target/equipment-java-1.0.jar'),
                       ('sidecar',ROOT/'.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/target/loomspan-sidecar-1.0.0-beta.2.jar')]:
         with zipfile.ZipFile(path) as jar:

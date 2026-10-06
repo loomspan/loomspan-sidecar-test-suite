@@ -1,9 +1,17 @@
-# Continuing work in this repository
+# Continuing work
 
-Read `README.md` and `docs/project-agreement.md` first. They preserve the user's agreed direction and distinguish decisions from suggestions. Read the two linked customer-facing claims documents when working on scenarios or coverage.
+Read README.md and docs/project-agreement.md first, then docs/foundation.md and
+docs/runtime.md as relevant. These describe the current Phase 2 foundation.
 
-Implementation was explicitly authorized on 2026-10-01. Follow the accepted first-delivery scope in `docs/implementation-handoff.md` and read `docs/implementation-status.md` for observed blockers and unverified work. Do not treat historical recommendations as finalized choices or compatibility checks as complete acceptance. Follow the user's current request.
+Preserve equivalence between embedded Java Framework and Python/FastAPI with
+Sidecar. Current skills and configuration are the starting point for experiments,
+not immutable reference answers. Agree on experiment scope and paid model runs
+before executing them. Keep claims, hypotheses and observed results distinct.
 
-Keep planning centered on customer-facing capabilities and convincing demonstrations through two equivalent reference microservices. Do not expand the claims lists into exhaustive low-level API-contract inventories unless the user requests that change.
+Phase 1 is complete. Historical archives, comparisons, diagnostic tests and replay
+machinery were deliberately retired on 2026-10-06 after an external recovery snapshot.
+Do not reconstruct those dependencies as prerequisites for ordinary Phase 2 work.
+Phase 3 release-confidence regression coverage remains future work.
 
-Keep the agreement current when the user settles or changes a design decision. Preserve the distinction between a claim, a proposed validation target, and an observed result.
+Keep the project agreement current when the user settles or changes direction.
+Do not infer a commit, push, release or paid evaluation from a documentation change.

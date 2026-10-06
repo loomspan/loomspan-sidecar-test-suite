@@ -34,7 +34,7 @@ def main():
                 'buildReference': build, 'sourceSha256': source,
                 'suiteCommit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                 'providerAccess': 'disabled', 'credentials': 'generate at installation',
-                'retainedEvidence': 'supplied separately for optional offline acceptance; not fresh results'}
+                'verification': 'Provider-free foundation smoke only; model evaluation and release acceptance are separate'}
     with zipfile.ZipFile(out / 'equipment-runtime.zip', 'x', zipfile.ZIP_DEFLATED) as archive:
         for name in names:
             archive.write(ROOT / name, name)

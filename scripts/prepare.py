@@ -7,18 +7,22 @@ def write(path, value):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(value, encoding="utf-8")
 def export_sources():
-    for name, version, expected in [
-        ('sidecar','1.0.0-beta.2','da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7'),
-        ('framework','1.0.0-beta.7','0778065ef5bafc9c8ea979093e5e0e48d7e1e687')]:
-        repo=ROOT.parent / ('loomspan-'+name)
-        sha=subprocess.check_output(['git','-C',str(repo),'rev-parse',f'v{version}^{{commit}}'],text=True).strip()
-        if sha != expected: raise RuntimeError(f'{name} tag mismatch: {sha}')
-        dest=ROOT/'.build'/(name+'-'+version)
-        if not dest.exists():
-            archive=ROOT/'.build'/f'{name}-{version}.tar'; archive.parent.mkdir(exist_ok=True)
-            subprocess.run(['git','-C',str(repo),'archive','--format=tar',f'--output={archive}',f'v{version}'],check=True)
-            dest.mkdir()
-            with tarfile.open(archive) as t: t.extractall(dest,filter='data')
+    # Export only the Sidecar source used by the current snapshot overlay.
+    import io
+    repo = ROOT.parent / 'loomspan-sidecar'
+    ref = 'v1.0.0-beta.2'
+    expected = 'da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7'
+    sha = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref + '^{commit}'], text=True).strip()
+    if sha != expected:
+        raise RuntimeError('Sidecar source tag mismatch')
+    dest = ROOT / '.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT'
+    if dest.exists():
+        return
+    raw = subprocess.check_output(['git', '-C', str(repo), 'archive', '--format=tar', ref])
+    dest.mkdir(parents=True)
+    with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
+        archive.extractall(dest, filter='data')
+
 def prepare_runtime():
     runtime=ROOT/'.runtime'; runtime.mkdir(exist_ok=True)
     secretfile=runtime/'secrets.json'
