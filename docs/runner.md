@@ -10,8 +10,12 @@ improvements and targeted rollback. There are no experiment variants to register
 | `capture` | Same execution as live, with an explicit unreviewed candidate-review document. No automatic fixture approval. |
 | `mock` | Reserved provider-free regression mode. Currently exits with UNAVAILABLE (code 2): compatible approved fixtures/replay support are not established. No runtime changes or paid fallback. |
 
-The initial scenarios are `baseline` and `priority` assessments. Both are selected
-by default; repeat `--scenario` to select a subset. Inputs and checks live in
+The default scenarios are `baseline` and `priority` assessments. Both are selected
+by default; repeat `--scenario` to select cases. Optional Phase 2 variations are
+`capacity_shortfall` (priority with a 25/minute capacity need) and `later_start`
+(baseline with a September 30 16:00 production start). These change mission inputs
+only; their expected business implications are defined in the project agreement,
+and business review remains manual. Inputs and checks live in
 `scripts/scenarios.py`, separately from orchestration. Full service-request regression
 is not part of this first runner; `scripts/smoke.py` remains the independent foundation check.
 
@@ -68,7 +72,17 @@ existing directory. There is no automatic retention or fixture-promotion service
 
 Checks cover completed execution, exact issued quotes, persisted publication, accepted
 assessment/comparison result preservation, unchanged prior rows, no service commitment,
-model selection and provider request/response pairing. The bundle contains accepted
+model selection and provider request/response pairing. Nine added checks verify
+the original incident, each published option result, and its source metadata
+against traced inputs/results. A portfolio check verifies valid, unique pursued
+options and consistency with the primary selection (empty for defer/undecided).
+Four service checks also verify dedicated condition fields and owner references
+against the exact source contact directory. Role meaning remains manual review.
+Offer metadata is checked against the complete record in the assessor's context.offer;
+the public output retains offerExpiresAt, offerReserved and offerSourceId. Full business
+review includes deferred findings and any explicit governing corrections in reviewConcerns.
+The current total is 27 checks per case without claiming semantic correctness.
+The bundle contains accepted
 Framework plans; raw fenced model JSON is not misclassified as a planning failure.
 This is not the retired comprehensive binding auditor or a Phase 3 release suite.
 
@@ -79,13 +93,27 @@ attempts, direct dispatches, token counts, reported cost and trace duration. Mis
 usage is unknown, not zero. Review business reasoning independently and use repeated
 observations when deciding whether a change is a real improvement.
 
+The current `failedModelAttempts` and `planRetries` counters do not include output
+schema-advisor corrections. Inspect `ADVISOR_REQUEST_MUTATION_RECORDED` events with
+`kind: retry_requested` when explaining extra model calls; record these separately
+in the business review. Valid raw JSON can still violate the output schema.
+
 ## Implementation verification
 
 ```powershell
 .venv/Scripts/python.exe -m pytest tests/test_runner.py -q
 ```
 
-Nineteen provider-free tests verify selection, safe overrides, lock handling, restoration
+Thirty-eight provider-free tests verify selection, safe overrides, lock handling, restoration
 after failures/interruption, evidence integrity and credential rejection, preservation
 checks, fenced-response tolerance and CLI report publication using simulated services.
 No real provider run was performed as part of implementing the runner.
+
+
+Per-skill experiments can add repeatable `--skill-model SKILL=PROVIDER/MODEL`
+arguments to the default `--model`. Overrides apply only to temporary manifests and
+model aliases on either integration; authored skills remain unchanged. The report
+records `skillModels`, the bundle captures effective configuration, and mixed-run
+checks validate each trace request's skill/model pair and provider model counts.
+All assignments share the selected `--reasoning` setting. These options do not
+authorize paid execution by themselves.

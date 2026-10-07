@@ -14,7 +14,9 @@ Do not use bare `docker compose up`, which omits those overlays.
 ```
 
 The smoke check logs in through real PKCE, invokes deterministic quote tools through
-both integrations, checks unauthenticated denial and Maya's request-creation denial,
+both integrations, verifies complete offer records and exact service quotes against
+source fixtures (including quote attendance equaling source arrival), checks
+unauthenticated denial and Maya's request-creation denial,
 and verifies no model requests and no changes to previous business rows. It adds two
 quote rows per app under new smoke case IDs. Results are in `.runtime/smoke.json`.
 It is a foundation check, not full business acceptance or model evaluation.

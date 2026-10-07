@@ -181,6 +181,15 @@ public class Business {
             q.put("expiresAt", resources.get("expiresAt"));
             q.put("reservation", false);
             q.put("restorationGuaranteed", false);
+            var rateRecord = (Map<?, ?>) terms.get("rates");
+            q.put("priceBreakdown", Map.of(
+                    "rateSourceId", rateRecord.get("id"), "rateSourceRevision", rateRecord.get("revision"),
+                    "repairLabor", Map.of("hours", 2, "hourlyRate", rates.get("repairHourly"),
+                            "maximum", 2 * rates.get("repairHourly").intValue()),
+                    "parts", List.of(
+                            Map.of("partId", "S17-B", "description", "sensor", "amount", rates.get("sensor")),
+                            Map.of("partId", "H17-B", "description", "connector kit", "amount", rates.get("connector"))),
+                    "attendancePremium", premium));
             quotes.add(q);
             try (var c = db(); var s = c.prepareStatement("INSERT OR IGNORE INTO quotes VALUES(?,?)")) {
                 s.setString(1, (String) q.get("quoteId"));
@@ -188,7 +197,25 @@ public class Business {
                 s.executeUpdate();
             }
         }
-        return Map.of("caseId", caseId, "assetId", assetId, "quotes", quotes, "entitlement", entitlement);
+        var continuity = data(caseId, "continuityOptions");
+        var offers = new LinkedHashMap<String, Object>();
+        for (String option : List.of("expedited", "standard", "loaner", "replacement")) {
+            var source = option.equals("expedited") || option.equals("standard") ? resources : continuity;
+            var offer = new LinkedHashMap<String, Object>();
+            offer.put("option", option);
+            offer.put("details", source.get(option));
+            offer.put("expiresAt", source.get("expiresAt"));
+            offer.put("reserved", source.get("reserved"));
+            offer.put("sourceId", source.get("id"));
+            offer.put("sourceRevision", source.get("revision"));
+            offer.put("monetaryUnit", source == resources
+                    ? ((Map<?, ?>) terms.get("rates")).get("monetaryUnit") : source.get("monetaryUnit"));
+            quotes.stream().filter(q -> option.equals(q.get("option"))).findFirst()
+                    .ifPresent(q -> offer.put("quote", q));
+            offers.put(option, offer);
+        }
+        return Map.of("caseId", caseId, "assetId", assetId, "quotes", quotes, "offers", offers,
+                "entitlement", entitlement);
     }
 
     String saveAssessment(String execution, String result) throws Exception {

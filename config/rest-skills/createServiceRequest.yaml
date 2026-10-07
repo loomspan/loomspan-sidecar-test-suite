@@ -20,6 +20,9 @@ input_schema:
           type: string
         attendance:
           type: string
+          description: The selected quote's offered technician arrival window, copied
+            exactly for approval matching. Approval does not confirm dispatch or establish
+            a visit-completion deadline.
         scope:
           type: object
           properties:

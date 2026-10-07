@@ -136,13 +136,96 @@ def test_usage_missing_cost_is_unknown_and_fenced_response_is_not_failure():
 def sample():
     case = 'case-test'
     quotes = [{'caseId': case, 'option': 'standard'}, {'caseId': case, 'option': 'expedited'}]
-    value = {'caseId': case, 'assetId': 'asset', 'quotes': quotes, 'equipmentAssessment': {'cause': 'unknown'}}
-    value.update({k: 'present' for k in ['disposition', 'selectedOption', 'rationale', 'alternatives', 'uncertainty', 'acceptedRisk', 'changeConditions', 'nextDecision', 'responsibleParty', 'citations']})
+    value = {'caseId': case, 'assetId': 'asset', 'quotes': quotes,
+             'equipmentAssessment': {'cause': 'unknown', 'reportedIncident': 'Original incident'},
+             'optionAssessments': {option: {'offerExpiresAt': 'deadline', 'offerReserved': False,
+                                           'offerSourceId': 'source', 'accessCondition': 'unresolved'}
+                                   for option in ['expedited', 'standard', 'loaner', 'replacement']}}
+    value.update({k: 'present' for k in ['disposition', 'selectedOption', 'rationale', 'alternatives', 'uncertainty', 'acceptedRisk', 'nextDecision', 'citations']})
+    value.update(selectedOption='expedited', pursuedOptions=['expedited', 'loaner'], reviewConcerns=[])
+    for option in ['expedited', 'standard']:
+        value['optionAssessments'][option].update(
+            chargeCondition='Conditional charges', scopeChangeCondition='Renew approval',
+            coverageReviewCondition='Pending review', dispatchOwnerSourceIds=['dispatch'],
+            coverageReviewerSourceIds=['review'],
+            ownerDirectory=[{'id': 'dispatch', 'responsibility': 'Dispatch'},
+                            {'id': 'review', 'responsibility': 'Coverage review'}])
     rows = {'quotes': [{'body': json.dumps(q)} for q in quotes], 'assessments': [{'body': json.dumps(value)}], 'requests': []}
     trace = [{'recordType': 'TOOL_CALL_COMPLETED', 'route': skill, 'timestamp': i,
               'data': {'details': {'result': json.dumps(output)}}}
              for i, (skill, output) in enumerate([('assessEquipment', value['equipmentAssessment']), ('compareOptions', value)])]
-    return value, rows, trace
+    extra = [{'recordType': 'TOOL_CALL_STARTED', 'route': 'assessEquipment',
+              'data': {'details': {'arguments': {'context': {'incident': 'Original incident'}}}}}]
+    for option, output in value['optionAssessments'].items():
+        skill = 'assess' + option.title() + 'Feasibility'
+        context = copy.deepcopy(output)
+        context['offer'] = {'expiresAt': context.pop('offerExpiresAt'),
+                            'reserved': context.pop('offerReserved'),
+                            'sourceId': context.pop('offerSourceId')}
+        if 'ownerDirectory' in output:
+            context['assetContext'] = {'contacts': copy.deepcopy(output['ownerDirectory'])}
+        extra.extend([
+            {'recordType': 'TOOL_CALL_STARTED', 'route': skill,
+             'data': {'details': {'arguments': {'context': context}}}},
+            {'recordType': 'TOOL_CALL_COMPLETED', 'route': skill,
+             'data': {'details': {'result': copy.deepcopy(output)}}}])
+    for record in extra:
+        record['timestamp'] = 0
+    return value, rows, extra + trace
+
+
+@pytest.mark.parametrize('mutation', ['omitted', 'restated', 'metadata', 'incident'])
+def test_publication_checks_detect_loss_or_rewriting(mutation):
+    value, _, trace = sample()
+    assert all(scenarios.publication_checks(value, trace).values())
+    if mutation == 'omitted':
+        del value['optionAssessments']['expedited']
+    elif mutation == 'restated':
+        value['optionAssessments']['expedited']['accessCondition'] = 'resolved'
+    elif mutation == 'metadata':
+        value['optionAssessments']['expedited']['offerExpiresAt'] = 'unknown'
+    else:
+        value['equipmentAssessment']['reportedIncident'] = 'rewritten'
+    assert not all(scenarios.publication_checks(value, trace).values())
+
+
+@pytest.mark.parametrize('selected,options,valid', [
+    ('expedited', ['expedited', 'loaner'], True),
+    ('expedited', ['loaner'], False),
+    ('expedited', ['expedited', 'expedited'], False),
+    ('loaner', ['loaner', 'invented'], False),
+    ('defer', [], True),
+    ('undecided', ['loaner'], False),
+    ('loaner', 'loaner', False),
+])
+def test_portfolio_selection_consistency(selected, options, valid):
+    assert scenarios.portfolio_valid({'selectedOption': selected, 'pursuedOptions': options}) is valid
+
+
+@pytest.mark.parametrize('mutation,expected', [
+    ('none', (True, True)), ('missing', (False, True)), ('blank', (False, True)),
+    ('foreign', (True, False)), ('duplicate', (True, False)),
+    ('directory', (True, False)), ('wrong_role', (True, True)), ('empty', (True, True)),
+])
+def test_service_conditions_check_structure_not_semantic_role(mutation, expected):
+    value, _, _ = sample()
+    published = value['optionAssessments']['expedited']
+    context = {'assetContext': {'contacts': copy.deepcopy(published['ownerDirectory'])}}
+    if mutation == 'missing':
+        del published['scopeChangeCondition']
+    elif mutation == 'blank':
+        published['chargeCondition'] = ' '
+    elif mutation == 'foreign':
+        published['coverageReviewerSourceIds'] = ['invented']
+    elif mutation == 'duplicate':
+        published['coverageReviewerSourceIds'] = ['review', 'review']
+    elif mutation == 'directory':
+        published['ownerDirectory'][1]['name'] = 'Invented name'
+    elif mutation == 'wrong_role':
+        published['coverageReviewerSourceIds'] = ['dispatch']
+    elif mutation == 'empty':
+        published['coverageReviewerSourceIds'] = []
+    assert scenarios.service_conditions(published, context) == expected
 
 
 def test_exact_preservation_detects_rewritten_child_or_quote():
@@ -237,3 +320,40 @@ def test_cli_publishes_report_and_restores_without_external_services(root, monke
         assert len(report['cases']) == (2 if mode == 'evaluate' else 4)
     with zipfile.ZipFile(root / 'evidence/latest/bundle.zip') as archive:
         assert ('candidate-review.json' in archive.namelist()) == (mode == 'capture')
+
+
+def test_mixed_overlay_preserves_contracts_and_both_hosts(root):
+    source = root / 'config/skills/example.yaml'
+    source.write_text('name: example\nmodel: reasoning\nthinking_level: medium\nprompt: Keep business method\ninput_bindings: {}\n')
+    before = source.read_bytes()
+    directory = root / '.runtime/mixed'
+    directory.mkdir()
+    runner.make_overlay(directory, ['java', 'sidecar'], 'test/lower', 'medium', {'example': 'test/stronger'})
+    effective = yaml.safe_load((directory / 'skills/example.yaml').read_bytes())
+    original = yaml.safe_load(before)
+    original['model'] = 'trial-example'
+    assert effective == original
+    assert source.read_bytes() == before
+    for host in ['java', 'sidecar']:
+        models = yaml.safe_load((directory / (host + '.yaml')).read_bytes())['loomspan']['models']
+        assert models['reasoning']['provider-model'] == 'test/lower'
+        assert models['trial-example']['provider-model'] == 'test/stronger'
+        assert models['trial-example']['thinking-levels'] == ['medium']
+
+
+def test_mixed_routing_check_rejects_swapped_skills_even_with_same_model_counts():
+    calls = [{'request': {'model': m}} for m in ['test/lower', 'test/stronger']]
+    def request(skill, model):
+        return {'recordType': 'MODEL_REQUEST_SENT', 'metadata': {'skillName': skill, 'providerModel': model}}
+    trace = [request('parent', 'test/lower'), request('expert', 'test/stronger')]
+    assert runner.model_assignment_matches(calls, trace, 'test/lower', {'expert': 'test/stronger'})
+    swapped = [request('parent', 'test/stronger'), request('expert', 'test/lower')]
+    assert not runner.model_assignment_matches(calls, swapped, 'test/lower', {'expert': 'test/stronger'})
+    assert not runner.model_assignment_matches(calls, trace[:1], 'test/lower', {'expert': 'test/stronger'})
+
+
+def test_invalid_mixed_override_stops_before_runtime(root, monkeypatch):
+    monkeypatch.setattr(runner, 'ready', lambda: pytest.fail('Must not access runtime'))
+    for value in ['missing=test/model', '../example=test/model', 'example=', 'example']:
+        with pytest.raises(SystemExit):
+            runner.main(['evaluate', '--model', 'test/lower', '--skill-model', value, '--dry-run'])

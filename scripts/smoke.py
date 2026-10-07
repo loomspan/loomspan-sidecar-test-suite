@@ -61,6 +61,7 @@ def main():
               'runtimeIdentity': identity['runtimeIdentity'], 'modelConfiguration': profile,
               'scope': 'Foundation smoke only; not model judgment or release acceptance',
               'paths': {}}
+    sources = json.loads((ROOT / 'fixtures/business.json').read_bytes())
     with httpx.Client(timeout=30, trust_env=False) as client:
         for name, storage, port in [('java', 'java', 18081), ('sidecar', 'python', 18082)]:
             before = records(storage)
@@ -82,6 +83,27 @@ def main():
             assert quotes['standard']['fullyCoveredScopeMaximum'] == 0
             assert all(q['coverage'] == 'PENDING' and not q['reservation']
                        and not q['restorationGuaranteed'] for q in quotes.values())
+            assert set(output['offers']) == {'expedited', 'standard', 'loaner', 'replacement'}
+            for option, offer in output['offers'].items():
+                source = sources['serviceResources' if option in quotes else 'continuityOptions']
+                assert offer['option'] == option and offer['details'] == source[option]
+                assert all(offer[k] == source[k] for k in ['expiresAt', 'reserved'])
+                assert offer['sourceId'] == source['id'] and offer['sourceRevision'] == source['revision']
+                assert offer['monetaryUnit'] == 'cents'
+                if option in quotes:
+                    assert offer['quote'] == quotes[option]
+                    assert quotes[option]['attendance'] == source[option]['arrival']
+                    detail = quotes[option]['priceBreakdown']
+                    assert detail == {
+                        'rateSourceId': 'RATE-09', 'rateSourceRevision': '1',
+                        'repairLabor': {'hours': 2, 'hourlyRate': 15000, 'maximum': 30000},
+                        'parts': [{'partId': 'S17-B', 'description': 'sensor', 'amount': 12000},
+                                  {'partId': 'H17-B', 'description': 'connector kit', 'amount': 6000}],
+                        'attendancePremium': 30000 if option == 'expedited' else 0}
+                    assert (detail['repairLabor']['maximum'] + sum(p['amount'] for p in detail['parts'])
+                            + detail['attendancePremium']) == quotes[option]['maxExposure']
+                else:
+                    assert 'quote' not in offer
             approval = {'assessmentVersion': 'not-issued', 'option': 'standard',
                         'quoteId': 'not-issued', 'attendance': 'not-issued',
                         'scope': {'repairHours': 1, 'parts': [], 'onlyIfJustifiedByTechnician': True},
@@ -97,7 +119,7 @@ def main():
             assert len(after['quotes']) == len(before['quotes']) + 2
             assert len(after['assessments']) == len(before['assessments'])
             assert len(after['requests']) == len(before['requests'])
-            result['paths'][name] = {'deterministicQuotes': 'PASS', 'unauthenticatedDenied': True,
+            result['paths'][name] = {'deterministicQuotes': 'PASS', 'completeOffers': 'PASS', 'unauthenticatedDenied': True,
                 'mayaCreationDenied': True, 'priorRecordsPreserved': True, 'newQuoteRows': 2,
                 'modelCalls': 0, 'caseId': case}
     require_offline_provider()

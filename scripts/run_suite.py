@@ -1,5 +1,7 @@
 """One runner: mock, live, evaluate and capture. No variant registry or historical inputs."""
 import argparse
+import copy
+from collections import Counter
 from contextlib import contextmanager
 from decimal import Decimal
 import hashlib
@@ -74,17 +76,26 @@ def command(args):
     subprocess.run(args, cwd=ROOT, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
 
-def make_overlay(directory, paths, model, reasoning):
+def make_overlay(directory, paths, model, reasoning, skill_models=None):
+    skill_models = skill_models or {}
     skills = directory / 'skills'
     skills.mkdir()
     for source in (ROOT / 'config/skills').glob('*.yaml'):
         text = source.read_text(encoding='utf-8')
         text = re.sub(r'^thinking_level:.*\n', '' if reasoning == 'none' else 'thinking_level: ' + reasoning + '\n', text, flags=re.M)
+        if source.stem in skill_models:
+            text = re.sub(r'^model:.*$', 'model: trial-' + source.stem, text, flags=re.M)
         (skills / source.name).write_text(text, encoding='utf-8')
     services = {'fixtures': {'environment': {'OPENROUTER_API_KEY': '${LOOMSPAN_OPENROUTER_API_KEY:?Provider key required}'}}}
     for path in paths:
         config = yaml.safe_load((ROOT / 'config' / (path + '.yaml')).read_text(encoding='utf-8'))
         config['loomspan']['models']['reasoning'].update({'provider-model': model, 'thinking-levels': [] if reasoning == 'none' else [reasoning]})
+        for skill, provider_model in skill_models.items():
+            alias = 'trial-' + skill
+            if alias in config['loomspan']['models']:
+                raise ValueError('Trial model alias already exists: ' + alias)
+            config['loomspan']['models'][alias] = copy.deepcopy(config['loomspan']['models']['reasoning'])
+            config['loomspan']['models'][alias]['provider-model'] = provider_model
         target = directory / (path + '.yaml')
         target.write_text(yaml.safe_dump(config, sort_keys=False), encoding='utf-8')
         services[path] = {'volumes': [target.as_posix() + ':/config/runtime.yaml:ro', skills.as_posix() + ':/config/skills:ro']}
@@ -104,11 +115,11 @@ def verify_mounted(directory, paths):
 
 
 @contextmanager
-def live_runtime(directory, paths, model, reasoning, report):
+def live_runtime(directory, paths, model, reasoning, report, skill_models=None):
     if os.getenv('LOOMSPAN_RUN_OVERLAY') or os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
         raise RuntimeError('An external runtime overlay is already active')
     require_offline_provider()
-    overlay = make_overlay(directory, paths, model, reasoning)
+    overlay = make_overlay(directory, paths, model, reasoning, skill_models)
     report['runtimeRestored'] = False
     try:
         os.environ['LOOMSPAN_RUN_OVERLAY'] = str(overlay)
@@ -188,7 +199,23 @@ def usage(events, trace):
     return result
 
 
-def execute_case(client, name, path, token, secrets, bundle, timeout, model):
+def model_assignment_matches(calls, trace, model, skill_models=None):
+    if not calls:
+        return False
+    if not skill_models:
+        return all(e['request'].get('model') == model for e in calls)
+    requests = [r for r in trace if r['recordType'] == 'MODEL_REQUEST_SENT']
+    if len(requests) != len(calls):
+        return False
+    for r in requests:
+        meta = r.get('metadata', {})
+        skill = meta.get('skillName')
+        if not skill or meta.get('providerModel') != skill_models.get(skill, model):
+            return False
+    return Counter(r['metadata']['providerModel'] for r in requests) == Counter(e['request'].get('model') for e in calls)
+
+
+def execute_case(client, name, path, token, secrets, bundle, timeout, model, skill_models=None):
     case = 'case-' + path + '-' + uuid.uuid4().hex
     prefix = name + '/' + path
     mission = scenarios.inputs(name, case)
@@ -238,7 +265,7 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model):
         calls = [e for e in events if e['event'] == 'model-request']
         responses = [e for e in events if e['event'] == 'model-response']
         result['checks']['complete provider pairing'] = bool(calls) and sorted(e['requestId'] for e in calls) == sorted(e['requestId'] for e in responses)
-        result['checks']['requested model used'] = bool(calls) and all(e['request'].get('model') == model for e in calls)
+        result['checks']['requested model used'] = model_assignment_matches(calls, trace, model, skill_models)
         result['checks']['no provider failures'] = not any(e['event'] in ['provider-transport-failure', 'model-rejected'] for e in events) and all(e.get('status', 0) == 200 and not e.get('response', {}).get('error') for e in responses)
         result['usage'] = usage(events, trace)
         result['status'] = 'CHECKS_PASS_REVIEW_REQUIRED' if result['checks'] and all(result['checks'].values()) and not any(k.endswith('Error') for k in result) else 'FAIL'
@@ -285,6 +312,7 @@ def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('mode', choices=['mock', 'live', 'evaluate', 'capture'])
     p.add_argument('--model', help='Explicit provider/model identifier for paid modes')
+    p.add_argument('--skill-model', action='append', default=[], metavar='SKILL=MODEL', help='Temporary per-skill model override; repeatable')
     p.add_argument('--reasoning', default='medium', choices=['none', 'minimal', 'low', 'medium', 'high', 'xhigh'])
     p.add_argument('--path', choices=['java', 'sidecar'], help='evaluate only; defaults to java')
     p.add_argument('--scenario', action='append', choices=scenarios.NAMES, help='Repeat to select scenarios; default both')
@@ -303,11 +331,20 @@ def main(argv=None):
         return 2
     if not args.model:
         p.error('--model is required for live, evaluate and capture')
+    skill_models = {}
+    for value in args.skill_model:
+        skill, separator, provider_model = value.partition('=')
+        source = ROOT / 'config/skills' / (skill + '.yaml')
+        if not separator or not provider_model.strip() or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*', skill) or not source.is_file():
+            p.error('Invalid skill override: ' + value)
+        if skill in skill_models or yaml.safe_load(source.read_bytes()).get('model') != 'reasoning':
+            p.error('Duplicate override or unsupported source model: ' + skill)
+        skill_models[skill] = provider_model
     paths = [args.path or 'java'] if args.mode == 'evaluate' else ['java', 'sidecar']
-    selected = list(dict.fromkeys(args.scenario or scenarios.NAMES))
+    selected = list(dict.fromkeys(args.scenario or scenarios.DEFAULT_NAMES))
     if args.dry_run:
         print(json.dumps({'mode': args.mode, 'paths': paths, 'scenarios': selected,
-                          'model': args.model, 'reasoning': args.reasoning, 'paidCalls': 0}, indent=2))
+                          'model': args.model, 'skillModels': skill_models, 'reasoning': args.reasoning, 'paidCalls': 0}, indent=2))
         return 0
     if not os.getenv('LOOMSPAN_OPENROUTER_API_KEY'):
         p.error('LOOMSPAN_OPENROUTER_API_KEY is required; no runtime changes made')
@@ -317,7 +354,7 @@ def main(argv=None):
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
     bundle = Bundle([*secrets.values(), os.environ['LOOMSPAN_OPENROUTER_API_KEY']])
     report = {'runId': uuid.uuid4().hex, 'mode': args.mode, 'model': args.model, 'reasoning': args.reasoning,
-              'paths': paths, 'scenarios': selected, 'cases': [], 'status': 'FAIL', 'runtimeRestored': None,
+              'skillModels': skill_models, 'paths': paths, 'scenarios': selected, 'cases': [], 'status': 'FAIL', 'runtimeRestored': None,
               'scope': 'Assessment scenarios only; service-request regression is separate',
               'businessReview': 'PENDING', 'replayApproved': False,
               'captureCandidate': args.mode == 'capture'}
@@ -336,7 +373,7 @@ def main(argv=None):
                 bundle.add('source/' + f.relative_to(ROOT).as_posix(), f.read_bytes())
             with tempfile.TemporaryDirectory(prefix='runner-', dir=ROOT / '.runtime') as temporary:
                 directory = Path(temporary)
-                with live_runtime(directory, paths, args.model, args.reasoning, report):
+                with live_runtime(directory, paths, args.model, args.reasoning, report, skill_models):
                     for file in directory.rglob('*.yaml'):
                         bundle.add('effective/' + file.relative_to(directory).as_posix(), file.read_bytes())
                     with httpx.Client(timeout=60, trust_env=False) as client:
@@ -346,7 +383,7 @@ def main(argv=None):
                                 token = login('maya')
                                 bundle.secrets.append(token)
                                 case = execute_case(client, name, path, token, secrets, bundle,
-                                                    report['build']['missionTimeoutSeconds'] + 60, args.model)
+                                                    report['build']['missionTimeoutSeconds'] + 60, args.model, skill_models)
                                 report['cases'].append(case)
                                 print(case['status'], flush=True)
                                 if case.get('executionError'):

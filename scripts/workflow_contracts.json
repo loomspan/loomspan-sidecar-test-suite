@@ -306,31 +306,9 @@
               "hypotheses": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "explanation": {
-                      "type": "string"
-                    },
-                    "supporting": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "contrary": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "required": [
-                    "explanation",
-                    "supporting",
-                    "contrary"
-                  ],
-                  "additionalProperties": false
-                }
+                  "type": "string"
+                },
+                "description": "Each entry explains one possible cause, its supporting and contrary observations with sources, and missing evidence. State when no supporting or contrary evidence is supplied."
               },
               "uncertainty": {
                 "type": "array",
@@ -348,7 +326,12 @@
                 "type": "array",
                 "items": {
                   "type": "string"
-                }
+                },
+                "description": "Identifiers of supplied source records supporting the reasoning. Context property names are not source identifiers."
+              },
+              "reportedIncident": {
+                "type": "string",
+                "description": "Original incident statement, copied by Framework without interpretation."
               }
             },
             "required": [
@@ -358,10 +341,10 @@
               "hypotheses",
               "uncertainty",
               "questions",
-              "citations"
+              "citations",
+              "reportedIncident"
             ],
-            "additionalProperties": false,
-            "description": "Complete unchanged assessEquipment result, including ordered arrays and original citations."
+            "additionalProperties": false
           },
           "assetContext": {
             "type": "object",
@@ -847,31 +830,9 @@
               "hypotheses": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "explanation": {
-                      "type": "string"
-                    },
-                    "supporting": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "contrary": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "required": [
-                    "explanation",
-                    "supporting",
-                    "contrary"
-                  ],
-                  "additionalProperties": false
-                }
+                  "type": "string"
+                },
+                "description": "Each entry explains one possible cause, its supporting and contrary observations with sources, and missing evidence. State when no supporting or contrary evidence is supplied."
               },
               "uncertainty": {
                 "type": "array",
@@ -889,7 +850,12 @@
                 "type": "array",
                 "items": {
                   "type": "string"
-                }
+                },
+                "description": "Identifiers of supplied source records supporting the reasoning. Context property names are not source identifiers."
+              },
+              "reportedIncident": {
+                "type": "string",
+                "description": "Original incident statement, copied by Framework without interpretation."
               }
             },
             "required": [
@@ -899,10 +865,10 @@
               "hypotheses",
               "uncertainty",
               "questions",
-              "citations"
+              "citations",
+              "reportedIncident"
             ],
-            "additionalProperties": false,
-            "description": "Complete unchanged assessEquipment result, including ordered arrays and original citations."
+            "additionalProperties": false
           },
           "assetContext": {
             "type": "object",
@@ -1639,7 +1605,8 @@
                   "type": "string"
                 },
                 "attendance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
                 },
                 "scope": {
                   "type": "object",
@@ -1672,6 +1639,74 @@
                 },
                 "restorationGuaranteed": {
                   "type": "boolean"
+                },
+                "priceBreakdown": {
+                  "type": "object",
+                  "properties": {
+                    "rateSourceId": {
+                      "type": "string"
+                    },
+                    "rateSourceRevision": {
+                      "type": "string"
+                    },
+                    "repairLabor": {
+                      "type": "object",
+                      "properties": {
+                        "hours": {
+                          "type": "integer"
+                        },
+                        "hourlyRate": {
+                          "type": "integer"
+                        },
+                        "maximum": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "hours",
+                        "hourlyRate",
+                        "maximum"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                    },
+                    "parts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "partId": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "partId",
+                          "description",
+                          "amount"
+                        ],
+                        "additionalProperties": false,
+                        "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                      }
+                    },
+                    "attendancePremium": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "rateSourceId",
+                    "rateSourceRevision",
+                    "repairLabor",
+                    "parts",
+                    "attendancePremium"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
                 }
               },
               "required": [
@@ -1685,7 +1720,8 @@
                 "scope",
                 "expiresAt",
                 "reservation",
-                "restorationGuaranteed"
+                "restorationGuaranteed",
+                "priceBreakdown"
               ],
               "additionalProperties": false
             },
@@ -1727,6 +1763,1212 @@
               "premiumCovered"
             ],
             "additionalProperties": false
+          },
+          "feasibility": {
+            "type": "object",
+            "properties": {
+              "expedited": {
+                "type": "object",
+                "properties": {
+                  "arrivalWindow": {
+                    "type": "string",
+                    "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+                  },
+                  "completionWindow": {
+                    "type": "string",
+                    "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+                  },
+                  "accessCondition": {
+                    "type": "string",
+                    "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+                  },
+                  "productionFit": {
+                    "type": "string",
+                    "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+                  },
+                  "expiryCondition": {
+                    "type": "string",
+                    "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+                  },
+                  "approvalCondition": {
+                    "type": "string",
+                    "description": "Service commitment approval for the quoted scope and cap, using verified identity and site permissions. A recorded ceiling is not approval; pending coverage does not prevent cap approval."
+                  },
+                  "unresolved": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Actual supplied source identifiers supporting the findings."
+                  },
+                  "offerExpiresAt": {
+                    "type": "string",
+                    "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+                  },
+                  "offerReserved": {
+                    "type": "boolean",
+                    "description": "Authoritative reservation state copied by Framework."
+                  },
+                  "offerSourceId": {
+                    "type": "string",
+                    "description": "Authoritative offer snapshot identifier copied by Framework."
+                  },
+                  "chargeCondition": {
+                    "type": "string",
+                    "description": "Included services, unconditional or attendance-triggered charges, and conditional repairs for this service offer. Distinguish elapsed visit time from billable repair labor, cap and actual charges; included activities can contribute elapsed time without using the repair-labor allowance. Do not double-count included charges. State missing terms explicitly."
+                  },
+                  "scopeChangeCondition": {
+                    "type": "string",
+                    "description": "Apply source terms for renewed approval when attendance, repair scope or cap changes and a new quote before work beyond approved scope or cap. A longer elapsed-work estimate alone does not establish additional repair scope; identify the changed work or leave the overrun unknown. Explicitly state if no rule is supplied."
+                  },
+                  "coverageReviewCondition": {
+                    "type": "string",
+                    "description": "How findings determine coverage and how incomplete/disputed findings remain pending review. Refer to coverageReviewerSourceIds for the owner; do not invent a personal name."
+                  },
+                  "dispatchOwnerSourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "IDs of supplied contact records whose recorded responsibility owns dispatch/resource confirmation. Empty if no matching record; no personal names."
+                  },
+                  "coverageReviewerSourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "IDs of supplied contact records whose recorded responsibility owns coverage review. Empty if no matching record; do not borrow identity fields from dispatch or another record."
+                  },
+                  "ownerDirectory": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "responsibility": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "hours": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "revision",
+                        "responsibility",
+                        "email"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Supplied contact records copied unchanged by Framework. References identify records, not proof of permission or approval."
+                  }
+                },
+                "required": [
+                  "arrivalWindow",
+                  "completionWindow",
+                  "accessCondition",
+                  "productionFit",
+                  "expiryCondition",
+                  "approvalCondition",
+                  "unresolved",
+                  "citations",
+                  "offerExpiresAt",
+                  "offerReserved",
+                  "offerSourceId",
+                  "chargeCondition",
+                  "scopeChangeCondition",
+                  "coverageReviewCondition",
+                  "dispatchOwnerSourceIds",
+                  "coverageReviewerSourceIds",
+                  "ownerDirectory"
+                ],
+                "additionalProperties": false
+              },
+              "standard": {
+                "type": "object",
+                "properties": {
+                  "arrivalWindow": {
+                    "type": "string",
+                    "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+                  },
+                  "completionWindow": {
+                    "type": "string",
+                    "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+                  },
+                  "accessCondition": {
+                    "type": "string",
+                    "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+                  },
+                  "productionFit": {
+                    "type": "string",
+                    "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+                  },
+                  "expiryCondition": {
+                    "type": "string",
+                    "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+                  },
+                  "approvalCondition": {
+                    "type": "string",
+                    "description": "Service commitment approval for the quoted scope and cap, using verified identity and site permissions. A recorded ceiling is not approval; pending coverage does not prevent cap approval."
+                  },
+                  "unresolved": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Actual supplied source identifiers supporting the findings."
+                  },
+                  "offerExpiresAt": {
+                    "type": "string",
+                    "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+                  },
+                  "offerReserved": {
+                    "type": "boolean",
+                    "description": "Authoritative reservation state copied by Framework."
+                  },
+                  "offerSourceId": {
+                    "type": "string",
+                    "description": "Authoritative offer snapshot identifier copied by Framework."
+                  },
+                  "chargeCondition": {
+                    "type": "string",
+                    "description": "Included services, unconditional or attendance-triggered charges, and conditional repairs for this service offer. Distinguish elapsed visit time from billable repair labor, cap and actual charges; included activities can contribute elapsed time without using the repair-labor allowance. Do not double-count included charges. State missing terms explicitly."
+                  },
+                  "scopeChangeCondition": {
+                    "type": "string",
+                    "description": "Apply source terms for renewed approval when attendance, repair scope or cap changes and a new quote before work beyond approved scope or cap. A longer elapsed-work estimate alone does not establish additional repair scope; identify the changed work or leave the overrun unknown. Explicitly state if no rule is supplied."
+                  },
+                  "coverageReviewCondition": {
+                    "type": "string",
+                    "description": "How findings determine coverage and how incomplete/disputed findings remain pending review. Refer to coverageReviewerSourceIds for the owner; do not invent a personal name."
+                  },
+                  "dispatchOwnerSourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "IDs of supplied contact records whose recorded responsibility owns dispatch/resource confirmation. Empty if no matching record; no personal names."
+                  },
+                  "coverageReviewerSourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "IDs of supplied contact records whose recorded responsibility owns coverage review. Empty if no matching record; do not borrow identity fields from dispatch or another record."
+                  },
+                  "ownerDirectory": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "revision": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "responsibility": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "hours": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "revision",
+                        "responsibility",
+                        "email"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Supplied contact records copied unchanged by Framework. References identify records, not proof of permission or approval."
+                  }
+                },
+                "required": [
+                  "arrivalWindow",
+                  "completionWindow",
+                  "accessCondition",
+                  "productionFit",
+                  "expiryCondition",
+                  "approvalCondition",
+                  "unresolved",
+                  "citations",
+                  "offerExpiresAt",
+                  "offerReserved",
+                  "offerSourceId",
+                  "chargeCondition",
+                  "scopeChangeCondition",
+                  "coverageReviewCondition",
+                  "dispatchOwnerSourceIds",
+                  "coverageReviewerSourceIds",
+                  "ownerDirectory"
+                ],
+                "additionalProperties": false
+              },
+              "loaner": {
+                "type": "object",
+                "properties": {
+                  "arrivalWindow": {
+                    "type": "string",
+                    "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+                  },
+                  "completionWindow": {
+                    "type": "string",
+                    "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+                  },
+                  "accessCondition": {
+                    "type": "string",
+                    "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+                  },
+                  "productionFit": {
+                    "type": "string",
+                    "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+                  },
+                  "expiryCondition": {
+                    "type": "string",
+                    "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+                  },
+                  "approvalCondition": {
+                    "type": "string",
+                    "description": "External procurement approval for the offered financial exposure, what the price includes and material unquoted costs. Identify recorded approval routing and separate provider acceptance; the service app does not authorize procurement."
+                  },
+                  "unresolved": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Actual supplied source identifiers supporting the findings."
+                  },
+                  "offerExpiresAt": {
+                    "type": "string",
+                    "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+                  },
+                  "offerReserved": {
+                    "type": "boolean",
+                    "description": "Authoritative reservation state copied by Framework."
+                  },
+                  "offerSourceId": {
+                    "type": "string",
+                    "description": "Authoritative offer snapshot identifier copied by Framework."
+                  }
+                },
+                "required": [
+                  "arrivalWindow",
+                  "completionWindow",
+                  "accessCondition",
+                  "productionFit",
+                  "expiryCondition",
+                  "approvalCondition",
+                  "unresolved",
+                  "citations",
+                  "offerExpiresAt",
+                  "offerReserved",
+                  "offerSourceId"
+                ],
+                "additionalProperties": false
+              },
+              "replacement": {
+                "type": "object",
+                "properties": {
+                  "arrivalWindow": {
+                    "type": "string",
+                    "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+                  },
+                  "completionWindow": {
+                    "type": "string",
+                    "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+                  },
+                  "accessCondition": {
+                    "type": "string",
+                    "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+                  },
+                  "productionFit": {
+                    "type": "string",
+                    "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+                  },
+                  "expiryCondition": {
+                    "type": "string",
+                    "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+                  },
+                  "approvalCondition": {
+                    "type": "string",
+                    "description": "External procurement approval for the offered financial exposure, what the price includes and material unquoted costs. Identify recorded approval routing and separate provider acceptance; the service app does not authorize procurement."
+                  },
+                  "unresolved": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Actual supplied source identifiers supporting the findings."
+                  },
+                  "offerExpiresAt": {
+                    "type": "string",
+                    "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+                  },
+                  "offerReserved": {
+                    "type": "boolean",
+                    "description": "Authoritative reservation state copied by Framework."
+                  },
+                  "offerSourceId": {
+                    "type": "string",
+                    "description": "Authoritative offer snapshot identifier copied by Framework."
+                  }
+                },
+                "required": [
+                  "arrivalWindow",
+                  "completionWindow",
+                  "accessCondition",
+                  "productionFit",
+                  "expiryCondition",
+                  "approvalCondition",
+                  "unresolved",
+                  "citations",
+                  "offerExpiresAt",
+                  "offerReserved",
+                  "offerSourceId"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "expedited",
+              "standard",
+              "loaner",
+              "replacement"
+            ],
+            "additionalProperties": false,
+            "description": "Accepted per-option model findings assembled by Framework, not authoritative source facts."
+          },
+          "offers": {
+            "type": "object",
+            "properties": {
+              "expedited": {
+                "type": "object",
+                "description": "One complete offer: original details, applicable source snapshot terms and provenance, plus its exact conditional service quote when applicable. Stated terms do not imply acceptance or fulfillment.",
+                "properties": {
+                  "option": {
+                    "type": "string",
+                    "enum": [
+                      "expedited",
+                      "standard",
+                      "loaner",
+                      "replacement"
+                    ]
+                  },
+                  "details": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Unchanged individual offer details, including supplied timing, scope, capacity and price. Missing attributes remain unknown."
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "description": "Stated expiry applying to this offer; booking or price preservation requires its own conditions."
+                  },
+                  "reserved": {
+                    "type": "boolean",
+                    "description": "Source reservation state of this offer; not approval."
+                  },
+                  "sourceId": {
+                    "type": "string",
+                    "description": "Snapshot that supplies this offer and its applicable terms; details.id identifies the individual offer within it."
+                  },
+                  "sourceRevision": {
+                    "type": "string",
+                    "description": "Revision of the source snapshot."
+                  },
+                  "monetaryUnit": {
+                    "type": "string",
+                    "description": "Unit of source amounts; explanatory dollar amounts require conversion when the unit is cents."
+                  },
+                  "quote": {
+                    "type": "object",
+                    "properties": {
+                      "quoteId": {
+                        "type": "string"
+                      },
+                      "option": {
+                        "type": "string"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "maxExposure": {
+                        "type": "integer"
+                      },
+                      "fullyCoveredScopeMaximum": {
+                        "type": "integer"
+                      },
+                      "coverage": {
+                        "type": "string"
+                      },
+                      "attendance": {
+                        "type": "string",
+                        "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
+                      },
+                      "scope": {
+                        "type": "object",
+                        "properties": {
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "onlyIfJustifiedByTechnician": {
+                            "type": "boolean"
+                          },
+                          "repairHours": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "parts",
+                          "onlyIfJustifiedByTechnician",
+                          "repairHours"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "expiresAt": {
+                        "type": "string"
+                      },
+                      "reservation": {
+                        "type": "boolean"
+                      },
+                      "restorationGuaranteed": {
+                        "type": "boolean"
+                      },
+                      "priceBreakdown": {
+                        "type": "object",
+                        "properties": {
+                          "rateSourceId": {
+                            "type": "string"
+                          },
+                          "rateSourceRevision": {
+                            "type": "string"
+                          },
+                          "repairLabor": {
+                            "type": "object",
+                            "properties": {
+                              "hours": {
+                                "type": "integer"
+                              },
+                              "hourlyRate": {
+                                "type": "integer"
+                              },
+                              "maximum": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "hours",
+                              "hourlyRate",
+                              "maximum"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                          },
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "partId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "partId",
+                                "description",
+                                "amount"
+                              ],
+                              "additionalProperties": false,
+                              "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                            }
+                          },
+                          "attendancePremium": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "rateSourceId",
+                          "rateSourceRevision",
+                          "repairLabor",
+                          "parts",
+                          "attendancePremium"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
+                      }
+                    },
+                    "required": [
+                      "quoteId",
+                      "option",
+                      "currency",
+                      "maxExposure",
+                      "fullyCoveredScopeMaximum",
+                      "coverage",
+                      "attendance",
+                      "scope",
+                      "expiresAt",
+                      "reservation",
+                      "restorationGuaranteed",
+                      "priceBreakdown"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Exact authoritative quote for this service option, including conditional amounts and approved-scope terms. Absent for procurement offers, whose price/scope is in details."
+                  }
+                },
+                "required": [
+                  "option",
+                  "details",
+                  "expiresAt",
+                  "reserved",
+                  "sourceId",
+                  "sourceRevision",
+                  "monetaryUnit"
+                ],
+                "additionalProperties": false
+              },
+              "standard": {
+                "type": "object",
+                "description": "One complete offer: original details, applicable source snapshot terms and provenance, plus its exact conditional service quote when applicable. Stated terms do not imply acceptance or fulfillment.",
+                "properties": {
+                  "option": {
+                    "type": "string",
+                    "enum": [
+                      "expedited",
+                      "standard",
+                      "loaner",
+                      "replacement"
+                    ]
+                  },
+                  "details": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Unchanged individual offer details, including supplied timing, scope, capacity and price. Missing attributes remain unknown."
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "description": "Stated expiry applying to this offer; booking or price preservation requires its own conditions."
+                  },
+                  "reserved": {
+                    "type": "boolean",
+                    "description": "Source reservation state of this offer; not approval."
+                  },
+                  "sourceId": {
+                    "type": "string",
+                    "description": "Snapshot that supplies this offer and its applicable terms; details.id identifies the individual offer within it."
+                  },
+                  "sourceRevision": {
+                    "type": "string",
+                    "description": "Revision of the source snapshot."
+                  },
+                  "monetaryUnit": {
+                    "type": "string",
+                    "description": "Unit of source amounts; explanatory dollar amounts require conversion when the unit is cents."
+                  },
+                  "quote": {
+                    "type": "object",
+                    "properties": {
+                      "quoteId": {
+                        "type": "string"
+                      },
+                      "option": {
+                        "type": "string"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "maxExposure": {
+                        "type": "integer"
+                      },
+                      "fullyCoveredScopeMaximum": {
+                        "type": "integer"
+                      },
+                      "coverage": {
+                        "type": "string"
+                      },
+                      "attendance": {
+                        "type": "string",
+                        "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
+                      },
+                      "scope": {
+                        "type": "object",
+                        "properties": {
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "onlyIfJustifiedByTechnician": {
+                            "type": "boolean"
+                          },
+                          "repairHours": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "parts",
+                          "onlyIfJustifiedByTechnician",
+                          "repairHours"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "expiresAt": {
+                        "type": "string"
+                      },
+                      "reservation": {
+                        "type": "boolean"
+                      },
+                      "restorationGuaranteed": {
+                        "type": "boolean"
+                      },
+                      "priceBreakdown": {
+                        "type": "object",
+                        "properties": {
+                          "rateSourceId": {
+                            "type": "string"
+                          },
+                          "rateSourceRevision": {
+                            "type": "string"
+                          },
+                          "repairLabor": {
+                            "type": "object",
+                            "properties": {
+                              "hours": {
+                                "type": "integer"
+                              },
+                              "hourlyRate": {
+                                "type": "integer"
+                              },
+                              "maximum": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "hours",
+                              "hourlyRate",
+                              "maximum"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                          },
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "partId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "partId",
+                                "description",
+                                "amount"
+                              ],
+                              "additionalProperties": false,
+                              "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                            }
+                          },
+                          "attendancePremium": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "rateSourceId",
+                          "rateSourceRevision",
+                          "repairLabor",
+                          "parts",
+                          "attendancePremium"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
+                      }
+                    },
+                    "required": [
+                      "quoteId",
+                      "option",
+                      "currency",
+                      "maxExposure",
+                      "fullyCoveredScopeMaximum",
+                      "coverage",
+                      "attendance",
+                      "scope",
+                      "expiresAt",
+                      "reservation",
+                      "restorationGuaranteed",
+                      "priceBreakdown"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Exact authoritative quote for this service option, including conditional amounts and approved-scope terms. Absent for procurement offers, whose price/scope is in details."
+                  }
+                },
+                "required": [
+                  "option",
+                  "details",
+                  "expiresAt",
+                  "reserved",
+                  "sourceId",
+                  "sourceRevision",
+                  "monetaryUnit"
+                ],
+                "additionalProperties": false
+              },
+              "loaner": {
+                "type": "object",
+                "description": "One complete offer: original details, applicable source snapshot terms and provenance, plus its exact conditional service quote when applicable. Stated terms do not imply acceptance or fulfillment.",
+                "properties": {
+                  "option": {
+                    "type": "string",
+                    "enum": [
+                      "expedited",
+                      "standard",
+                      "loaner",
+                      "replacement"
+                    ]
+                  },
+                  "details": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Unchanged individual offer details, including supplied timing, scope, capacity and price. Missing attributes remain unknown."
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "description": "Stated expiry applying to this offer; booking or price preservation requires its own conditions."
+                  },
+                  "reserved": {
+                    "type": "boolean",
+                    "description": "Source reservation state of this offer; not approval."
+                  },
+                  "sourceId": {
+                    "type": "string",
+                    "description": "Snapshot that supplies this offer and its applicable terms; details.id identifies the individual offer within it."
+                  },
+                  "sourceRevision": {
+                    "type": "string",
+                    "description": "Revision of the source snapshot."
+                  },
+                  "monetaryUnit": {
+                    "type": "string",
+                    "description": "Unit of source amounts; explanatory dollar amounts require conversion when the unit is cents."
+                  },
+                  "quote": {
+                    "type": "object",
+                    "properties": {
+                      "quoteId": {
+                        "type": "string"
+                      },
+                      "option": {
+                        "type": "string"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "maxExposure": {
+                        "type": "integer"
+                      },
+                      "fullyCoveredScopeMaximum": {
+                        "type": "integer"
+                      },
+                      "coverage": {
+                        "type": "string"
+                      },
+                      "attendance": {
+                        "type": "string",
+                        "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
+                      },
+                      "scope": {
+                        "type": "object",
+                        "properties": {
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "onlyIfJustifiedByTechnician": {
+                            "type": "boolean"
+                          },
+                          "repairHours": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "parts",
+                          "onlyIfJustifiedByTechnician",
+                          "repairHours"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "expiresAt": {
+                        "type": "string"
+                      },
+                      "reservation": {
+                        "type": "boolean"
+                      },
+                      "restorationGuaranteed": {
+                        "type": "boolean"
+                      },
+                      "priceBreakdown": {
+                        "type": "object",
+                        "properties": {
+                          "rateSourceId": {
+                            "type": "string"
+                          },
+                          "rateSourceRevision": {
+                            "type": "string"
+                          },
+                          "repairLabor": {
+                            "type": "object",
+                            "properties": {
+                              "hours": {
+                                "type": "integer"
+                              },
+                              "hourlyRate": {
+                                "type": "integer"
+                              },
+                              "maximum": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "hours",
+                              "hourlyRate",
+                              "maximum"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                          },
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "partId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "partId",
+                                "description",
+                                "amount"
+                              ],
+                              "additionalProperties": false,
+                              "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                            }
+                          },
+                          "attendancePremium": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "rateSourceId",
+                          "rateSourceRevision",
+                          "repairLabor",
+                          "parts",
+                          "attendancePremium"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
+                      }
+                    },
+                    "required": [
+                      "quoteId",
+                      "option",
+                      "currency",
+                      "maxExposure",
+                      "fullyCoveredScopeMaximum",
+                      "coverage",
+                      "attendance",
+                      "scope",
+                      "expiresAt",
+                      "reservation",
+                      "restorationGuaranteed",
+                      "priceBreakdown"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Exact authoritative quote for this service option, including conditional amounts and approved-scope terms. Absent for procurement offers, whose price/scope is in details."
+                  }
+                },
+                "required": [
+                  "option",
+                  "details",
+                  "expiresAt",
+                  "reserved",
+                  "sourceId",
+                  "sourceRevision",
+                  "monetaryUnit"
+                ],
+                "additionalProperties": false
+              },
+              "replacement": {
+                "type": "object",
+                "description": "One complete offer: original details, applicable source snapshot terms and provenance, plus its exact conditional service quote when applicable. Stated terms do not imply acceptance or fulfillment.",
+                "properties": {
+                  "option": {
+                    "type": "string",
+                    "enum": [
+                      "expedited",
+                      "standard",
+                      "loaner",
+                      "replacement"
+                    ]
+                  },
+                  "details": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Unchanged individual offer details, including supplied timing, scope, capacity and price. Missing attributes remain unknown."
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "description": "Stated expiry applying to this offer; booking or price preservation requires its own conditions."
+                  },
+                  "reserved": {
+                    "type": "boolean",
+                    "description": "Source reservation state of this offer; not approval."
+                  },
+                  "sourceId": {
+                    "type": "string",
+                    "description": "Snapshot that supplies this offer and its applicable terms; details.id identifies the individual offer within it."
+                  },
+                  "sourceRevision": {
+                    "type": "string",
+                    "description": "Revision of the source snapshot."
+                  },
+                  "monetaryUnit": {
+                    "type": "string",
+                    "description": "Unit of source amounts; explanatory dollar amounts require conversion when the unit is cents."
+                  },
+                  "quote": {
+                    "type": "object",
+                    "properties": {
+                      "quoteId": {
+                        "type": "string"
+                      },
+                      "option": {
+                        "type": "string"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "maxExposure": {
+                        "type": "integer"
+                      },
+                      "fullyCoveredScopeMaximum": {
+                        "type": "integer"
+                      },
+                      "coverage": {
+                        "type": "string"
+                      },
+                      "attendance": {
+                        "type": "string",
+                        "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
+                      },
+                      "scope": {
+                        "type": "object",
+                        "properties": {
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "onlyIfJustifiedByTechnician": {
+                            "type": "boolean"
+                          },
+                          "repairHours": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "parts",
+                          "onlyIfJustifiedByTechnician",
+                          "repairHours"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "expiresAt": {
+                        "type": "string"
+                      },
+                      "reservation": {
+                        "type": "boolean"
+                      },
+                      "restorationGuaranteed": {
+                        "type": "boolean"
+                      },
+                      "priceBreakdown": {
+                        "type": "object",
+                        "properties": {
+                          "rateSourceId": {
+                            "type": "string"
+                          },
+                          "rateSourceRevision": {
+                            "type": "string"
+                          },
+                          "repairLabor": {
+                            "type": "object",
+                            "properties": {
+                              "hours": {
+                                "type": "integer"
+                              },
+                              "hourlyRate": {
+                                "type": "integer"
+                              },
+                              "maximum": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "hours",
+                              "hourlyRate",
+                              "maximum"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                          },
+                          "parts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "partId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "partId",
+                                "description",
+                                "amount"
+                              ],
+                              "additionalProperties": false,
+                              "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                            }
+                          },
+                          "attendancePremium": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "rateSourceId",
+                          "rateSourceRevision",
+                          "repairLabor",
+                          "parts",
+                          "attendancePremium"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
+                      }
+                    },
+                    "required": [
+                      "quoteId",
+                      "option",
+                      "currency",
+                      "maxExposure",
+                      "fullyCoveredScopeMaximum",
+                      "coverage",
+                      "attendance",
+                      "scope",
+                      "expiresAt",
+                      "reservation",
+                      "restorationGuaranteed",
+                      "priceBreakdown"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Exact authoritative quote for this service option, including conditional amounts and approved-scope terms. Absent for procurement offers, whose price/scope is in details."
+                  }
+                },
+                "required": [
+                  "option",
+                  "details",
+                  "expiresAt",
+                  "reserved",
+                  "sourceId",
+                  "sourceRevision",
+                  "monetaryUnit"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "expedited",
+              "standard",
+              "loaner",
+              "replacement"
+            ],
+            "additionalProperties": false,
+            "description": "Complete deterministic offer records used by the assessors; verify their findings against these records and the original sources."
           }
         },
         "required": [
@@ -1740,9 +2982,11 @@
           "serviceResources",
           "continuityOptions",
           "quotes",
-          "entitlementDetermination"
+          "entitlementDetermination",
+          "feasibility",
+          "offers"
         ],
-        "additionalProperties": true
+        "additionalProperties": false
       }
     },
     "required": [
@@ -1829,7 +3073,8 @@
             "type": "string"
           },
           "attendance": {
-            "type": "string"
+            "type": "string",
+            "description": "The selected quote's offered technician arrival window, copied exactly for approval matching. Approval does not confirm dispatch or establish a visit-completion deadline."
           },
           "scope": {
             "type": "object",
@@ -1919,31 +3164,9 @@
       "hypotheses": {
         "type": "array",
         "items": {
-          "type": "object",
-          "properties": {
-            "explanation": {
-              "type": "string"
-            },
-            "supporting": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "contrary": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "explanation",
-            "supporting",
-            "contrary"
-          ],
-          "additionalProperties": false
-        }
+          "type": "string"
+        },
+        "description": "Each entry explains one possible cause, its supporting and contrary observations with sources, and missing evidence. State when no supporting or contrary evidence is supplied."
       },
       "uncertainty": {
         "type": "array",
@@ -1963,6 +3186,10 @@
           "type": "string"
         },
         "description": "Identifiers of supplied source records supporting the reasoning. Context property names are not source identifiers."
+      },
+      "reportedIncident": {
+        "type": "string",
+        "description": "Original incident statement, copied by Framework without interpretation."
       }
     },
     "required": [
@@ -1972,7 +3199,8 @@
       "hypotheses",
       "uncertainty",
       "questions",
-      "citations"
+      "citations",
+      "reportedIncident"
     ],
     "additionalProperties": false
   },
@@ -1995,7 +3223,7 @@
       },
       "selectedOption": {
         "type": "string",
-        "description": "Stable option name; never a quote ID. Combined strategies belong in rationale.",
+        "description": "Primary option in pursuedOptions; never a quote ID. Explain combined strategies in rationale.",
         "enum": [
           "expedited",
           "standard",
@@ -2006,13 +3234,15 @@
         ]
       },
       "rationale": {
-        "type": "string"
+        "type": "string",
+        "description": "Explain the selected portfolio tradeoff with decision-critical facts and qualifications; reference published option conditions for supporting detail."
       },
       "alternatives": {
         "type": "array",
         "items": {
           "type": "string"
-        }
+        },
+        "description": "Reasons for rejecting or deferring other strategies, using relevant findings and qualifications."
       },
       "quotes": {
         "type": "array",
@@ -2050,7 +3280,8 @@
               ]
             },
             "attendance": {
-              "type": "string"
+              "type": "string",
+              "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
             },
             "scope": {
               "type": "object",
@@ -2083,6 +3314,74 @@
             },
             "restorationGuaranteed": {
               "type": "boolean"
+            },
+            "priceBreakdown": {
+              "type": "object",
+              "properties": {
+                "rateSourceId": {
+                  "type": "string"
+                },
+                "rateSourceRevision": {
+                  "type": "string"
+                },
+                "repairLabor": {
+                  "type": "object",
+                  "properties": {
+                    "hours": {
+                      "type": "integer"
+                    },
+                    "hourlyRate": {
+                      "type": "integer"
+                    },
+                    "maximum": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "hours",
+                    "hourlyRate",
+                    "maximum"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                },
+                "parts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "partId": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "amount": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "partId",
+                      "description",
+                      "amount"
+                    ],
+                    "additionalProperties": false,
+                    "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                  }
+                },
+                "attendancePremium": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "rateSourceId",
+                "rateSourceRevision",
+                "repairLabor",
+                "parts",
+                "attendancePremium"
+              ],
+              "additionalProperties": false,
+              "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
             }
           },
           "required": [
@@ -2096,11 +3395,12 @@
             "scope",
             "expiresAt",
             "reservation",
-            "restorationGuaranteed"
+            "restorationGuaranteed",
+            "priceBreakdown"
           ],
           "additionalProperties": false
         },
-        "description": "All issued authoritative service quotes, each once and unchanged. Unquoted offers belong in alternatives."
+        "description": "All issued authoritative service quotes, each once and unchanged. Procurement offers remain in optionAssessments and may be pursued or deferred; they are not service quotes."
       },
       "citations": {
         "type": "array",
@@ -2113,22 +3413,16 @@
         "type": "array",
         "items": {
           "type": "string"
-        }
+        },
+        "description": "Unresolved facts that could change portfolio selection; operational unknowns remain in optionAssessments."
       },
       "acceptedRisk": {
-        "type": "string"
-      },
-      "changeConditions": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
+        "type": "string",
+        "description": "Residual risk of the recommended portfolio, including decision-critical qualifications; reference published option conditions for supporting detail."
       },
       "nextDecision": {
-        "type": "string"
-      },
-      "responsibleParty": {
-        "type": "string"
+        "type": "string",
+        "description": "Choice required now, its urgency and responsible role where evidenced, with decision-critical prerequisites and references to the pursued options published conditions."
       },
       "equipmentAssessment": {
         "type": "object",
@@ -2148,31 +3442,9 @@
           "hypotheses": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "explanation": {
-                  "type": "string"
-                },
-                "supporting": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "contrary": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "required": [
-                "explanation",
-                "supporting",
-                "contrary"
-              ],
-              "additionalProperties": false
-            }
+              "type": "string"
+            },
+            "description": "Each entry explains one possible cause, its supporting and contrary observations with sources, and missing evidence. State when no supporting or contrary evidence is supplied."
           },
           "uncertainty": {
             "type": "array",
@@ -2192,6 +3464,10 @@
               "type": "string"
             },
             "description": "Identifiers of supplied source records supporting the reasoning. Context property names are not source identifiers."
+          },
+          "reportedIncident": {
+            "type": "string",
+            "description": "Original incident statement, copied by Framework without interpretation."
           }
         },
         "required": [
@@ -2201,9 +3477,451 @@
           "hypotheses",
           "uncertainty",
           "questions",
-          "citations"
+          "citations",
+          "reportedIncident"
         ],
         "additionalProperties": false
+      },
+      "optionAssessments": {
+        "type": "object",
+        "properties": {
+          "expedited": {
+            "type": "object",
+            "properties": {
+              "arrivalWindow": {
+                "type": "string",
+                "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+              },
+              "completionWindow": {
+                "type": "string",
+                "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+              },
+              "accessCondition": {
+                "type": "string",
+                "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+              },
+              "productionFit": {
+                "type": "string",
+                "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+              },
+              "expiryCondition": {
+                "type": "string",
+                "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+              },
+              "approvalCondition": {
+                "type": "string",
+                "description": "Service commitment approval for the quoted scope and cap, using verified identity and site permissions. A recorded ceiling is not approval; pending coverage does not prevent cap approval."
+              },
+              "unresolved": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Actual supplied source identifiers supporting the findings."
+              },
+              "offerExpiresAt": {
+                "type": "string",
+                "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+              },
+              "offerReserved": {
+                "type": "boolean",
+                "description": "Authoritative reservation state copied by Framework."
+              },
+              "offerSourceId": {
+                "type": "string",
+                "description": "Authoritative offer snapshot identifier copied by Framework."
+              },
+              "chargeCondition": {
+                "type": "string",
+                "description": "Included services, unconditional or attendance-triggered charges, and conditional repairs for this service offer. Distinguish elapsed visit time from billable repair labor, cap and actual charges; included activities can contribute elapsed time without using the repair-labor allowance. Do not double-count included charges. State missing terms explicitly."
+              },
+              "scopeChangeCondition": {
+                "type": "string",
+                "description": "Apply source terms for renewed approval when attendance, repair scope or cap changes and a new quote before work beyond approved scope or cap. A longer elapsed-work estimate alone does not establish additional repair scope; identify the changed work or leave the overrun unknown. Explicitly state if no rule is supplied."
+              },
+              "coverageReviewCondition": {
+                "type": "string",
+                "description": "How findings determine coverage and how incomplete/disputed findings remain pending review. Refer to coverageReviewerSourceIds for the owner; do not invent a personal name."
+              },
+              "dispatchOwnerSourceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "IDs of supplied contact records whose recorded responsibility owns dispatch/resource confirmation. Empty if no matching record; no personal names."
+              },
+              "coverageReviewerSourceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "IDs of supplied contact records whose recorded responsibility owns coverage review. Empty if no matching record; do not borrow identity fields from dispatch or another record."
+              },
+              "ownerDirectory": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "revision": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "responsibility": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "hours": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "responsibility",
+                    "email"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Supplied contact records copied unchanged by Framework. References identify records, not proof of permission or approval."
+              }
+            },
+            "required": [
+              "arrivalWindow",
+              "completionWindow",
+              "accessCondition",
+              "productionFit",
+              "expiryCondition",
+              "approvalCondition",
+              "unresolved",
+              "citations",
+              "offerExpiresAt",
+              "offerReserved",
+              "offerSourceId",
+              "chargeCondition",
+              "scopeChangeCondition",
+              "coverageReviewCondition",
+              "dispatchOwnerSourceIds",
+              "coverageReviewerSourceIds",
+              "ownerDirectory"
+            ],
+            "additionalProperties": false
+          },
+          "standard": {
+            "type": "object",
+            "properties": {
+              "arrivalWindow": {
+                "type": "string",
+                "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+              },
+              "completionWindow": {
+                "type": "string",
+                "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+              },
+              "accessCondition": {
+                "type": "string",
+                "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+              },
+              "productionFit": {
+                "type": "string",
+                "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+              },
+              "expiryCondition": {
+                "type": "string",
+                "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+              },
+              "approvalCondition": {
+                "type": "string",
+                "description": "Service commitment approval for the quoted scope and cap, using verified identity and site permissions. A recorded ceiling is not approval; pending coverage does not prevent cap approval."
+              },
+              "unresolved": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Actual supplied source identifiers supporting the findings."
+              },
+              "offerExpiresAt": {
+                "type": "string",
+                "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+              },
+              "offerReserved": {
+                "type": "boolean",
+                "description": "Authoritative reservation state copied by Framework."
+              },
+              "offerSourceId": {
+                "type": "string",
+                "description": "Authoritative offer snapshot identifier copied by Framework."
+              },
+              "chargeCondition": {
+                "type": "string",
+                "description": "Included services, unconditional or attendance-triggered charges, and conditional repairs for this service offer. Distinguish elapsed visit time from billable repair labor, cap and actual charges; included activities can contribute elapsed time without using the repair-labor allowance. Do not double-count included charges. State missing terms explicitly."
+              },
+              "scopeChangeCondition": {
+                "type": "string",
+                "description": "Apply source terms for renewed approval when attendance, repair scope or cap changes and a new quote before work beyond approved scope or cap. A longer elapsed-work estimate alone does not establish additional repair scope; identify the changed work or leave the overrun unknown. Explicitly state if no rule is supplied."
+              },
+              "coverageReviewCondition": {
+                "type": "string",
+                "description": "How findings determine coverage and how incomplete/disputed findings remain pending review. Refer to coverageReviewerSourceIds for the owner; do not invent a personal name."
+              },
+              "dispatchOwnerSourceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "IDs of supplied contact records whose recorded responsibility owns dispatch/resource confirmation. Empty if no matching record; no personal names."
+              },
+              "coverageReviewerSourceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "IDs of supplied contact records whose recorded responsibility owns coverage review. Empty if no matching record; do not borrow identity fields from dispatch or another record."
+              },
+              "ownerDirectory": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "revision": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "responsibility": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "hours": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "responsibility",
+                    "email"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "Supplied contact records copied unchanged by Framework. References identify records, not proof of permission or approval."
+              }
+            },
+            "required": [
+              "arrivalWindow",
+              "completionWindow",
+              "accessCondition",
+              "productionFit",
+              "expiryCondition",
+              "approvalCondition",
+              "unresolved",
+              "citations",
+              "offerExpiresAt",
+              "offerReserved",
+              "offerSourceId",
+              "chargeCondition",
+              "scopeChangeCondition",
+              "coverageReviewCondition",
+              "dispatchOwnerSourceIds",
+              "coverageReviewerSourceIds",
+              "ownerDirectory"
+            ],
+            "additionalProperties": false
+          },
+          "loaner": {
+            "type": "object",
+            "properties": {
+              "arrivalWindow": {
+                "type": "string",
+                "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+              },
+              "completionWindow": {
+                "type": "string",
+                "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+              },
+              "accessCondition": {
+                "type": "string",
+                "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+              },
+              "productionFit": {
+                "type": "string",
+                "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+              },
+              "expiryCondition": {
+                "type": "string",
+                "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+              },
+              "approvalCondition": {
+                "type": "string",
+                "description": "External procurement approval for the offered financial exposure, what the price includes and material unquoted costs. Identify recorded approval routing and separate provider acceptance; the service app does not authorize procurement."
+              },
+              "unresolved": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Actual supplied source identifiers supporting the findings."
+              },
+              "offerExpiresAt": {
+                "type": "string",
+                "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+              },
+              "offerReserved": {
+                "type": "boolean",
+                "description": "Authoritative reservation state copied by Framework."
+              },
+              "offerSourceId": {
+                "type": "string",
+                "description": "Authoritative offer snapshot identifier copied by Framework."
+              }
+            },
+            "required": [
+              "arrivalWindow",
+              "completionWindow",
+              "accessCondition",
+              "productionFit",
+              "expiryCondition",
+              "approvalCondition",
+              "unresolved",
+              "citations",
+              "offerExpiresAt",
+              "offerReserved",
+              "offerSourceId"
+            ],
+            "additionalProperties": false
+          },
+          "replacement": {
+            "type": "object",
+            "properties": {
+              "arrivalWindow": {
+                "type": "string",
+                "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+              },
+              "completionWindow": {
+                "type": "string",
+                "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+              },
+              "accessCondition": {
+                "type": "string",
+                "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+              },
+              "productionFit": {
+                "type": "string",
+                "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+              },
+              "expiryCondition": {
+                "type": "string",
+                "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+              },
+              "approvalCondition": {
+                "type": "string",
+                "description": "External procurement approval for the offered financial exposure, what the price includes and material unquoted costs. Identify recorded approval routing and separate provider acceptance; the service app does not authorize procurement."
+              },
+              "unresolved": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Actual supplied source identifiers supporting the findings."
+              },
+              "offerExpiresAt": {
+                "type": "string",
+                "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+              },
+              "offerReserved": {
+                "type": "boolean",
+                "description": "Authoritative reservation state copied by Framework."
+              },
+              "offerSourceId": {
+                "type": "string",
+                "description": "Authoritative offer snapshot identifier copied by Framework."
+              }
+            },
+            "required": [
+              "arrivalWindow",
+              "completionWindow",
+              "accessCondition",
+              "productionFit",
+              "expiryCondition",
+              "approvalCondition",
+              "unresolved",
+              "citations",
+              "offerExpiresAt",
+              "offerReserved",
+              "offerSourceId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "expedited",
+          "standard",
+          "loaner",
+          "replacement"
+        ],
+        "additionalProperties": false,
+        "description": "Framework-published findings remain unchanged. Comparison reviews material accuracy across all options, including deferred ones, and explicitly records governing corrections or unresolved conflicts in reviewConcerns."
+      },
+      "pursuedOptions": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "expedited",
+            "standard",
+            "loaner",
+            "replacement"
+          ]
+        },
+        "description": "Unique options recommended for pursuit now. Include the primary selectedOption; empty for defer/undecided."
+      },
+      "reviewConcerns": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Material errors or genuine conflicts in any published technical or option finding, including deferred options: identify the affected claim, source evidence, governing correction or unresolved question, and consequence for recommendation or future use. Explicitly supersede incorrect claims; empty only when none evidenced."
       }
     },
     "required": [
@@ -2217,10 +3935,823 @@
       "citations",
       "uncertainty",
       "acceptedRisk",
-      "changeConditions",
       "nextDecision",
-      "responsibleParty",
-      "equipmentAssessment"
+      "equipmentAssessment",
+      "optionAssessments",
+      "pursuedOptions",
+      "reviewConcerns"
+    ],
+    "additionalProperties": false
+  },
+  "feasibilityInput": {
+    "type": "object",
+    "properties": {
+      "caseId": {
+        "type": "string",
+        "description": "Case correlation identifier supplied by the caller."
+      },
+      "assetId": {
+        "type": "string",
+        "description": "Registered asset identifier; does not grant caller authority."
+      },
+      "context": {
+        "type": "object",
+        "properties": {
+          "assetContext": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "assetId": {
+                "type": "string"
+              },
+              "serial": {
+                "type": "string"
+              },
+              "manufacturer": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "hardwareRevision": {
+                "type": "string"
+              },
+              "commissioned": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "site": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "revision": {
+                    "type": "string"
+                  },
+                  "siteId": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  },
+                  "access": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "revision",
+                  "siteId",
+                  "timezone",
+                  "access"
+                ],
+                "additionalProperties": false
+              },
+              "approvalContext": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "revision": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "monetaryUnit": {
+                    "type": "string"
+                  },
+                  "luisMaximumCustomerExposure": {
+                    "type": "integer"
+                  },
+                  "mayaMayCommit": {
+                    "type": "boolean"
+                  },
+                  "largerCommitments": {
+                    "type": "string"
+                  },
+                  "permissionBoundary": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "revision",
+                  "currency",
+                  "monetaryUnit",
+                  "luisMaximumCustomerExposure",
+                  "mayaMayCommit",
+                  "largerCommitments",
+                  "permissionBoundary"
+                ],
+                "additionalProperties": false
+              },
+              "contacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "revision": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "responsibility": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "hours": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "responsibility",
+                    "email"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "revision",
+              "issuer",
+              "assetId",
+              "serial",
+              "manufacturer",
+              "model",
+              "hardwareRevision",
+              "commissioned",
+              "owner",
+              "site",
+              "approvalContext",
+              "contacts"
+            ],
+            "additionalProperties": false,
+            "description": "Complete original assetContext data; preserve all returned records, fields and values, including optional source metadata. Use the data value, not its transport envelope."
+          },
+          "serviceTerms": {
+            "type": "object",
+            "properties": {
+              "clauses": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "revision": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "certificate": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "revision": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "string"
+                  },
+                  "endExclusive": {
+                    "type": "string"
+                  },
+                  "serial": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "revision",
+                  "start",
+                  "endExclusive",
+                  "serial"
+                ],
+                "additionalProperties": false
+              },
+              "agreement": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "revision": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "string"
+                  },
+                  "endExclusive": {
+                    "type": "string"
+                  },
+                  "diagnosisIncluded": {
+                    "type": "boolean"
+                  },
+                  "travelIncluded": {
+                    "type": "boolean"
+                  },
+                  "assetId": {
+                    "type": "string"
+                  },
+                  "siteId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "revision",
+                  "start",
+                  "endExclusive",
+                  "diagnosisIncluded",
+                  "travelIncluded",
+                  "assetId",
+                  "siteId"
+                ],
+                "additionalProperties": false
+              },
+              "rates": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "revision": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "diagnosis": {
+                    "type": "integer"
+                  },
+                  "travel": {
+                    "type": "integer"
+                  },
+                  "repairHourly": {
+                    "type": "integer"
+                  },
+                  "sensor": {
+                    "type": "integer"
+                  },
+                  "connector": {
+                    "type": "integer"
+                  },
+                  "expedited": {
+                    "type": "integer"
+                  },
+                  "monetaryUnit": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "revision",
+                  "currency",
+                  "diagnosis",
+                  "travel",
+                  "repairHourly",
+                  "sensor",
+                  "connector",
+                  "expedited",
+                  "monetaryUnit"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "clauses",
+              "certificate",
+              "agreement",
+              "rates"
+            ],
+            "additionalProperties": false,
+            "description": "Complete original serviceTerms data; preserve all returned records, fields and values, including optional source metadata. Use the data value, not its transport envelope."
+          },
+          "operatingNeeds": {
+            "type": "object",
+            "properties": {
+              "incident": {
+                "type": "string"
+              },
+              "productionStart": {
+                "type": "string"
+              },
+              "recoverableDelayHours": {
+                "type": "integer"
+              },
+              "lostMorningShift": {
+                "type": "string"
+              },
+              "minimumCapacityPerMinute": {
+                "type": "integer"
+              },
+              "restorationRiskPreference": {
+                "type": "string"
+              },
+              "siteAccess": {
+                "type": "string"
+              },
+              "businessNow": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "incident",
+              "productionStart",
+              "recoverableDelayHours",
+              "lostMorningShift",
+              "minimumCapacityPerMinute",
+              "restorationRiskPreference",
+              "siteAccess",
+              "businessNow"
+            ],
+            "additionalProperties": true,
+            "description": "Original mission context, including incident, operating priorities, site access and business time; preserve supplied values."
+          },
+          "entitlementDetermination": {
+            "type": "object",
+            "description": "Copy the determination field from the entitlements tool result envelope unchanged. This is the deterministic coverage evaluation, separate from entitlements data.",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PARTIAL_OR_COVERED",
+                  "PENDING",
+                  "OUTSIDE_PERIOD"
+                ]
+              },
+              "coveredItems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "diagnosisIncluded": {
+                "type": "boolean"
+              },
+              "travelIncluded": {
+                "type": "boolean"
+              },
+              "premiumCovered": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "status",
+              "coveredItems",
+              "diagnosisIncluded",
+              "travelIncluded",
+              "premiumCovered"
+            ],
+            "additionalProperties": false
+          },
+          "offer": {
+            "type": "object",
+            "description": "One complete offer: original details, applicable source snapshot terms and provenance, plus its exact conditional service quote when applicable. Stated terms do not imply acceptance or fulfillment.",
+            "properties": {
+              "option": {
+                "type": "string",
+                "enum": [
+                  "expedited",
+                  "standard",
+                  "loaner",
+                  "replacement"
+                ]
+              },
+              "details": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Unchanged individual offer details, including supplied timing, scope, capacity and price. Missing attributes remain unknown."
+              },
+              "expiresAt": {
+                "type": "string",
+                "description": "Stated expiry applying to this offer; booking or price preservation requires its own conditions."
+              },
+              "reserved": {
+                "type": "boolean",
+                "description": "Source reservation state of this offer; not approval."
+              },
+              "sourceId": {
+                "type": "string",
+                "description": "Snapshot that supplies this offer and its applicable terms; details.id identifies the individual offer within it."
+              },
+              "sourceRevision": {
+                "type": "string",
+                "description": "Revision of the source snapshot."
+              },
+              "monetaryUnit": {
+                "type": "string",
+                "description": "Unit of source amounts; explanatory dollar amounts require conversion when the unit is cents."
+              },
+              "quote": {
+                "type": "object",
+                "properties": {
+                  "quoteId": {
+                    "type": "string"
+                  },
+                  "option": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "maxExposure": {
+                    "type": "integer"
+                  },
+                  "fullyCoveredScopeMaximum": {
+                    "type": "integer"
+                  },
+                  "coverage": {
+                    "type": "string"
+                  },
+                  "attendance": {
+                    "type": "string",
+                    "description": "Offered technician arrival window, copied unchanged from this service option's source arrival. It does not specify visit end, elapsed work duration or restored production; dispatch confirmation is separate."
+                  },
+                  "scope": {
+                    "type": "object",
+                    "properties": {
+                      "parts": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "onlyIfJustifiedByTechnician": {
+                        "type": "boolean"
+                      },
+                      "repairHours": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "parts",
+                      "onlyIfJustifiedByTechnician",
+                      "repairHours"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expiresAt": {
+                    "type": "string"
+                  },
+                  "reservation": {
+                    "type": "boolean"
+                  },
+                  "restorationGuaranteed": {
+                    "type": "boolean"
+                  },
+                  "priceBreakdown": {
+                    "type": "object",
+                    "properties": {
+                      "rateSourceId": {
+                        "type": "string"
+                      },
+                      "rateSourceRevision": {
+                        "type": "string"
+                      },
+                      "repairLabor": {
+                        "type": "object",
+                        "properties": {
+                          "hours": {
+                            "type": "integer"
+                          },
+                          "hourlyRate": {
+                            "type": "integer"
+                          },
+                          "maximum": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "hours",
+                          "hourlyRate",
+                          "maximum"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Quoted repair-labor allowance and its maximum before coverage; hours are billable repair scope, not elapsed visit duration."
+                      },
+                      "parts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "partId": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "amount": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "partId",
+                            "description",
+                            "amount"
+                          ],
+                          "additionalProperties": false,
+                          "description": "One scoped part and its quoted amount before coverage; charge only if technician-justified."
+                        }
+                      },
+                      "attendancePremium": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "rateSourceId",
+                      "rateSourceRevision",
+                      "repairLabor",
+                      "parts",
+                      "attendancePremium"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Authoritative calculation of this quote in integer USD cents. Labor maximum plus listed parts plus attendance premium equals maxExposure. Repair labor and parts remain conditional on justified work and coverage; this is not an invoice. Diagnosis and travel are included, not additional charges."
+                  }
+                },
+                "required": [
+                  "quoteId",
+                  "option",
+                  "currency",
+                  "maxExposure",
+                  "fullyCoveredScopeMaximum",
+                  "coverage",
+                  "attendance",
+                  "scope",
+                  "expiresAt",
+                  "reservation",
+                  "restorationGuaranteed",
+                  "priceBreakdown"
+                ],
+                "additionalProperties": false,
+                "description": "Exact authoritative quote for this service option, including conditional amounts and approved-scope terms. Absent for procurement offers, whose price/scope is in details."
+              }
+            },
+            "required": [
+              "option",
+              "details",
+              "expiresAt",
+              "reserved",
+              "sourceId",
+              "sourceRevision",
+              "monetaryUnit"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "assetContext",
+          "serviceTerms",
+          "operatingNeeds",
+          "entitlementDetermination",
+          "offer"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "caseId",
+      "assetId",
+      "context"
+    ],
+    "additionalProperties": false
+  },
+  "feasibilityOutput": {
+    "type": "object",
+    "properties": {
+      "arrivalWindow": {
+        "type": "string",
+        "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+      },
+      "completionWindow": {
+        "type": "string",
+        "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+      },
+      "accessCondition": {
+        "type": "string",
+        "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+      },
+      "productionFit": {
+        "type": "string",
+        "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+      },
+      "expiryCondition": {
+        "type": "string",
+        "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+      },
+      "approvalCondition": {
+        "type": "string",
+        "description": "External procurement approval for the offered financial exposure, what the price includes and material unquoted costs. Identify recorded approval routing and separate provider acceptance; the service app does not authorize procurement."
+      },
+      "unresolved": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+      },
+      "citations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Actual supplied source identifiers supporting the findings."
+      },
+      "offerExpiresAt": {
+        "type": "string",
+        "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+      },
+      "offerReserved": {
+        "type": "boolean",
+        "description": "Authoritative reservation state copied by Framework."
+      },
+      "offerSourceId": {
+        "type": "string",
+        "description": "Authoritative offer snapshot identifier copied by Framework."
+      }
+    },
+    "required": [
+      "arrivalWindow",
+      "completionWindow",
+      "accessCondition",
+      "productionFit",
+      "expiryCondition",
+      "approvalCondition",
+      "unresolved",
+      "citations",
+      "offerExpiresAt",
+      "offerReserved",
+      "offerSourceId"
+    ],
+    "additionalProperties": false
+  },
+  "serviceFeasibilityOutput": {
+    "type": "object",
+    "properties": {
+      "arrivalWindow": {
+        "type": "string",
+        "description": "Supplied arrival/delivery window or lead time, with date/timezone where available; state unknown if absent."
+      },
+      "completionWindow": {
+        "type": "string",
+        "description": "Interpret timing labels with the offered scope, or calculate arrival plus supplied elapsed duration. State any ambiguity between arrival and setup completion for provider clarification. If completion is not established, identify missing evidence. Completion is not guaranteed restoration."
+      },
+      "accessCondition": {
+        "type": "string",
+        "description": "Access through this offer's entire work/setup period: confirmed sufficiency, necessary arrangements, or missing evidence. Calculate available time only for established activity dates; recurring opening hours alone do not date the work."
+      },
+      "productionFit": {
+        "type": "string",
+        "description": "This option's timing and capacity relative to the operating need, with assumptions and limits. Comparison evaluates combinations."
+      },
+      "expiryCondition": {
+        "type": "string",
+        "description": "Action required before the bound offerExpiresAt deadline; distinguish price preservation from booking and decisions that cannot await diagnosis."
+      },
+      "approvalCondition": {
+        "type": "string",
+        "description": "Service commitment approval for the quoted scope and cap, using verified identity and site permissions. A recorded ceiling is not approval; pending coverage does not prevent cap approval."
+      },
+      "unresolved": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Unresolved prerequisites or unknowns for this offer, with responsible roles where evidenced. Refer other-option questions to their assessments/comparison; do not present locally absent information as a case-wide unknown."
+      },
+      "citations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Actual supplied source identifiers supporting the findings."
+      },
+      "offerExpiresAt": {
+        "type": "string",
+        "description": "Authoritative expiry copied by Framework; interpretation belongs in expiryCondition."
+      },
+      "offerReserved": {
+        "type": "boolean",
+        "description": "Authoritative reservation state copied by Framework."
+      },
+      "offerSourceId": {
+        "type": "string",
+        "description": "Authoritative offer snapshot identifier copied by Framework."
+      },
+      "chargeCondition": {
+        "type": "string",
+        "description": "Included services, unconditional or attendance-triggered charges, and conditional repairs for this service offer. Distinguish elapsed visit time from billable repair labor, cap and actual charges; included activities can contribute elapsed time without using the repair-labor allowance. Do not double-count included charges. State missing terms explicitly."
+      },
+      "scopeChangeCondition": {
+        "type": "string",
+        "description": "Apply source terms for renewed approval when attendance, repair scope or cap changes and a new quote before work beyond approved scope or cap. A longer elapsed-work estimate alone does not establish additional repair scope; identify the changed work or leave the overrun unknown. Explicitly state if no rule is supplied."
+      },
+      "coverageReviewCondition": {
+        "type": "string",
+        "description": "How findings determine coverage and how incomplete/disputed findings remain pending review. Refer to coverageReviewerSourceIds for the owner; do not invent a personal name."
+      },
+      "dispatchOwnerSourceIds": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "IDs of supplied contact records whose recorded responsibility owns dispatch/resource confirmation. Empty if no matching record; no personal names."
+      },
+      "coverageReviewerSourceIds": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "IDs of supplied contact records whose recorded responsibility owns coverage review. Empty if no matching record; do not borrow identity fields from dispatch or another record."
+      },
+      "ownerDirectory": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "responsibility": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "hours": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "responsibility",
+            "email"
+          ],
+          "additionalProperties": false
+        },
+        "description": "Supplied contact records copied unchanged by Framework. References identify records, not proof of permission or approval."
+      }
+    },
+    "required": [
+      "arrivalWindow",
+      "completionWindow",
+      "accessCondition",
+      "productionFit",
+      "expiryCondition",
+      "approvalCondition",
+      "unresolved",
+      "citations",
+      "offerExpiresAt",
+      "offerReserved",
+      "offerSourceId",
+      "chargeCondition",
+      "scopeChangeCondition",
+      "coverageReviewCondition",
+      "dispatchOwnerSourceIds",
+      "coverageReviewerSourceIds",
+      "ownerDirectory"
     ],
     "additionalProperties": false
   }

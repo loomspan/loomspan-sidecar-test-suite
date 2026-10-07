@@ -27,9 +27,25 @@ async def leaf(name,body,who):
         quotes=[]
         for option,premium in [('expedited',rates['expedited']),('standard',0)]:
             quotes.append({'quoteId':case+'-'+option+'-v1','option':option,'currency':'USD','maxExposure':repair+premium,'fullyCoveredScopeMaximum':premium,'coverage':'PENDING','attendance':resources[option]['arrival'],'scope':{'repairHours':2,'parts':['S17-B','H17-B'],'onlyIfJustifiedByTechnician':True},'expiresAt':resources['expiresAt'],'reservation':False,'restorationGuaranteed':False})
+        for quote in quotes:
+            quote['priceBreakdown'] = {
+                'rateSourceId': rates['id'], 'rateSourceRevision': rates['revision'],
+                'repairLabor': {'hours': 2, 'hourlyRate': rates['repairHourly'], 'maximum': 2*rates['repairHourly']},
+                'parts': [{'partId': 'S17-B', 'description': 'sensor', 'amount': rates['sensor']},
+                          {'partId': 'H17-B', 'description': 'connector kit', 'amount': rates['connector']}],
+                'attendancePremium': quote['fullyCoveredScopeMaximum']}
         with db() as c:
             for quote in quotes: c.execute('INSERT OR IGNORE INTO quotes VALUES(?,?)',(quote['quoteId'],json.dumps(quote,sort_keys=True)))
-        return {'caseId':case,'assetId':asset,'quotes':quotes,'entitlement':entitlement}
+        continuity=(await record(case,'continuityOptions'))['data']
+        offers={}
+        quotes_by_option={q['option']:q for q in quotes}
+        for option,source in [('expedited',resources),('standard',resources),('loaner',continuity),('replacement',continuity)]:
+            offer={'option':option,'details':source[option],'expiresAt':source['expiresAt'],
+                   'reserved':source['reserved'],'sourceId':source['id'],'sourceRevision':source['revision'],
+                   'monetaryUnit':rates['monetaryUnit'] if option in quotes_by_option else source['monetaryUnit']}
+            if option in quotes_by_option: offer['quote']=quotes_by_option[option]
+            offers[option]=offer
+        return {'caseId':case,'assetId':asset,'quotes':quotes,'offers':offers,'entitlement':entitlement}
     result=await record(case,name); result['assetId']=asset
     if name=='assetContext' and result['data']['assetId']!=asset:
         raise HTTPException(404,'registered asset context unavailable')
