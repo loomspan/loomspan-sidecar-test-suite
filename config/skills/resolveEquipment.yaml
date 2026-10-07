@@ -32,7 +32,7 @@ prompt: |
   assessEquipment and serviceTerms. Declared bindings supply child inputs; use empty
   toolArguments when no unbound contribution is needed. Lookup tools take caseId and
   assetId. Framework assembles the final output from accepted child results.
-model: reasoning
+model: coordination
 thinking_level: medium
 rbac_roles:
 - ASSESS_EQUIPMENT

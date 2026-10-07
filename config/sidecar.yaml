@@ -26,7 +26,11 @@ loomspan:
   models:
     reasoning:
       connection: model
-      provider-model: meta/muse-spark-1.3-contributor
+      provider-model: openai/gpt-6-sol
+      thinking-levels: [medium]
+    coordination:
+      connection: model
+      provider-model: openai/gpt-6-luna
       thinking-levels: [medium]
   skills:
     locations: [file:/config/skills/*.yaml, file:/config/rest-skills/*.yaml]

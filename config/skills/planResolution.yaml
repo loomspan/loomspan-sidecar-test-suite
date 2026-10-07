@@ -34,7 +34,7 @@ prompt: |
   Declared bindings supply source data, operating needs and accepted findings; use
   empty toolArguments when no unbound contribution is needed. Lookup tools take
   caseId and assetId. The accepted compareOptions result is the workflow output.
-model: reasoning
+model: coordination
 thinking_level: medium
 rbac_roles:
 - ASSESS_EQUIPMENT

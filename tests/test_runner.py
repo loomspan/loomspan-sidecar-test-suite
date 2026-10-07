@@ -32,8 +32,9 @@ def root(tmp_path, monkeypatch):
 def test_mock_and_preview_never_touch_runtime(monkeypatch, capsys):
     monkeypatch.setattr(runner, 'ready', lambda: pytest.fail('Must not access runtime'))
     monkeypatch.delenv('LOOMSPAN_OPENROUTER_API_KEY', raising=False)
-    assert runner.main(['mock']) == 2
-    assert 'UNAVAILABLE' in capsys.readouterr().out
+    assert runner.main(['mock', '--dry-run']) == 0
+    preview = json.loads(capsys.readouterr().out)
+    assert preview['paidCalls'] == 0 and len(preview['scenarios']) == 4
     for mode in ['live', 'capture', 'evaluate']:
         assert runner.main([mode, '--model', 'test/model', '--dry-run']) == 0
         selection = json.loads(capsys.readouterr().out)
@@ -357,3 +358,16 @@ def test_invalid_mixed_override_stops_before_runtime(root, monkeypatch):
     for value in ['missing=test/model', '../example=test/model', 'example=', 'example']:
         with pytest.raises(SystemExit):
             runner.main(['evaluate', '--model', 'test/lower', '--skill-model', value, '--dry-run'])
+
+
+def test_trial_overrides_replace_selected_pack_aliases(root):
+    # A whole-tree trial must not silently retain a coordinator's normal model.
+    skill = root / 'config/skills/example.yaml'
+    skill.write_text('name: example\nmodel: coordination\nthinking_level: medium\n')
+    directory = root / '.runtime/selected-pack-trial'
+    directory.mkdir()
+    runner.make_overlay(directory, ['java'], 'test/whole-tree', 'medium')
+    generated = yaml.safe_load((directory / 'skills/example.yaml').read_bytes())
+    config = yaml.safe_load((directory / 'java.yaml').read_bytes())
+    assert config['loomspan']['models'][generated['model']]['provider-model'] == 'test/whole-tree'
+    assert yaml.safe_load(skill.read_bytes())['model'] == 'coordination'

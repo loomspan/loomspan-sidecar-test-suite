@@ -15,7 +15,7 @@ Do not use bare `docker compose up`, which omits those overlays.
 
 The smoke check logs in through real PKCE, invokes deterministic quote tools through
 both integrations, verifies complete offer records and exact service quotes against
-source fixtures (including quote attendance equaling source arrival), checks
+source fixtures (including quote attendance equaling source arrival), checks the mounted eight-skill mixed-model assignment,
 unauthenticated denial and Maya's request-creation denial,
 and verifies no model requests and no changes to previous business rows. It adds two
 quote rows per app under new smoke case IDs. Results are in `.runtime/smoke.json`.
@@ -55,12 +55,15 @@ Do not reconfigure the current initialized workspace.
 The build recorder verifies that both packaged hosts embed the installed Framework
 bytes. Sidecar packaging skips its incompatible pinned test sources; this remains a
 limitation, not test acceptance. Current provider/mission/proxy limits are 480/2400/510s.
-The authored default model is Muse/medium. Provider access remains disabled by the
+The authored pack uses Sol/medium for six judgment skills and Luna/medium for the
+two coordinators. The generator preserves this assignment. Provider access remains disabled by the
 normal Compose overlays regardless of whether the shell has a provider key.
 
-The cleanup did not rebuild or alter application source, current skill definitions,
-Compose configuration or business fixture values. Rebuild commands are operational
-instructions, not a claim that a fresh rebuild was performed during cleanup.
+Phase 2 cleanup retained packaged hosts and business methods and made the tested
+mixed assignment the normal configuration. Historical synthetic business records,
+results and traces were retired into an external recovery snapshot; credentials and
+Sidecar operational configuration were retained. Startup recreates the normal running
+services; smoke adds fresh isolated quotes. No paid validation was performed during cleanup.
 
 ## Portable installation
 
@@ -71,6 +74,16 @@ provider-disabled configuration and generates credentials. Start with `start.py 
 and run `smoke.py`. Packaging/install scripts require the same local Python environment.
 These tools are retained; a new portable installation was not performed during cleanup.
 
+## Deterministic assessment replay
+
+After startup, run `.venv/Scripts/python.exe scripts/run_suite.py mock` to exercise
+all four accepted assessment cases on both real integrations using frozen Sol/Luna
+responses. It requires no provider key and keeps provider access disabled. The maintained
+`fixtures/reference` pack travels with source packages and is never replaced by run
+output. Each replay creates fresh synthetic assessment/quote rows while preserving
+existing rows. It checks runtime behavior against the accepted reference, not new
+model reasoning or the full service-request workflow. See [the runner guide](runner.md).
+
 ## Skill experiments
 
 Current model/planning declarations live in `config/skills`; Sidecar's deterministic
@@ -79,8 +92,7 @@ remain in `scripts/author_workflow.py` and `scripts/workflow_contracts.json`.
 Keep Java and Python business/authorization behavior equivalent during skill changes.
 
 Use the [shared four-mode runner](runner.md) for an authorized evaluation. Work directly
-on current skills; there is no variant registry. The historical Phase 1 replay machinery
-and captures remain retired. The runner uses `evidence/latest` by default, replacing
+on current skills; there is no variant registry. Historical Phase 1 and Phase 2 captures remain retired. The runner uses `evidence/latest` by default, replacing
 its three output files rather than accumulating run directories. Keep an accepted
 result separately when a skill improvement is accepted. Paid calls still require
 explicit authorization; no paid run was performed when implementing the runner.

@@ -1,0 +1,58 @@
+{
+  "formatVersion": 1,
+  "sourceRunId": "f11193ccd3024844bb38cc69d53e0d2c",
+  "sourceIntegration": "java",
+  "sourceBundleSha256": "6d081a46cae6781ce13bbf999f6f7610d5eb0a477fad354de9777eb6c418aa02",
+  "sourceReportSha256": "ffbb20249120e7a9a1622245c5109620765bc8b8a8a5d1891b5103390c0121fa",
+  "businessStatus": "BUSINESS_PASS_WITH_MINOR_CAVEATS",
+  "reasoning": "medium",
+  "acceptanceBasis": "Manual source-based review of all four technical assessments, sixteen option findings and four final recommendations against the existing material-correctness criteria. Structural checks and exact transport are assessed separately.",
+  "nonBlockingCaveats": [
+    "Incomplete-but-undisputed warranty review is again compressed into CONTACT-WARRANTY, whose explicit responsibility covers disputed findings. No grant or denial is invented; retain the previously recorded minor owner-precision limitation consistently.",
+    "Baseline loaner expiry ends: approval alone does not book it; a service request asks dispatch to confirm resources rather than reserving stock. This is unnecessary cross-process context, but neither directs loaner submission through the service app nor assigns the service dispatch contact as procurement owner. Approval and final handoffs explicitly retain external procurement and provider acceptance.",
+    "Later-start loaner access says at least two hours of later access are needed for the 20:00-22:00 window. This is defensible as coverage of the whole offered window, but must not be read as a known minimum delivery/setup duration. The same finding explicitly leaves setup completion unknown and requires full-period access including beyond 22:00. Record as ambiguous planning wording, not a demonstrated two-hour activity duration.",
+    "Later-start uncertainty asks whether expedited dispatch can be confirmed before offer expiry. The governing expiryCondition and nextDecision correctly make timely approved submission preserve prices and dispatch remain unconfirmed; the uncertainty does not explicitly add a dispatch-confirmation deadline, but is unnecessarily ambiguous.",
+    "Compressed author attribution, redundant cross-assessment reminders and priority physical-label reconfirmation remain readability costs. No new skill edits were made to chase these within the repeat."
+  ],
+  "limits": [
+    "Four fixed scenarios in one synthetic business process; no broad reliability claim.",
+    "No paid Sidecar, request creation, default model change, accepted promotion, commit or push.",
+    "The redesign passed 44 provider-free tests and both disabled-provider smoke checks before this batch. No implementation edits during the batch. Consumer delivery was verified on both integrations with local rejection probes before this batch. Fixed cases and one batch do not establish repeatability or general causality."
+  ],
+  "scenarios": [
+    "baseline",
+    "priority",
+    "capacity_shortfall",
+    "later_start"
+  ],
+  "skillModels": {
+    "assessEquipment": "openai/gpt-6-sol",
+    "assessExpeditedFeasibility": "openai/gpt-6-sol",
+    "assessLoanerFeasibility": "openai/gpt-6-sol",
+    "assessReplacementFeasibility": "openai/gpt-6-sol",
+    "assessStandardFeasibility": "openai/gpt-6-sol",
+    "compareOptions": "openai/gpt-6-sol",
+    "planResolution": "openai/gpt-6-luna",
+    "resolveEquipment": "openai/gpt-6-luna"
+  },
+  "skillContracts": {
+    "assessEquipment": "14b0548b75ea33bce5f530884b44dd90914a67c48f1eb99b713e55b183bb0903",
+    "assessExpeditedFeasibility": "85280eaef73f27f1173d4342eb2f294bcf1527897f9557a4230ec2b6451ba6fd",
+    "assessLoanerFeasibility": "14c50d3c462beb581338f964e94281f20c47a8f2dd416271e6354a83203128d0",
+    "assessReplacementFeasibility": "d4e0b73aa5d384423150c0456ed487d1d0b85ee7cbce352d5b6c85c3f5dec382",
+    "assessStandardFeasibility": "f4970eb57b71a5f1d2d6ae405e337fdd5c9ebe96671cc6996851438359834262",
+    "compareOptions": "5dcb33998366ee3b1c72dccb476c910cef049e20e5f161076ef425e5c293615a",
+    "planResolution": "9c8bbfe8f801afb177f93a4d6f1c98b3ef920dc60dde8eea0e70ab012c5ae2fc",
+    "resolveEquipment": "84b237c576783e9d27f7bfe0fe9fd723077f576d785afb43157cf082a19a35af"
+  },
+  "sourceHashes": {
+    "fixtures/base-case.json": "7d1f50eddbd751861a7fa4bda5d023a1e147c1d50677849ce057938805a7bdb9",
+    "fixtures/business.json": "65539841473b81c9ef7a1a32aca64e894b5e6070aaa8e635d189e39b0fd7597c"
+  },
+  "files": {
+    "baseline.json": "c336de6bcd3b4d30cedaa66e9f5e5775cf19179233d4a447b71a087f85074eee",
+    "priority.json": "2f9c309fd57f4dcc885159066b28e9b8d312e7bc7aa9ab6c345e0d2c01acf27f",
+    "capacity_shortfall.json": "f3044d0962881335a025c577653ba9530194c2a3b319a7f7dcbbcd8adfd25fef",
+    "later_start.json": "0b97f06ac3935b15a472df878673eae8ae1cf230ecc9989b429de34668735e7b"
+  }
+}

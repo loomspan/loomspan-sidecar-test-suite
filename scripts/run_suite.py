@@ -1,4 +1,4 @@
-"""One runner: mock, live, evaluate and capture. No variant registry or historical inputs."""
+"""One runner: frozen offline replay, live evaluation and capture."""
 import argparse
 import copy
 from collections import Counter
@@ -83,6 +83,7 @@ def make_overlay(directory, paths, model, reasoning, skill_models=None):
     for source in (ROOT / 'config/skills').glob('*.yaml'):
         text = source.read_text(encoding='utf-8')
         text = re.sub(r'^thinking_level:.*\n', '' if reasoning == 'none' else 'thinking_level: ' + reasoning + '\n', text, flags=re.M)
+        text = re.sub(r'^model:.*$', 'model: reasoning', text, flags=re.M)
         if source.stem in skill_models:
             text = re.sub(r'^model:.*$', 'model: trial-' + source.stem, text, flags=re.M)
         (skills / source.name).write_text(text, encoding='utf-8')
@@ -215,7 +216,7 @@ def model_assignment_matches(calls, trace, model, skill_models=None):
     return Counter(r['metadata']['providerModel'] for r in requests) == Counter(e['request'].get('model') for e in calls)
 
 
-def execute_case(client, name, path, token, secrets, bundle, timeout, model, skill_models=None):
+def execute_case(client, name, path, token, secrets, bundle, timeout, model, skill_models=None, reference=None):
     case = 'case-' + path + '-' + uuid.uuid4().hex
     prefix = name + '/' + path
     mission = scenarios.inputs(name, case)
@@ -227,7 +228,14 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model, ski
     terminal, trace, events = {}, [], []
     api = environment.url(PORTS[path])
     try:
-        response = client.post(environment.url(18090, '/control/cases/' + case), json={'mode': 'live', 'path': path}, headers=control)
+        registration = {'mode': 'live', 'path': path}
+        if reference is not None:
+            from replay_reference import bind_case
+            reference = bind_case(reference, case)
+            if reference['input'] != mission:
+                raise ValueError('Scenario differs from frozen input')
+            registration = {'mode': 'replay', 'path': path, 'steps': reference['steps']}
+        response = client.post(environment.url(18090, '/control/cases/' + case), json=registration, headers=control)
         response.raise_for_status()
         response = client.post(api + '/assessments', json=mission, headers=headers)
         response.raise_for_status()
@@ -268,14 +276,28 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model, ski
         result['checks']['requested model used'] = model_assignment_matches(calls, trace, model, skill_models)
         result['checks']['no provider failures'] = not any(e['event'] in ['provider-transport-failure', 'model-rejected'] for e in events) and all(e.get('status', 0) == 200 and not e.get('response', {}).get('error') for e in responses)
         result['usage'] = usage(events, trace)
+        if reference is not None:
+            result['checks']['all frozen responses consumed exactly once'] = (
+                sorted(e.get('stage', -1) for e in responses) == list(range(len(reference['steps'])))
+                and len(calls) == len(reference['steps']))
+            result['checks']['only offline reference responses'] = bool(responses) and all(
+                e.get('provenance', '').startswith('accepted-reference:') for e in responses)
+            result['checks']['published result matches frozen reference'] = (
+                terminal.get('status') == 'COMPLETED' and scenarios.decoded(terminal['result']) == reference['expected'])
+            result['businessReview'] = 'FROZEN_ACCEPTED_REFERENCE_NOT_NEW_MODEL_REVIEW'
+            result['usage']['paidModelCalls'] = sum(e.get('provenance') == 'live OpenRouter' for e in responses)
         result['status'] = 'CHECKS_PASS_REVIEW_REQUIRED' if result['checks'] and all(result['checks'].values()) and not any(k.endswith('Error') for k in result) else 'FAIL'
+        if reference is not None and result['status'] != 'FAIL':
+            result['status'] = 'REPLAY_PASS'
     return result
 
 
 def write_report(report, bundle, output):
     output.mkdir(parents=True, exist_ok=True)
+    note = ('Frozen accepted responses exercised against current runtime; no new model judgment or paid calls.'
+            if report['mode'] == 'mock' else 'Business judgment requires review; automated success is not acceptance.')
     lines = ['# Run result', '', f"Mode: {report['mode']}; status: **{report['status']}**.",
-             '', 'Business judgment requires review; automated success is not acceptance.', '',
+             '', note, '',
              '| Scenario | Path | Checks | Calls | Reported cost | Trace seconds |', '|---|---|---|---|---|---|']
     for case in report['cases']:
         checks = case['checks']
@@ -292,7 +314,7 @@ def write_report(report, bundle, output):
     if report['mode'] == 'capture':
         bundle.add('candidate-review.json', {'status': 'UNREVIEWED', 'replayApproved': False,
                    'runId': report['runId'], 'reviewAreas': scenarios.REVIEW_AREAS,
-                   'note': 'Candidate evidence only. This runner does not promote or replay captures.'})
+                   'note': 'Candidate evidence only; no automatic promotion. Mock replays only the separately frozen accepted reference.'})
     bundle.add('report.json', report)
     bundle.add('summary.md', summary)
     bundle.add('checksums.json', {n: digest(raw) for n, raw in bundle.files.items()})
@@ -314,21 +336,78 @@ def parser():
     p.add_argument('--model', help='Explicit provider/model identifier for paid modes')
     p.add_argument('--skill-model', action='append', default=[], metavar='SKILL=MODEL', help='Temporary per-skill model override; repeatable')
     p.add_argument('--reasoning', default='medium', choices=['none', 'minimal', 'low', 'medium', 'high', 'xhigh'])
-    p.add_argument('--path', choices=['java', 'sidecar'], help='evaluate only; defaults to java')
-    p.add_argument('--scenario', action='append', choices=scenarios.NAMES, help='Repeat to select scenarios; default both')
+    p.add_argument('--path', choices=['java', 'sidecar'], help='evaluate defaults to java; mock defaults to both')
+    p.add_argument('--scenario', action='append', choices=scenarios.NAMES, help='Repeat to select scenarios; mock defaults to all four')
     p.add_argument('--output', type=Path, help='A new directory; default evidence/latest is replaced each run')
     p.add_argument('--dry-run', action='store_true', help='Print selection without provider access or runtime changes')
     return p
 
 
+def mock_main(args, p):
+    from replay_reference import load_reference
+    from model_profile import model_profile
+    if args.model or args.skill_model or args.reasoning != 'medium':
+        p.error('mock uses the frozen model assignment; overrides require a separate paid evaluation')
+    manifest, references = load_reference(ROOT)
+    paths = [args.path] if args.path else ['java', 'sidecar']
+    selected = list(dict.fromkeys(args.scenario or manifest['scenarios']))
+    if args.dry_run:
+        print(json.dumps({'mode': 'mock', 'paths': paths, 'scenarios': selected,
+                          'sourceRunId': manifest['sourceRunId'], 'paidCalls': 0}, indent=2))
+        return 0
+    output = args.output.resolve() if args.output else ROOT / 'evidence/latest'
+    if args.output and output.exists():
+        p.error('--output must be a new directory; accepted results are never overwritten')
+    secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
+    bundle = Bundle([*secrets.values(), os.getenv('LOOMSPAN_OPENROUTER_API_KEY')])
+    report = {'runId': uuid.uuid4().hex, 'mode': 'mock', 'cases': [], 'status': 'FAIL',
+              'paths': paths, 'scenarios': selected, 'runtimeRestored': False,
+              'sourceRunId': manifest['sourceRunId'], 'referenceFiles': manifest['files'],
+              'businessReview': 'FROZEN_ACCEPTED_REFERENCE_NOT_NEW_MODEL_REVIEW',
+              'scope': 'Four reference assessments; no new model judgment or service-request regression'}
+    with run_lock():
+        try:
+            if os.getenv('LOOMSPAN_RUN_OVERLAY') or os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
+                raise RuntimeError('mock requires the normal provider-disabled runtime')
+            ready()
+            require_offline_provider()
+            model_profile()  # Verify authored contracts and assignments on both real hosts.
+            report['build'] = baseline()
+            bundle.add('reference-manifest.json', manifest)
+            with httpx.Client(timeout=60, trust_env=False) as client:
+                for name in selected:
+                    for path in paths:
+                        print('Replaying ' + name + ' / ' + path, flush=True)
+                        token = login('maya')
+                        bundle.secrets.append(token)
+                        case = execute_case(client, name, path, token, secrets, bundle, 180,
+                                            'openai/gpt-6-sol', manifest['skillModels'], references[name])
+                        report['cases'].append(case)
+                        print(case['status'], flush=True)
+                        if case['status'] != 'REPLAY_PASS':
+                            raise RuntimeError('Replay mismatch; stopped without a paid fallback')
+            report['status'] = 'REPLAY_PASS'
+        except (Exception, KeyboardInterrupt) as error:
+            report['error'] = bundle.error(error)
+        finally:
+            try:
+                require_offline_provider()
+                report['runtimeRestored'] = True
+            except Exception as error:
+                report['error'] = bundle.error(error)
+                report['status'] = 'FAIL'
+            write_report(report, bundle, output)
+    print(str(output / 'summary.md'))
+    return 0 if report['status'] == 'REPLAY_PASS' else 1
+
+
 def main(argv=None):
     p = parser()
     args = p.parse_args(argv)
-    if args.path and args.mode != 'evaluate':
-        p.error('--path is only valid for evaluate; live/capture run both integrations')
+    if args.path and args.mode not in ['evaluate', 'mock']:
+        p.error('--path is only valid for evaluate/mock; live/capture run both integrations')
     if args.mode == 'mock':
-        print('UNAVAILABLE: no compatible approved mock fixtures. No runtime changes or model calls.')
-        return 2
+        return mock_main(args, p)
     if not args.model:
         p.error('--model is required for live, evaluate and capture')
     skill_models = {}
@@ -337,7 +416,7 @@ def main(argv=None):
         source = ROOT / 'config/skills' / (skill + '.yaml')
         if not separator or not provider_model.strip() or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*', skill) or not source.is_file():
             p.error('Invalid skill override: ' + value)
-        if skill in skill_models or yaml.safe_load(source.read_bytes()).get('model') != 'reasoning':
+        if skill in skill_models or yaml.safe_load(source.read_bytes()).get('model') not in ['reasoning', 'coordination']:
             p.error('Duplicate override or unsupported source model: ' + skill)
         skill_models[skill] = provider_model
     paths = [args.path or 'java'] if args.mode == 'evaluate' else ['java', 'sidecar']

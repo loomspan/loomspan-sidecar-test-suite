@@ -3,6 +3,7 @@ import asyncio, datetime, json, os, pathlib, time, uuid
 import httpx
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fixtures.replay import request_matches
 app=FastAPI()
 DATA=pathlib.Path(os.getenv('FIXTURE_DATA','/data')); DATA.mkdir(exist_ok=True)
 cases={}; gates={}; lock=asyncio.Lock()
@@ -127,6 +128,9 @@ async def model(path:str,request:Request):
             system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
             for n,item in enumerate(case.get('steps',[])):
                 if n in case['used']: continue
+                if 'requestContract' in item:
+                    if request_matches(body, item['requestContract']): candidates.append((n,item))
+                    continue
                 if (all(t in serialized for t in item['contains']) and all(t not in serialized for t in item.get('excludes',[]))
                     and all(t in system for t in item.get('systemContains',[]))
                     and all(t not in system for t in item.get('systemExcludes',[]))
@@ -166,5 +170,5 @@ async def model(path:str,request:Request):
         return StreamingResponse(relay(),status_code=response.status_code,media_type=response.headers.get('content-type','application/json'))
     result=(completed_task_response(body,step['responseFromCompletedTask'])
             if 'responseFromCompletedTask' in step else step['response'])
-    journal('model-response',path=path,caseId=case_id,requestId=request_id,response=result,stage=i,provenance=step.get('provenance','development scaffold'))
+    journal('model-response',path=path,caseId=case_id,requestId=request_id,status=200,response=result,stage=i,provenance=step.get('provenance','development scaffold'))
     return result

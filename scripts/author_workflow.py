@@ -305,7 +305,7 @@ def main():
         'compareOptions': 'Compare checked options and own the final cited recommendation.',
     }
     for name, prompt in DECISION_PROMPTS.items():
-        doc = dict(name=name, description=descriptions[name], model='reasoning', thinking_level='medium',
+        doc = dict(name=name, description=descriptions[name], model=('coordination' if name in ['resolveEquipment', 'planResolution'] else 'reasoning'), thinking_level='medium',
                    rbac_roles=['ASSESS_EQUIPMENT'], input_schema=copy.deepcopy(CONTRACTS[name]),
                    prompt=composed_prompt(prompt, SKILL_RUNTIME[name]), output_schema=copy.deepcopy(CONTRACTS['assessmentOutput' if name == 'assessEquipment' else 'decisionOutput']),
                    output_schema_max_retries=2)
