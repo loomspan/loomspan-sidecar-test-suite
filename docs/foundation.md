@@ -83,8 +83,8 @@ this documentation is not a worked answer injected into prompts.
 
 ## Limits
 
-Current packages use Framework 1.0.0-beta.8-SNAPSHOT and Sidecar beta.2 source built
-against it. Nested bindings do not always eliminate model call envelopes; the final
+Current packages use Framework 1.0.0-beta.8 and pinned Sidecar 1.0.0-beta.3 source.
+Nested bindings do not always eliminate model call envelopes; the final
 observed workflow used fifteen model calls per case. Optimizing call count is separate
 from business correctness. Mixed assignment does not guarantee reliable review.
 Phase 3 will define broader regression and release confidence. See the phase summary

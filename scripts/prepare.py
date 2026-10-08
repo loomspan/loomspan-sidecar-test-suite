@@ -7,18 +7,19 @@ def write(path, value):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(value, encoding="utf-8")
 def export_sources():
-    # Export only the Sidecar source used by the current snapshot overlay.
+    # Export the pinned Sidecar release without modifying the neighboring checkout.
     import io
     repo = ROOT.parent / 'loomspan-sidecar'
-    ref = 'v1.0.0-beta.2'
-    expected = 'da3bb8f8ae6087955f9b3a6bd02b9706d3b582e7'
+    ref = 'v1.0.0-beta.3'
+    expected = '3eff6befd95f73b7d4091ed0da32498e0f64c488'
     sha = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref + '^{commit}'], text=True).strip()
     if sha != expected:
         raise RuntimeError('Sidecar source tag mismatch')
-    dest = ROOT / '.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT'
+    dest = ROOT / '.build/sidecar-1.0.0-beta.3'
     if dest.exists():
         return
-    raw = subprocess.check_output(['git', '-C', str(repo), 'archive', '--format=tar', ref])
+    raw = subprocess.check_output(['git', '-c', 'core.autocrlf=false', '-C', str(repo),
+                                   'archive', '--format=tar', ref])
     dest.mkdir(parents=True)
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         archive.extractall(dest, filter='data')

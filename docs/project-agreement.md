@@ -20,6 +20,12 @@ is imposed, but further tuning or paid runs do not follow automatically.
 
 ## Human business contract
 
+The user authorized switching the maintained runtime to Sidecar `1.0.0-beta.3`
+with Loomspan Framework `1.0.0-beta.8`. Build from the pinned release source,
+update both integrations and verify locally with provider-free checks and frozen
+reference replay. Preserve credentials, operational data, skills and model assignments.
+This dependency update authorizes no paid evaluation, commit, push or release.
+
 Responsibilities, decisions and handoffs must represent a sensible business process.
 Methods, schemas and interfaces can change at any justified scale; a frozen trial is
 an experimental control, not a permanent ban on improvement. Do not fragment the

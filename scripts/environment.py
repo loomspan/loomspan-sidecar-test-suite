@@ -35,7 +35,7 @@ def compose():
     value = settings()
     command = ['docker', 'compose', '--project-directory', str(ROOT), '-p', value['project'],
                '--env-file', str(ROOT / '.runtime/compose.env')]
-    for name in ['compose.yaml', 'compose.snapshot.yaml', 'compose.offline.yaml']:
+    for name in ['compose.yaml', 'compose.runtime.yaml', 'compose.offline.yaml']:
         command += ['-f', str(ROOT / name)]
     if value.get('runtimeMode') == 'supplied-artifacts':
         command += ['-f', str(ROOT / 'compose.onprem.yaml')]

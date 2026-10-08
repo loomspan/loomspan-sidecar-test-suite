@@ -2,7 +2,7 @@
 
 Use Docker Compose for all five services and the local Python environment for tooling.
 Always use `scripts.environment.compose()` through the provided startup script so the
-snapshot, provider-disabled and optional isolated/supplied-artifact overlays are applied.
+runtime, provider-disabled and optional isolated/supplied-artifact overlays are applied.
 Do not use bare `docker compose up`, which omits those overlays.
 
 ## Initialized workspace
@@ -29,9 +29,8 @@ under `.runtime`. Never print credentials or delete databases during ordinary cl
 ## Building from source
 
 Prerequisites: Docker, Java 21+, Maven, Python 3.13 and the Maven-installed Framework
-`1.0.0-beta.8-SNAPSHOT`. The pinned Sidecar beta.2 source is exported into
-`.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT`; the initialized workspace
-already contains it. `scripts/prepare.py` can export it from the neighboring
+`1.0.0-beta.8`. The pinned Sidecar beta.3 source is exported into
+`.build/sidecar-1.0.0-beta.3`. `scripts/prepare.py` can export it from the neighboring
 `loomspan-sidecar` checkout for a fresh workspace and generate local credentials.
 It does not overwrite an existing source export.
 
@@ -40,9 +39,9 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.lock
 .venv/Scripts/python.exe -m playwright install chromium
 .venv/Scripts/python.exe scripts/prepare.py
-mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' -f apps/java/pom.xml clean package
-mvn -B -ntp '-Dloomspan.version=1.0.0-beta.8-SNAPSHOT' '-Dmaven.test.skip=true' -f .build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/pom.xml clean package
-.venv/Scripts/python.exe scripts/record_snapshot_build.py
+mvn -B -ntp -f apps/java/pom.xml clean package
+mvn -B -ntp -f .build/sidecar-1.0.0-beta.3/pom.xml clean package
+.venv/Scripts/python.exe scripts/record_build.py
 .venv/Scripts/python.exe scripts/start.py --build
 .venv/Scripts/python.exe scripts/smoke.py
 ```
@@ -53,11 +52,21 @@ For a fresh isolated workspace, run `scripts/configure_isolated.py --project NAM
 Do not reconfigure the current initialized workspace.
 
 The build recorder verifies that both packaged hosts embed the installed Framework
-bytes. Sidecar packaging skips its incompatible pinned test sources; this remains a
-limitation, not test acceptance. Current provider/mission/proxy limits are 480/2400/510s.
+bytes. Both POMs pin Framework beta.8; Sidecar's release tag is checked before export.
+Source export disables Git's Windows line-ending conversion so release-workflow
+text checks receive the tagged LF content.
+Current provider/mission/proxy limits are 480/2400/510s.
 The authored pack uses Sol/medium for six judgment skills and Luna/medium for the
 two coordinators. The generator preserves this assignment. Provider access remains disabled by the
 normal Compose overlays regardless of whether the shell has a provider key.
+
+The 2026-10-07 dependency upgrade passed the 58 provider-free suite tests, both-host
+smoke and all eight frozen-reference replay cases. Both running JARs matched the
+recorded build identity and embedded identical Framework beta.8 bytes; portable
+package input/hash verification also passed. Sidecar's source tests reported 252
+passes and three skips initially; the sole failed release-workflow line-ending
+check passed on rerun after restoring the exported workflows to their tagged LF bytes.
+No paid calls were made. These checks do not establish full release acceptance.
 
 Phase 2 cleanup retained packaged hosts and business methods and made the tested
 mixed assignment the normal configuration. Historical synthetic business records,

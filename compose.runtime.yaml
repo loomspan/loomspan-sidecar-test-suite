@@ -1,4 +1,4 @@
-# Local test build: Sidecar beta.2 source with installed Framework beta.8-SNAPSHOT.
+# Pinned release build: Sidecar beta.3 with Framework beta.8.
 services:
   fixtures:
     environment:
@@ -8,7 +8,7 @@ services:
       LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 480s
       LOOMSPAN_SESSION_MISSIONTIMEOUT: 2400s
   sidecar:
-    build: .build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT
+    build: .build/sidecar-1.0.0-beta.3
     environment:
       LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 480s
       LOOMSPAN_SESSION_MISSIONTIMEOUT: 2400s

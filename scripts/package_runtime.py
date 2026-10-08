@@ -21,7 +21,7 @@ def main():
     build = json.loads((ROOT / '.runtime/build-baseline.json').read_bytes())
     source = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in names}
     jars = {'java': ROOT / 'apps/java/target/equipment-java-1.0.jar',
-            'sidecar': ROOT / '.build/sidecar-1.0.0-beta.2-framework-beta.8-SNAPSHOT/target/loomspan-sidecar-1.0.0-beta.2.jar'}
+            'sidecar': ROOT / '.build/sidecar-1.0.0-beta.3/target/loomspan-sidecar-1.0.0-beta.3.jar'}
     for name, path in jars.items():
         if hashlib.sha256(path.read_bytes()).hexdigest() != build['artifacts'][name]['sha256']:
             raise ValueError('Package changed: ' + name)
