@@ -6,8 +6,9 @@ Business judgment remains a separate human review, never a keyword score.
 import copy
 import json
 from pathlib import Path
+from trace_payload import payload
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_NAMES = ('baseline', 'priority')
 NAMES = (*DEFAULT_NAMES, 'capacity_shortfall', 'later_start')
 REVIEW_AREAS = [
@@ -39,18 +40,6 @@ def inputs(name, case):
 
 def decoded(value):
     return json.loads(value) if isinstance(value, str) else value
-
-
-def payload(record, records):
-    if record.get('data') is not None:
-        return record['data']
-    meta = record['metadata']
-    chunks = sorted((r for r in records if r['recordType'] == 'PAYLOAD_CHUNK_APPENDED'
-                     and r['metadata'].get('payloadId') == meta.get('payloadId')),
-                    key=lambda r: r['metadata']['chunkIndex'])
-    if len(chunks) != meta.get('chunkCount') or [c['metadata']['chunkIndex'] for c in chunks] != list(range(len(chunks))):
-        raise ValueError('Incomplete or duplicate trace payload chunks')
-    return json.loads(''.join(c['data'] for c in chunks))
 
 
 def review(terminal, mission, rows, trace):
@@ -136,3 +125,7 @@ def service_conditions(published, context):
         if valid:
             valid = len(refs) == len(set(refs))
     return bool(conditions), valid
+
+
+def preservation_checks(old, new):
+    return {'no service commitments created': old['requests'] == new['requests']}

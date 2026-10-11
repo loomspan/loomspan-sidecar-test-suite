@@ -11,9 +11,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-import author_workflow as author
+from suites.equipment_service import author_workflow as author
 
-spec = importlib.util.spec_from_file_location('offer_business', ROOT / 'apps/python/business.py')
+spec = importlib.util.spec_from_file_location('offer_business', ROOT / 'apps/python/suites/equipment_service/business.py')
 business = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(business)
 
@@ -71,7 +71,7 @@ def test_offers_preserve_source_terms_and_exact_persisted_quotes(tmp_path, monke
 
 
 def test_all_assessors_receive_whole_offer_and_publish_its_terms():
-    parent = yaml.safe_load((ROOT / 'config/skills/planResolution.yaml').read_bytes())
+    parent = yaml.safe_load((ROOT / 'config/skills/equipment-service/planResolution.yaml').read_bytes())
     for skill, (option, _) in author.FEASIBILITY.items():
         child = next(x for x in parent['allowed_skills'] if x['name'] == skill)
         bindings = child['input_bindings']
@@ -79,7 +79,7 @@ def test_all_assessors_receive_whole_offer_and_publish_its_terms():
                                               'path': '/offers/' + option}
         assert not any(k in bindings for k in ['/context/quotes', '/context/offerExpiresAt',
                                               '/context/offerReserved', '/context/offerSourceId'])
-        manifest = yaml.safe_load((ROOT / ('config/skills/' + skill + '.yaml')).read_bytes())
+        manifest = yaml.safe_load((ROOT / ('config/skills/equipment-service/' + skill + '.yaml')).read_bytes())
         assert manifest['input_schema'] == author.CONTRACTS['feasibilityInput']
         for published, key in [('offerExpiresAt', 'expiresAt'), ('offerReserved', 'reserved'),
                                ('offerSourceId', 'sourceId')]:

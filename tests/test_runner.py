@@ -12,14 +12,14 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import run_suite as runner
-import scenarios
+from suites.equipment_service import scenarios
 
 
 @pytest.fixture
 def root(tmp_path, monkeypatch):
     (tmp_path / '.runtime').mkdir()
-    (tmp_path / 'config/skills').mkdir(parents=True)
-    (tmp_path / 'config/skills/example.yaml').write_text('name: example\nthinking_level: medium\ninput_bindings: {}\n')
+    (tmp_path / 'config/skills/equipment-service').mkdir(parents=True)
+    (tmp_path / 'config/skills/equipment-service/example.yaml').write_text('name: example\nthinking_level: medium\ninput_bindings: {}\n')
     config = {'loomspan': {'models': {'reasoning': {'provider-model': 'old/model', 'thinking-levels': ['medium']}}, 'session': {'mission-timeout': '2400s'}}}
     for name in ['java', 'sidecar']:
         (tmp_path / 'config' / (name + '.yaml')).write_text(yaml.safe_dump(config))
@@ -42,7 +42,7 @@ def test_mock_and_preview_never_touch_runtime(monkeypatch, capsys):
         assert selection['scenarios'] == ['baseline', 'priority']
 
 
-def test_preflight_requires_model_key_and_evaluate_only_path(monkeypatch):
+def test_preflight_requires_model_key_and_evaluate_only_path(root, monkeypatch):
     monkeypatch.delenv('LOOMSPAN_OPENROUTER_API_KEY', raising=False)
     for args in [['evaluate'], ['evaluate', '--model', 'test/model'], ['live', '--path', 'java', '--model', 'test/model']]:
         with pytest.raises(SystemExit) as error:
@@ -61,9 +61,9 @@ def test_overlay_changes_only_model_settings_and_never_authored_files(root, reas
     for name in ['java', 'sidecar']:
         current = yaml.safe_load((directory / (name + '.yaml')).read_bytes())
         original = yaml.safe_load(before[root / 'config' / (name + '.yaml')])
-        original['loomspan']['models']['reasoning'] = {'provider-model': 'test/model', 'thinking-levels': [] if reasoning == 'none' else ['medium']}
+        original['loomspan']['models']['trial-equipment-service'] = {'provider-model': 'test/model', 'thinking-levels': [] if reasoning == 'none' else ['medium']}
         assert current == original
-    assert ('thinking_level:' in (directory / 'skills/example.yaml').read_text()) == (reasoning != 'none')
+    assert ('thinking_level:' in (directory / 'skills/equipment-service/example.yaml').read_text()) == (reasoning != 'none')
     assert all(p.read_bytes() == raw for p, raw in before.items())
 
 
@@ -264,7 +264,7 @@ def test_execute_case_collects_real_shape_and_accepted_fenced_plan(monkeypatch):
                'response': {'usage': {'cost': .01, 'prompt_tokens': 100, 'completion_tokens': 10},
                             'choices': [{'message': {'content': '```json\n{}\n```'}}]}}]
     states = iter([{'assessments': [], 'quotes': [], 'requests': []}, rows])
-    monkeypatch.setattr(runner, 'database', lambda _: next(states))
+    monkeypatch.setattr(runner, 'database', lambda *args: next(states))
     monkeypatch.setattr(scenarios, 'inputs', lambda *args: {'caseId': case, 'assetId': 'asset'})
     def handle(request):
         path = request.url.path
@@ -290,7 +290,8 @@ def test_execute_case_collects_real_shape_and_accepted_fenced_plan(monkeypatch):
 def test_cli_publishes_report_and_restores_without_external_services(root, monkeypatch, mode, failure):
     (root / 'fixtures').mkdir()
     (root / 'scripts').mkdir()
-    for name in ['fixtures/base-case.json', 'fixtures/business.json', 'fixtures/server.py', 'scripts/scenarios.py', 'scripts/run_suite.py']:
+    for name in ['fixtures/base-case.json', 'fixtures/business.json', 'fixtures/server.py', 'scripts/suites/equipment_service/scenarios.py', 'scripts/run_suite.py']:
+        (root / name).parent.mkdir(parents=True, exist_ok=True)
         (root / name).write_text('{}')
     (root / '.runtime/secrets.json').write_text(json.dumps({'control': 'private-control-value', 'observer': 'private-observer-value'}))
     monkeypatch.setenv('LOOMSPAN_OPENROUTER_API_KEY', 'private-provider-value')
@@ -309,7 +310,7 @@ def test_cli_publishes_report_and_restores_without_external_services(root, monke
                 'usage': {'modelCalls': 0, 'reportedCost': None}, 'status': 'CHECKS_PASS_REVIEW_REQUIRED'}
     monkeypatch.setattr(runner, 'execute_case', execute)
     assert runner.main([mode, '--model', 'test/model']) == (1 if failure else 0)
-    report = json.loads((root / 'evidence/latest/report.json').read_bytes())
+    report = json.loads((root / 'evidence/latest/equipment-service/report.json').read_bytes())
     assert report['runtimeRestored'] is True
     assert report['replayApproved'] is False
     assert report['captureCandidate'] == (mode == 'capture')
@@ -319,25 +320,25 @@ def test_cli_publishes_report_and_restores_without_external_services(root, monke
     assert 'private-provider-value' not in json.dumps(report)
     if not failure:
         assert len(report['cases']) == (2 if mode == 'evaluate' else 4)
-    with zipfile.ZipFile(root / 'evidence/latest/bundle.zip') as archive:
+    with zipfile.ZipFile(root / 'evidence/latest/equipment-service/bundle.zip') as archive:
         assert ('candidate-review.json' in archive.namelist()) == (mode == 'capture')
 
 
 def test_mixed_overlay_preserves_contracts_and_both_hosts(root):
-    source = root / 'config/skills/example.yaml'
+    source = root / 'config/skills/equipment-service/example.yaml'
     source.write_text('name: example\nmodel: reasoning\nthinking_level: medium\nprompt: Keep business method\ninput_bindings: {}\n')
     before = source.read_bytes()
     directory = root / '.runtime/mixed'
     directory.mkdir()
     runner.make_overlay(directory, ['java', 'sidecar'], 'test/lower', 'medium', {'example': 'test/stronger'})
-    effective = yaml.safe_load((directory / 'skills/example.yaml').read_bytes())
+    effective = yaml.safe_load((directory / 'skills/equipment-service/example.yaml').read_bytes())
     original = yaml.safe_load(before)
     original['model'] = 'trial-example'
     assert effective == original
     assert source.read_bytes() == before
     for host in ['java', 'sidecar']:
         models = yaml.safe_load((directory / (host + '.yaml')).read_bytes())['loomspan']['models']
-        assert models['reasoning']['provider-model'] == 'test/lower'
+        assert models['trial-equipment-service']['provider-model'] == 'test/lower'
         assert models['trial-example']['provider-model'] == 'test/stronger'
         assert models['trial-example']['thinking-levels'] == ['medium']
 
@@ -362,12 +363,12 @@ def test_invalid_mixed_override_stops_before_runtime(root, monkeypatch):
 
 def test_trial_overrides_replace_selected_pack_aliases(root):
     # A whole-tree trial must not silently retain a coordinator's normal model.
-    skill = root / 'config/skills/example.yaml'
+    skill = root / 'config/skills/equipment-service/example.yaml'
     skill.write_text('name: example\nmodel: coordination\nthinking_level: medium\n')
     directory = root / '.runtime/selected-pack-trial'
     directory.mkdir()
     runner.make_overlay(directory, ['java'], 'test/whole-tree', 'medium')
-    generated = yaml.safe_load((directory / 'skills/example.yaml').read_bytes())
+    generated = yaml.safe_load((directory / 'skills/equipment-service/example.yaml').read_bytes())
     config = yaml.safe_load((directory / 'java.yaml').read_bytes())
     assert config['loomspan']['models'][generated['model']]['provider-model'] == 'test/whole-tree'
     assert yaml.safe_load(skill.read_bytes())['model'] == 'coordination'

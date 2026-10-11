@@ -2,7 +2,7 @@
 import argparse
 import copy
 from collections import Counter
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from decimal import Decimal
 import hashlib
 import json
@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import sys
 import subprocess
 import tempfile
 import time
@@ -23,7 +24,8 @@ from baseline import baseline
 from login import login
 from readiness import ready
 from smoke import require_offline_provider
-import scenarios
+from suites.equipment_service import scenarios
+from suites.registry import EQUIPMENT, SUITES, select
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTS = {'java': 18081, 'sidecar': 18082}
@@ -76,26 +78,37 @@ def command(args):
     subprocess.run(args, cwd=ROOT, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
 
-def make_overlay(directory, paths, model, reasoning, skill_models=None):
+def make_overlay(directory, paths, model, reasoning, skill_models=None, suite=EQUIPMENT):
     skill_models = skill_models or {}
     skills = directory / 'skills'
     skills.mkdir()
-    for source in (ROOT / 'config/skills').glob('*.yaml'):
+    for source in (ROOT / 'config/skills').rglob('*.yaml'):
         text = source.read_text(encoding='utf-8')
+        if source.parent != ROOT / suite.skill_directory:
+            target = skills / source.relative_to(ROOT / 'config/skills')
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+            continue
         text = re.sub(r'^thinking_level:.*\n', '' if reasoning == 'none' else 'thinking_level: ' + reasoning + '\n', text, flags=re.M)
-        text = re.sub(r'^model:.*$', 'model: reasoning', text, flags=re.M)
+        text = re.sub(r'^model:.*$', 'model: trial-' + suite.name, text, flags=re.M)
         if source.stem in skill_models:
             text = re.sub(r'^model:.*$', 'model: trial-' + source.stem, text, flags=re.M)
-        (skills / source.name).write_text(text, encoding='utf-8')
+        target = skills / source.relative_to(ROOT / 'config/skills')
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding='utf-8')
     services = {'fixtures': {'environment': {'OPENROUTER_API_KEY': '${LOOMSPAN_OPENROUTER_API_KEY:?Provider key required}'}}}
     for path in paths:
         config = yaml.safe_load((ROOT / 'config' / (path + '.yaml')).read_text(encoding='utf-8'))
-        config['loomspan']['models']['reasoning'].update({'provider-model': model, 'thinking-levels': [] if reasoning == 'none' else [reasoning]})
+        alias = 'trial-' + suite.name
+        if alias in config['loomspan']['models']:
+            raise ValueError('Trial model alias already exists: ' + alias)
+        config['loomspan']['models'][alias] = copy.deepcopy(config['loomspan']['models']['reasoning'])
+        config['loomspan']['models'][alias].update({'provider-model': model, 'thinking-levels': [] if reasoning == 'none' else [reasoning]})
         for skill, provider_model in skill_models.items():
             alias = 'trial-' + skill
             if alias in config['loomspan']['models']:
                 raise ValueError('Trial model alias already exists: ' + alias)
-            config['loomspan']['models'][alias] = copy.deepcopy(config['loomspan']['models']['reasoning'])
+            config['loomspan']['models'][alias] = copy.deepcopy(config['loomspan']['models']['trial-' + suite.name])
             config['loomspan']['models'][alias]['provider-model'] = provider_model
         target = directory / (path + '.yaml')
         target.write_text(yaml.safe_dump(config, sort_keys=False), encoding='utf-8')
@@ -108,7 +121,7 @@ def make_overlay(directory, paths, model, reasoning, skill_models=None):
 def verify_mounted(directory, paths):
     for path in paths:
         pairs = [(directory / (path + '.yaml'), '/config/runtime.yaml')]
-        pairs += [(f, '/config/skills/' + f.name) for f in (directory / 'skills').glob('*.yaml')]
+        pairs += [(f, '/config/skills/' + f.relative_to(directory / 'skills').as_posix()) for f in (directory / 'skills').rglob('*.yaml')]
         for source, mounted in pairs:
             actual = subprocess.check_output(environment.execute(path, 'cat', mounted))
             if yaml.safe_load(actual) != yaml.safe_load(source.read_bytes()):
@@ -116,11 +129,11 @@ def verify_mounted(directory, paths):
 
 
 @contextmanager
-def live_runtime(directory, paths, model, reasoning, report, skill_models=None):
+def live_runtime(directory, paths, model, reasoning, report, skill_models=None, suite=EQUIPMENT):
     if os.getenv('LOOMSPAN_RUN_OVERLAY') or os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
         raise RuntimeError('An external runtime overlay is already active')
     require_offline_provider()
-    overlay = make_overlay(directory, paths, model, reasoning, skill_models)
+    overlay = make_overlay(directory, paths, model, reasoning, skill_models, suite)
     report['runtimeRestored'] = False
     try:
         os.environ['LOOMSPAN_RUN_OVERLAY'] = str(overlay)
@@ -136,22 +149,22 @@ def live_runtime(directory, paths, model, reasoning, report, skill_models=None):
         report['runtimeRestored'] = True
 
 
-def database(path):
+def database(path, suite=EQUIPMENT):
     host = 'python' if path == 'sidecar' else path
-    file = ROOT / '.runtime' / host / 'equipment.db'
+    file = ROOT / '.runtime' / host / suite.database
     with sqlite3.connect('file:' + file.as_posix() + '?mode=ro', uri=True) as db:
         db.row_factory = sqlite3.Row
-        return {t: [dict(r) for r in db.execute('SELECT * FROM ' + t)] for t in ['assessments', 'quotes', 'requests']}
+        return {t: [dict(r) for r in db.execute('SELECT * FROM ' + t)] for t in suite.tables}
 
 
 def row_hashes(rows):
     return {t: {digest(json.dumps(r, sort_keys=True).encode()) for r in rs} for t, rs in rows.items()}
 
 
-def wait(client, api, ident, headers, timeout):
+def wait(client, api, ident, headers, timeout, suite=EQUIPMENT):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        response = client.get(api + '/assessments/' + ident, headers=headers)
+        response = client.get(api + suite.endpoint + '/' + ident, headers=headers)
         response.raise_for_status()
         value = response.json()
         if value.get('status') in ['COMPLETED', 'FAILED', 'CANCELLED']:
@@ -160,18 +173,32 @@ def wait(client, api, ident, headers, timeout):
     raise TimeoutError('Assessment exceeded the configured mission timeout plus collection grace')
 
 
-def trace_for(client, path, case, observer, bundle, prefix):
+def trace_catalog(client, path, observer):
+    base = environment.url(18081 if path == 'java' else 18083, '/_loomspan/observability/v1')
+    items, seen, params = [], set(), {}
+    while True:
+        response = client.get(base + '/traces', headers={'X-loomspan-Api-Key': observer}, params=params)
+        response.raise_for_status()
+        page = response.json()
+        items.extend(page['items'])
+        cursor = page.get('nextCursor')
+        if not cursor:
+            if page.get('hasMore'):
+                raise ValueError('Trace page is incomplete without a continuation')
+            return items
+        if cursor in seen:
+            raise ValueError('Repeated trace continuation')
+        seen.add(cursor)
+        params = {'cursor': cursor}
+
+
+def trace_for(client, path, case, observer, bundle, prefix, suite=EQUIPMENT, exclude_ids=()):
     port = 18081 if path == 'java' else 18083
     base = environment.url(port, '/_loomspan/observability/v1')
     headers = {'X-loomspan-Api-Key': observer}
-    response = client.get(base + '/traces', headers=headers)
-    response.raise_for_status()
-    page = response.json()
-    if page.get('nextCursor') or page.get('nextPageToken'):
-        raise ValueError('Trace listing is paginated; capture cannot claim completeness')
     roots = []
-    for item in page['items']:
-        if item.get('entrySkill') != 'resolveEquipment':
+    for item in trace_catalog(client, path, observer):
+        if item.get('entrySkill') != suite.entry_skill or item['traceId'] in exclude_ids:
             continue
         response = client.get(base + '/traces/' + item['traceId'] + '/artifact', headers=headers)
         response.raise_for_status()
@@ -179,7 +206,7 @@ def trace_for(client, path, case, observer, bundle, prefix):
         if case.encode() in raw:
             roots.append(raw)
     if len(roots) != 1:
-        raise ValueError('Expected one correlated resolveEquipment trace')
+        raise ValueError('Expected one correlated ' + suite.entry_skill + ' trace')
     bundle.add(prefix + '/trace.ndjson', roots[0])
     return [json.loads(line) for line in roots[0].splitlines()]
 
@@ -216,15 +243,16 @@ def model_assignment_matches(calls, trace, model, skill_models=None):
     return Counter(r['metadata']['providerModel'] for r in requests) == Counter(e['request'].get('model') for e in calls)
 
 
-def execute_case(client, name, path, token, secrets, bundle, timeout, model, skill_models=None, reference=None):
+def execute_case(client, name, path, token, secrets, bundle, timeout, model, skill_models=None, reference=None, suite=EQUIPMENT):
+    scenarios = suite.scenarios
     case = 'case-' + path + '-' + uuid.uuid4().hex
     prefix = name + '/' + path
     mission = scenarios.inputs(name, case)
     bundle.add(prefix + '/input.json', mission)
-    before = database(path)
+    before = database(path, suite)
     headers = {'Authorization': 'Bearer ' + token}
     control = {'X-Control-Key': secrets['control']}
-    result = {'scenario': name, 'path': path, 'caseId': case, 'checks': {}, 'businessReview': 'PENDING'}
+    result = {'suite': suite.name, 'scenario': name, 'path': path, 'caseId': case, 'checks': {}, 'businessReview': 'PENDING'}
     terminal, trace, events = {}, [], []
     api = environment.url(PORTS[path])
     try:
@@ -237,10 +265,10 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model, ski
             registration = {'mode': 'replay', 'path': path, 'steps': reference['steps']}
         response = client.post(environment.url(18090, '/control/cases/' + case), json=registration, headers=control)
         response.raise_for_status()
-        response = client.post(api + '/assessments', json=mission, headers=headers)
+        response = client.post(api + suite.endpoint, json=mission, headers=headers)
         response.raise_for_status()
         result['executionId'] = response.json()['id']
-        terminal = wait(client, api, result['executionId'], headers, timeout)
+        terminal = wait(client, api, result['executionId'], headers, timeout, suite)
     except Exception as error:
         result['executionError'] = bundle.error(error)
     finally:
@@ -254,20 +282,20 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model, ski
         except Exception as error:
             result['journalError'] = bundle.error(error)
         try:
-            trace = trace_for(client, path, case, secrets['observer'], bundle, prefix)
+            trace = trace_for(client, path, case, secrets['observer'], bundle, prefix, suite)
             # Accepted plans are authoritative; raw fenced model text is not reparsed here.
             plans = [scenarios.payload(r, trace) for r in trace if r['recordType'] in ['PLAN_CREATED', 'PLAN_UPDATED']]
             bundle.add(prefix + '/accepted-plans.json', plans)
         except Exception as error:
             result['traceError'] = bundle.error(error)
         try:
-            after = database(path)
+            after = database(path, suite)
             old, new = row_hashes(before), row_hashes(after)
             relevant = {t: [r for r in rows if case in (r.get('body') or r.get('receipt') or '')] for t, rows in after.items()}
             bundle.add(prefix + '/business-records.json', relevant)
             result['checks'].update(scenarios.review(terminal, mission, relevant, trace))
             result['checks']['prior database rows unchanged'] = all(old[t] <= new[t] for t in old)
-            result['checks']['no service commitments created'] = old['requests'] == new['requests']
+            result['checks'].update(scenarios.preservation_checks(old, new))
         except Exception as error:
             result['reviewError'] = bundle.error(error)
         calls = [e for e in events if e['event'] == 'model-request']
@@ -296,6 +324,12 @@ def write_report(report, bundle, output):
     output.mkdir(parents=True, exist_ok=True)
     note = ('Frozen accepted responses exercised against current runtime; no new model judgment or paid calls.'
             if report['mode'] == 'mock' else 'Business judgment requires review; automated success is not acceptance.')
+    if report.get('fixtureOrigin') == 'authored-protocol-fixtures':
+        note = 'Authored protocol fixtures, not captured model judgments. No live provider calls or business acceptance claim.'
+    if report.get('fixtureOrigin') == 'unreviewed-live-capture':
+        note = 'Recorded real responses replayed offline; human judgment review and reference acceptance remain pending.'
+    if report.get('fixtureOrigin') == 'authored-protocol-and-reviewed-live-typesafe':
+        note = 'Authored protocol fixtures plus separately reviewed real TypeSafe responses. Offline replay checks integration fidelity; it does not re-evaluate model quality.'
     lines = ['# Run result', '', f"Mode: {report['mode']}; status: **{report['status']}**.",
              '', note, '',
              '| Scenario | Path | Checks | Calls | Reported cost | Trace seconds |', '|---|---|---|---|---|---|']
@@ -309,11 +343,11 @@ def write_report(report, bundle, output):
     if report.get('error'):
         lines += ['', 'Runner error: ' + report['error']]
     lines += ['', 'Runtime restored/provider-disabled: ' + str(report['runtimeRestored']), '',
-              'Manual review:', *['- ' + x for x in scenarios.REVIEW_AREAS]]
+              'Manual review:', *['- ' + x for x in report.get('reviewAreas', scenarios.REVIEW_AREAS)]]
     summary = ('\n'.join(lines) + '\n').encode()
     if report['mode'] == 'capture':
         bundle.add('candidate-review.json', {'status': 'UNREVIEWED', 'replayApproved': False,
-                   'runId': report['runId'], 'reviewAreas': scenarios.REVIEW_AREAS,
+                   'runId': report['runId'], 'reviewAreas': report.get('reviewAreas', scenarios.REVIEW_AREAS),
                    'note': 'Candidate evidence only; no automatic promotion. Mock replays only the separately frozen accepted reference.'})
     bundle.add('report.json', report)
     bundle.add('summary.md', summary)
@@ -333,30 +367,31 @@ def write_report(report, bundle, output):
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('mode', choices=['mock', 'live', 'evaluate', 'capture'])
+    p.add_argument('--suite', action='append', choices=[*SUITES, 'all'], help='Repeat to select suites; default equipment-service')
     p.add_argument('--model', help='Explicit provider/model identifier for paid modes')
     p.add_argument('--skill-model', action='append', default=[], metavar='SKILL=MODEL', help='Temporary per-skill model override; repeatable')
     p.add_argument('--reasoning', default='medium', choices=['none', 'minimal', 'low', 'medium', 'high', 'xhigh'])
     p.add_argument('--path', choices=['java', 'sidecar'], help='evaluate defaults to java; mock defaults to both')
-    p.add_argument('--scenario', action='append', choices=scenarios.NAMES, help='Repeat to select scenarios; mock defaults to all four')
+    p.add_argument('--scenario', action='append', help='Repeat to select scenarios; mock defaults to all four')
     p.add_argument('--output', type=Path, help='A new directory; default evidence/latest is replaced each run')
     p.add_argument('--dry-run', action='store_true', help='Print selection without provider access or runtime changes')
+    p.add_argument('--resume-capture', type=Path, help='Native capture only: prior suite report directory; use unused permits from that same batch')
     return p
 
 
-def mock_main(args, p):
-    from replay_reference import load_reference
+def mock_main(args, p, suite=EQUIPMENT):
     from model_profile import model_profile
     if args.model or args.skill_model or args.reasoning != 'medium':
         p.error('mock uses the frozen model assignment; overrides require a separate paid evaluation')
-    manifest, references = load_reference(ROOT)
+    manifest, references = suite.reference_loader(ROOT)
     paths = [args.path] if args.path else ['java', 'sidecar']
     selected = list(dict.fromkeys(args.scenario or manifest['scenarios']))
     if args.dry_run:
-        print(json.dumps({'mode': 'mock', 'paths': paths, 'scenarios': selected,
+        print(json.dumps({'suite': suite.name, 'mode': 'mock', 'paths': paths, 'scenarios': selected,
                           'sourceRunId': manifest['sourceRunId'], 'paidCalls': 0}, indent=2))
         return 0
     output = args.output.resolve() if args.output else ROOT / 'evidence/latest'
-    if args.output and output.exists():
+    if args.output and output.exists() and not getattr(args, 'grouped', False):
         p.error('--output must be a new directory; accepted results are never overwritten')
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
     bundle = Bundle([*secrets.values(), os.getenv('LOOMSPAN_OPENROUTER_API_KEY')])
@@ -364,8 +399,9 @@ def mock_main(args, p):
               'paths': paths, 'scenarios': selected, 'runtimeRestored': False,
               'sourceRunId': manifest['sourceRunId'], 'referenceFiles': manifest['files'],
               'businessReview': 'FROZEN_ACCEPTED_REFERENCE_NOT_NEW_MODEL_REVIEW',
-              'scope': 'Four reference assessments; no new model judgment or service-request regression'}
-    with run_lock():
+              'suite': suite.name, 'reviewAreas': suite.scenarios.REVIEW_AREAS,
+              'scope': suite.scope + '; frozen replay, no new model judgment'}
+    with (nullcontext() if getattr(args, 'grouped', False) else run_lock()):
         try:
             if os.getenv('LOOMSPAN_RUN_OVERLAY') or os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
                 raise RuntimeError('mock requires the normal provider-disabled runtime')
@@ -381,7 +417,7 @@ def mock_main(args, p):
                         token = login('maya')
                         bundle.secrets.append(token)
                         case = execute_case(client, name, path, token, secrets, bundle, 180,
-                                            'openai/gpt-6-sol', manifest['skillModels'], references[name])
+                                            'openai/gpt-6-sol', manifest['skillModels'], references[name], suite)
                         report['cases'].append(case)
                         print(case['status'], flush=True)
                         if case['status'] != 'REPLAY_PASS':
@@ -401,19 +437,22 @@ def mock_main(args, p):
     return 0 if report['status'] == 'REPLAY_PASS' else 1
 
 
-def main(argv=None):
-    p = parser()
-    args = p.parse_args(argv)
+def run_selected(args, p, suite):
+    scenarios = suite.scenarios
+    if args.mode != 'mock' and suite.live_runner:
+        return suite.live_runner(args, p, suite, sys.modules[__name__])
     if args.path and args.mode not in ['evaluate', 'mock']:
         p.error('--path is only valid for evaluate/mock; live/capture run both integrations')
     if args.mode == 'mock':
-        return mock_main(args, p)
+        if suite.mock_runner:
+            return suite.mock_runner(args, p, suite, sys.modules[__name__])
+        return mock_main(args, p, suite)
     if not args.model:
         p.error('--model is required for live, evaluate and capture')
     skill_models = {}
     for value in args.skill_model:
         skill, separator, provider_model = value.partition('=')
-        source = ROOT / 'config/skills' / (skill + '.yaml')
+        source = ROOT / suite.skill_directory / (skill + '.yaml')
         if not separator or not provider_model.strip() or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*', skill) or not source.is_file():
             p.error('Invalid skill override: ' + value)
         if skill in skill_models or yaml.safe_load(source.read_bytes()).get('model') not in ['reasoning', 'coordination']:
@@ -422,22 +461,22 @@ def main(argv=None):
     paths = [args.path or 'java'] if args.mode == 'evaluate' else ['java', 'sidecar']
     selected = list(dict.fromkeys(args.scenario or scenarios.DEFAULT_NAMES))
     if args.dry_run:
-        print(json.dumps({'mode': args.mode, 'paths': paths, 'scenarios': selected,
+        print(json.dumps({'suite': suite.name, 'mode': args.mode, 'paths': paths, 'scenarios': selected,
                           'model': args.model, 'skillModels': skill_models, 'reasoning': args.reasoning, 'paidCalls': 0}, indent=2))
         return 0
     if not os.getenv('LOOMSPAN_OPENROUTER_API_KEY'):
         p.error('LOOMSPAN_OPENROUTER_API_KEY is required; no runtime changes made')
     output = args.output.resolve() if args.output else ROOT / 'evidence/latest'
-    if args.output and output.exists():
+    if args.output and output.exists() and not getattr(args, 'grouped', False):
         p.error('--output must be a new directory; accepted results are never overwritten')
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
     bundle = Bundle([*secrets.values(), os.environ['LOOMSPAN_OPENROUTER_API_KEY']])
     report = {'runId': uuid.uuid4().hex, 'mode': args.mode, 'model': args.model, 'reasoning': args.reasoning,
               'skillModels': skill_models, 'paths': paths, 'scenarios': selected, 'cases': [], 'status': 'FAIL', 'runtimeRestored': None,
-              'scope': 'Assessment scenarios only; service-request regression is separate',
+              'suite': suite.name, 'scope': suite.scope, 'reviewAreas': scenarios.REVIEW_AREAS,
               'businessReview': 'PENDING', 'replayApproved': False,
               'captureCandidate': args.mode == 'capture'}
-    with run_lock():
+    with (nullcontext() if getattr(args, 'grouped', False) else run_lock()):
         try:
             ready()
             require_offline_provider()
@@ -445,14 +484,15 @@ def main(argv=None):
             report['build'] = baseline()
             report['gitCommit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
             files = [*(ROOT / 'config').rglob('*.yaml'), *(ROOT / 'apps').rglob('*.py'), *(ROOT / 'apps').rglob('*.java'),
-                     ROOT / 'fixtures/base-case.json', ROOT / 'fixtures/business.json', ROOT / 'fixtures/server.py',
-                     ROOT / 'scripts/scenarios.py', ROOT / 'scripts/run_suite.py']
+                     *(ROOT / name for name in suite.source_files), *(ROOT / 'scripts').rglob('*.py'),
+                     *(ROOT / 'scripts/suites').rglob('*.json')]
+            files = sorted(set(files))
             report['sourceSha256'] = {f.relative_to(ROOT).as_posix(): digest(f.read_bytes()) for f in files}
             for f in files:
                 bundle.add('source/' + f.relative_to(ROOT).as_posix(), f.read_bytes())
             with tempfile.TemporaryDirectory(prefix='runner-', dir=ROOT / '.runtime') as temporary:
                 directory = Path(temporary)
-                with live_runtime(directory, paths, args.model, args.reasoning, report, skill_models):
+                with live_runtime(directory, paths, args.model, args.reasoning, report, skill_models, suite):
                     for file in directory.rglob('*.yaml'):
                         bundle.add('effective/' + file.relative_to(directory).as_posix(), file.read_bytes())
                     with httpx.Client(timeout=60, trust_env=False) as client:
@@ -462,7 +502,7 @@ def main(argv=None):
                                 token = login('maya')
                                 bundle.secrets.append(token)
                                 case = execute_case(client, name, path, token, secrets, bundle,
-                                                    report['build']['missionTimeoutSeconds'] + 60, args.model, skill_models)
+                                                    report['build']['missionTimeoutSeconds'] + 60, args.model, skill_models, None, suite)
                                 report['cases'].append(case)
                                 print(case['status'], flush=True)
                                 if case.get('executionError'):
@@ -475,6 +515,69 @@ def main(argv=None):
             write_report(report, bundle, output)
     print(str(output / 'summary.md'))
     return 0 if report['status'] == 'CHECKS_PASS_REVIEW_REQUIRED' else 1
+
+
+def main(argv=None):
+    p = parser()
+    args = p.parse_args(argv)
+    try:
+        suites = select(args.suite)
+    except ValueError as error:
+        p.error(str(error))
+    if args.path and args.mode not in ['evaluate', 'mock']:
+        p.error('--path is only valid for evaluate/mock; live/capture run both integrations')
+    if args.mode == 'mock' and (args.model or args.skill_model or args.reasoning != 'medium'):
+        p.error('mock uses the frozen model assignment; overrides require a separate paid evaluation')
+    if args.mode != 'mock' and not args.model:
+        p.error('--model is required for live, evaluate and capture')
+    if len(suites) > 1 and args.skill_model:
+        p.error('--skill-model requires one named suite')
+    if args.resume_capture and (args.mode != 'capture' or len(suites) != 1 or not suites[0].live_runner):
+        p.error('--resume-capture requires capture of the native suite')
+    if args.mode != 'mock' and len(suites) > 1 and any(s.live_runner for s in suites):
+        p.error('Native live evaluation requires one named suite to keep the paid scope bounded')
+    for suite in suites:
+        if args.mode not in suite.modes or (args.mode == 'mock' and suite.reference_loader is None):
+            p.error(suite.name + ': unsupported mode ' + args.mode)
+        catalog = suite.scenarios.NAMES
+        if suite.live_runner and args.mode != 'mock':
+            catalog = [c['name'] for c in json.loads((ROOT / 'fixtures/typesafe-ai/live-cases.json').read_bytes())['cases']]
+        unknown = set(args.scenario or ()) - set(catalog)
+        if unknown:
+            p.error(suite.name + ': unknown scenarios ' + ', '.join(sorted(unknown)))
+    if args.mode == 'mock':
+        for suite in suites:
+            manifest, _ = suite.reference_loader(ROOT)
+            if set(args.scenario or ()) - set(manifest['scenarios']):
+                p.error(suite.name + ': selected scenario has no frozen reference')
+    if args.dry_run:
+        return max(run_selected(args, p, suite) for suite in suites)
+    output = args.output.resolve() if args.output else ROOT / 'evidence/latest'
+    if args.output and output.exists() and not getattr(args, 'grouped', False):
+        p.error('--output must be a new directory; accepted results are never overwritten')
+    # One workspace lock covers the complete multi-suite selection.
+    with run_lock():
+        results = []
+        for suite in suites:
+            selected = copy.copy(args)
+            selected.output = output / suite.name
+            selected.grouped = True
+            code = run_selected(selected, p, suite)
+            results.append((suite.name, code))
+            output.mkdir(parents=True, exist_ok=True)
+            lines = ['# Suite results', '', '| Suite | Result |', '|---|---|']
+            for name, result in results:
+                report = json.loads((output / name / 'report.json').read_bytes())
+                lines.append(f"| [{name}]({name}/summary.md) | {report['status']} |")
+            (output / 'summary.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+            # Do not continue after runtime restoration failed.
+            report = json.loads((output / suite.name / 'report.json').read_bytes())
+            if not report['runtimeRestored']:
+                for remaining in suites[len(results):]:
+                    with (output / 'summary.md').open('a', encoding='utf-8') as summary:
+                        summary.write(f'| {remaining.name} | NOT_RUN: runtime restoration failed |\n')
+                return 1
+        return max(code for _, code in results)
 
 
 if __name__ == '__main__':

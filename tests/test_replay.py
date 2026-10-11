@@ -65,7 +65,7 @@ def test_frozen_reference_integrity_unique_requests_and_identity_rebinding():
         assert all(s['response']['usage']['total_tokens'] == 0 for s in bound['steps'])
 
 
-@pytest.mark.parametrize('file', ['fixtures/reference/baseline.json', 'fixtures/business.json', 'config/skills/compareOptions.yaml'])
+@pytest.mark.parametrize('file', ['fixtures/reference/baseline.json', 'fixtures/business.json', 'config/skills/equipment-service/compareOptions.yaml'])
 def test_stale_or_modified_reference_rejected(tmp_path, file):
     shutil.copytree(ROOT / 'fixtures', tmp_path / 'fixtures', ignore=shutil.ignore_patterns('__pycache__'))
     shutil.copytree(ROOT / 'config', tmp_path / 'config')

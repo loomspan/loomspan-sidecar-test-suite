@@ -1,0 +1,7 @@
+{
+  "frameworkVersion": "1.0.0-beta.9-SNAPSHOT",
+  "frameworkCommit": "3265354b6c4975c8ae82ac9f111eff0ffcf77b9d",
+  "sidecarVersion": "1.0.0-beta.3",
+  "sidecarCommit": "3eff6befd95f73b7d4091ed0da32498e0f64c488",
+  "note": "Pinned Sidecar release source rebuilt with the explicit Framework snapshot dependency override; not an upstream Sidecar release combination."
+}

@@ -5,6 +5,12 @@ business contract is primary: a practitioner should recognize responsibilities,
 decisions and handoffs as a sensible process. Do not fragment work merely to fit a
 weaker model. Read [Phase 2 summary](phase2-summary.md) for the observed scope.
 
+The equipment-service suite extraction changes file ownership and host adapters, not
+skill responsibilities, prompts, handoffs or model assignments. Provider-free checks
+can establish preservation of those contracts; they do not establish improved model
+reasoning or lower authoring cost. Transfer of the suite structure to a second business
+example remains proposed for testing. See [suite boundaries](suites.md).
+
 ## Evidence status
 
 **Demonstrated in a defined scope** means the mechanism was directly checked locally.
@@ -91,3 +97,48 @@ Use provider-free checks for deterministic arithmetic, preservation and permissi
 Freeze a candidate within a trial; do not confuse that control with a ban on justified
 future changes. State observed scope, costs, caveats and what remains untested. Repeated
 fixed cases support a bounded conclusion, not general reliability or universal causality.
+
+## Native typed judgments: evidence boundary
+
+The TypeSafe example separates a native judgment leaf from a parent that forwards or
+assembles its answer. **Design rationale:** preserve provider answers at the native
+boundary and let a consuming contract validate the values it uses; do not add chat
+synthesis solely to reformat a typed answer. Structured criteria and input bindings
+make the intended decision context reviewable.
+
+**Evidence status and limits:** the original tests use authored protocol responses.
+They can establish substitution, transport, forwarding
+and consumer validation behavior but cannot establish judgment accuracy, calibration,
+cost advantage or real-provider acceptance of boundary inputs. This example does not
+extend the equipment model-tuning conclusions to a new domain.
+
+**Live-check observation (2026-10-11):** one real Score response reported 1.80 while its
+displayed probabilities weighted to 1.81. The test's intended 0.01 tolerance falsely
+failed at the binary floating-point boundary. Retain the original provider values and
+captured failure; test tolerance boundaries with decimal examples and allow numerical
+representation epsilon. This observation does not establish the provider's internal
+rounding policy or authorize broad relaxation of numeric checks.
+
+**Semantic observation (2026-10-11):** 24 additional live calls over 12 contrasting
+contacts separated evidence sufficiency from impact. A Noul judged whether current
+functionality was established; an independent Score judged functional extent. Missing
+or conflicting evidence returned 0.02–0.14 sufficiency while explicit functionality
+returned 0.77–0.90. Scores for all explicit cases matched the intended normal/partial/
+total levels. Forced Scores on insufficient evidence remained unsuitable for action.
+Use an explicit evidence judgment when the scale cannot represent unknown; do not
+mistake a concentrated Score distribution for evidence that the facts exist.
+
+**Limit:** the provisional 0.80 sufficiency range missed four clear cases. Preserve
+these misses and consider conservative clarification rather than silently moving the
+threshold after observing results. These small authored examples support a design
+pattern, not calibrated probabilities or broad accuracy. The reviewed response pack
+records question-level acceptance; offline replay establishes transport fidelity,
+not fresh semantic validation. Those observations preceded the application policy.
+
+**Application policy design:** keep raw model output distinct from the application's
+decision. An owner-authorized view can apply a configurable threshold without another
+inference, return explicit clarification with a null usable score, and validate only
+the branches it consumes. Preserve execution failure as execution failure rather than
+turning it into a business assessment. Forwarding and object bindings can deliver
+the same recorded judgments to this policy without chat synthesis. Evidence for the
+current implementation and fresh semantic evaluation is recorded in the TypeSafe guide.

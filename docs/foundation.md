@@ -2,6 +2,11 @@
 
 Phases 1 and 2 are complete. The current equipment-service example is the retained
 reference; [Phase 2 summary](phase2-summary.md) describes its validation and limits.
+The additional [TypeSafe customer-support suite](typesafe-ai.md) exercises native
+typed judgments within the same hosts, with separate skills, APIs and protocol fixtures.
+Its owner-authenticated execution `/impact` view applies equivalent Java/Python
+policy to retained evidence judgments while preserving raw results; it performs no
+inference or customer action. The default evidence threshold is 0.80.
 
 ## Applications and infrastructure
 
@@ -45,8 +50,8 @@ records supported corrections or genuine unresolved conflicts in reviewConcerns.
 Original findings remain published unchanged; superseding interpretations must be explicit.
 Equipment hypotheses use self-contained prose with support, contrary evidence and unknowns.
 
-The generator and shared contract source are `scripts/author_workflow.py` and
-`scripts/workflow_contracts.json`. Both hosts share `config/skills`; Sidecar's deterministic
+The generator and shared contract source are `scripts/suites/equipment_service/author_workflow.py` and
+`scripts/suites/equipment_service/workflow_contracts.json`. Both hosts share `config/skills/equipment-service`; Sidecar's deterministic
 REST declarations and routes are separate. Regeneration is deliberate, not a startup
 prerequisite. The `reasoning` alias selects Sol; `coordination` selects Luna.
 

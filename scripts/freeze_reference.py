@@ -33,9 +33,9 @@ def freeze(bundle_raw, report_raw, review, output):
             raise ValueError('Capture checksum failure')
         if json.loads(z.read('report.json')) != report:
             raise ValueError('Bundle/report mismatch')
-        for skill_file in sorted((ROOT / 'config/skills').glob('*.yaml')):
+        for skill_file in sorted((ROOT / 'config/skills/equipment-service').glob('*.yaml')):
             name = skill_file.stem
-            original = z.read('source/config/skills/' + skill_file.name)
+            original = z.read('source/config/skills/equipment-service/' + skill_file.name)
             if contract_hash(original) != contract_hash(skill_file.read_bytes()):
                 raise ValueError('Business contract differs from accepted capture: ' + name)
             manifest['skillContracts'][name] = contract_hash(original)

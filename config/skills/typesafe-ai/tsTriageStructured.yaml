@@ -1,0 +1,48 @@
+name: tsTriageStructured
+description: Evaluate support-contact judgments; no ticket routing or customer action.
+model: typesafeTriage
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+    policy:
+      type: object
+      additionalProperties: true
+    candidates:
+      type: object
+      additionalProperties: true
+    parameters:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  - policy
+  - candidates
+  - parameters
+  additionalProperties: false
+typesafe:
+  state:
+    contact: ${/input/context}
+    slash: ${/input/context/a~1b}
+    tilde: ${/input/context/a~0b}
+    literal: $${/input/notResolved}
+    note: Repeat=${/input/context/repeat}; count=${/input/context/count}
+  questions:
+    department:
+      type: choice
+      instructions:
+        question: Which team should review ${/input/context/message}?
+        policy: ${/input/policy}
+      criteria: ${/input/candidates}
+    repeat:
+      type: noul
+      instructions:
+      - Check contact history.
+      - ${/input/context/history/0}
+      criteria:
+        'true': null
+    impact:
+      type: score
+      criteria: ${/input/parameters/levels}

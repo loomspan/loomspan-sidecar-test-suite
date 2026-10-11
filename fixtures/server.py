@@ -5,6 +5,8 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fixtures.replay import request_matches
 app=FastAPI()
+from fixtures.typesafe import install as install_typesafe
+install_typesafe(app)
 DATA=pathlib.Path(os.getenv('FIXTURE_DATA','/data')); DATA.mkdir(exist_ok=True)
 cases={}; gates={}; lock=asyncio.Lock()
 def journal(event, **data):

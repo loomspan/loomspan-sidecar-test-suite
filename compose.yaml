@@ -45,7 +45,7 @@ services:
       - ./config/sidecar.yaml:/config/runtime.yaml:ro
       - ./config/skills:/config/skills:ro
       - ./config/rest-skills:/config/rest-skills:ro
-      - ./config/routes.yaml:/config/routes.yaml:ro
+      - ./.runtime/suite-routes.yaml:/config/routes.yaml:ro
       - sidecar-data:/sidecar/data
     ports: [127.0.0.1:18083:8080, 127.0.0.1:19091:9091]
 volumes:

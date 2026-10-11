@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def require_offline_provider():
     result = subprocess.run(environment.execute('fixtures', 'python', '-c',
-        "import os; print('disabled' if not os.getenv('OPENROUTER_API_KEY') else 'enabled')"),
+        "import os; print('disabled' if not (os.getenv('OPENROUTER_API_KEY') or os.getenv('LOOMSPAN_TYPESAFE_API_KEY')) else 'enabled')"),
         check=True, capture_output=True, text=True)
     if result.stdout.strip() != 'disabled':
         raise RuntimeError('Smoke check requires provider-disabled runtime')

@@ -1,0 +1,157 @@
+---
+audience: loomspan-skill-builder
+status: development
+applies_to: bundled-loomspan-revision
+coverage: initial-source-verified
+---
+
+# Model Selection and Named AI Connections
+
+## Applicability
+
+Use this document when an LLM-backed YAML skill needs a model, when an application must route models to endpoints/accounts, or when diagnosing model resolution. Annotation-defined Java skills execute without framework model configuration.
+
+## Authoring model
+
+The author-facing chain is:
+
+`skill model` → `loomspan.models` framework alias → `loomspan.connections` connection → built-in driver → provider model ID
+
+- An LLM-backed skill MUST set `model` to a configured framework model alias.
+- A model alias MUST set `connection` and `provider-model`.
+- The connection MUST exist and MUST choose exactly one built-in driver: `openai`, `anthropic`, `gemini`, `ollama`, or `typesafe`. TypeSafe leaves require `typesafe`; ordinary chat YAML requires a chat driver.
+- Connection names and framework model names are application-owned and case-sensitive map keys.
+- Multiple connections MAY use the same driver. Use separate names when endpoints, accounts, credentials, headers, or protocol options differ.
+- `default-model` has no special fallback behavior; it is an ordinary alias.
+
+```yaml
+loomspan:
+  connections:
+    local-primary:
+      driver: ollama
+      base-url: http://localhost:11434
+    local-secondary:
+      driver: ollama
+      base-url: http://localhost:11435
+  models:
+    summarizer:
+      connection: local-primary
+      provider-model: qwen3:8b
+    planner:
+      connection: local-secondary
+      provider-model: granite4:latest
+```
+
+The YAML skill declares `model: summarizer` or `model: planner`; it does not declare the driver or endpoint.
+
+The resolved per-skill execution configuration and its named connection clients belong to the complete generation captured by a root invocation. Nested and parallel work, including provider retries, uses those captured clients after another generation is published. New roots use the new generation. Superseded clients close only after captured physical work finishes. A skill and a previously unknown model alias can therefore be validated and published together through `SkillReloader.validate(documents, configuration)` and `prepare(documents, configuration)`; hosts with their own credential store may use the map overload. See the [Java publication contract](../java-api/skill-reload.md).
+
+The connection table below describes ordinary embedded `application.yml`. In an explicit publication, supply the same driver and provider settings in `ExecutionConfiguration` but replace credentials with references: `api-key-ref`, `gemini.credentials-ref` for a URI, `gemini.credentials-json-ref` for in-memory Vertex service-account JSON, and `header-refs`. The two Gemini credential sources are mutually exclusive. Literal `api-key`, `gemini.credentials-uri`, and `headers` are rejected in authored candidates. The existing prepare overload reads referenced Spring `Environment` properties. The map overload requires all referenced values from a copied host map and never falls back to Environment; unused, missing, and blank entries fail preparation. Validation checks reference syntax without resolving them. Candidate YAML may include only `loomspan.connections`, `loomspan.models`, `loomspan.session`, and `loomspan.execution-trace.persistence`. Omitted session and trace settings use fresh binding defaults, rather than values from mutable global properties. Skill-only updates copy the active generation's settings.
+
+## Connection rules
+
+| Driver | Required mode | Optional connection settings |
+| --- | --- | --- |
+| `openai` | `api-key` | `base-url`, `request-timeout`, static `headers`, `openai.organization-id`, `openai.project-id`, `openai.compatibility-profile` |
+| `anthropic` | `api-key` | `base-url`, `request-timeout`, static `headers` |
+| `typesafe` | `api-key` | Service-prefix `base-url`, response/socket-inactivity `request-timeout`, static `headers` except Authorization; see [TypeSafe skills](typesafe-skills.md) |
+| `ollama` | `base-url` | None; this driver uses Ollama's native API |
+| `gemini` | Exactly one of API-key mode or Vertex AI mode | `request-timeout` in either mode; API-key mode uses `api-key`; Vertex mode uses `gemini.vertex-ai: true`, `project-id`, `location`, and optional `credentials-uri` |
+
+Static `headers` are accepted by OpenAI, Anthropic, and TypeSafe. TypeSafe rejects any capitalization of Authorization and does not accept chat provider option blocks or thinking levels. Provider-specific option blocks MUST match their driver. Unknown `loomspan.*` fields are rejected at startup. Loomspan does not read, merge, or inherit `spring.ai.*` configuration.
+
+The OpenAI and Anthropic drivers use Spring AI 2's official SDK-backed clients. A configured `base-url` is the SDK service root, not a completion-path override. OpenAI appends `/chat/completions`, so a compatible service that uses the conventional versioned route should provide a root ending in `/v1`. Anthropic appends `/v1/messages` and supplies its required version header through the official client. Put supported Anthropic beta values and other custom headers in the common `headers` map. Compatibility is a service contract, not inferred by Loomspan. The Ollama driver uses the native `/api/chat` protocol.
+
+The removed OpenAI completion-path override and Anthropic completion-path/version/beta fields have no aliases or fallback behavior and fail strict startup binding. Move any supported Anthropic beta/custom values to `headers`; choose a complete compatible `base-url` instead of overriding a completion path.
+
+OpenRouter error-completion handling is enabled only by `openai.compatibility-profile: openrouter`; Loomspan does not infer it from a connection name or URL. This profile rejects `finish_reason: error` responses, including any partial assistant content, and preserves bounded provider diagnostics for tracing. The 1 MiB provider-error diagnostic capture limit bounds retained failure evidence, with explicit `truncated` and `captureLimitBytes` metadata; it does not limit successful response size. The profile inspects the complete response for embedded errors and preserves successful answer content, tool arguments, and response metadata. Parsing, provider/model constraints, and existing timeout/cancellation behavior still apply.
+
+Every connection owns a `provider-retry` policy. Defaults are enabled, three total unchanged-request attempts, 500 ms initial backoff, a 2.0 multiplier, a 5 s cap, and 0.2 jitter. Skills select only the model alias and cannot declare or override this policy. The session-wide `loomspan.session.quotas.max-provider-attempts` safeguard defaults to 192; zero disables that quota.
+
+One Loomspan model interaction is one semantic request from mission, planning, or step execution. The single Spring AI tool loop may require multiple model turns inside that interaction. A semantic validator retry starts another semantic attempt; a provider retry repeats one unchanged model turn. Every actual downstream send is one physical provider attempt, is counted against quota once, and is owned by Loomspan because provider-native retries are disabled.
+
+Credentials SHOULD come from environment placeholders or an external secret source and MUST NOT be committed. Connection diagnostics, traces, and metrics identify framework model, connection, and driver; connection-construction diagnostics do not expose API keys, header values, base URLs, or credential contents. Native TypeSafe request evidence records its actual endpoint under existing capture controls. Authored YAML retains reference names, not resolved values. Environment-variable changes require restart. For rotation, publish a replacement, allow old work to finish, then revoke the old key; external revocation can break a captured execution.
+
+## Provider call budgets
+
+The whole-call behavior below applies to chat drivers. TypeSafe uses Apache
+response/socket inactivity timeouts: progressing body chunks may keep a response
+alive beyond `request-timeout`. Omission retains Apache defaults; connect and
+connection-lease defaults remain unchanged. Mission cancellation and deadlines
+remain authoritative. See [native transport](typesafe-skills.md#transport-usage-and-observation).
+
+For chat drivers, `loomspan.connections.<name>.request-timeout` MAY bound one physical HTTP call through complete response consumption, including header wait and OpenRouter response inspection. Headers, whitespace keepalives and continuing body chunks do not reset the whole-call deadline. It is not a connect or read-inactivity setting and cannot be overridden by a skill/model or emitted as request JSON. Existing connect behavior is preserved. The current OpenAI/Anthropic SDK transports also derive their read/write inactivity limits from this duration, so raising the budget raises those inherited limits. This setting does not override provider/server/proxy limits.
+
+| Driver | Omitted `request-timeout` | Explicit value |
+| --- | --- | --- |
+| OpenAI, including OpenRouter | 60-second whole-call limit | Configured whole-call budget |
+| Anthropic | 60-second whole-call limit | Configured whole-call budget |
+| Gemini API key and Vertex AI | Client-call limit unset | Configured whole-call budget |
+| Ollama | Existing transport unchanged | Rejected as unsupported |
+| TypeSafe (both account routes) | Apache defaults | Response/socket inactivity timeout; no added elapsed whole-call deadline |
+
+An authored value MUST be an exact whole-millisecond duration from `1ms` through `2147483647ms` inclusive (24 days, 20 hours, 31 minutes, 23.647 seconds). Spring duration units and exact ISO-8601 syntax are accepted. Zero, negatives, malformed text, sub-millisecond or fractional-millisecond durations, and larger values fail safely with the full property path; values are never clamped or converted to unlimited. Existing configurations need no migration.
+
+Partial startup fragment; supply model aliases and skills separately:
+
+```yaml
+loomspan:
+  connections:
+    reasoning:
+      driver: openai
+      base-url: https://openrouter.ai/api/v1
+      api-key: ${OPENROUTER_API_KEY}
+      request-timeout: 240s
+      openai:
+        compatibility-profile: openrouter
+  session:
+    mission-timeout: 600s
+```
+
+The mission deadline remains authoritative over all calls, other work and retry backoff. Each permitted physical attempt receives its connection budget, but multiple full budgets are not promised inside the mission. Genuine provider timeouts use the existing Framework retry policy; cancellation, interruption and mission cutoff retain their existing failure ownership and late-write fences. Native retries remain disabled.
+
+For `ExecutionConfiguration`, use the same key and replace `api-key` with `api-key-ref`. Both preparation credential paths accept it; validation does not resolve credentials or call providers. New roots receive the published clients/budget. Previously admitted roots, delayed descendants and retries keep the captured generation; skill-only updates retain the active budget. Host-map preparation keeps its generic safe error wrapper; obtain actionable timeout paths with `validate` before `prepare`. See [publication](../java-api/skill-reload.md).
+
+## Thinking levels
+
+TypeSafe model aliases and leaves MUST omit thinking levels and `thinking_level`.
+The following thinking rules apply to chat models.
+
+A model alias MAY declare `thinking-levels`. A skill's `thinking_level` MUST be one of those configured values. If the alias has no configured levels, the skill MUST omit `thinking_level`. Thinking options are adapted to the selected driver at request time; the connection remains reusable across model aliases.
+
+## Migration and diagnosis
+
+1. Create a named entry under `loomspan.connections` for each endpoint/account.
+2. Move base URLs, credentials, headers, and provider-specific protocol settings from `spring.ai.*` into that connection.
+3. Replace each `loomspan.models.<name>.provider` with `connection` and keep `provider-model`.
+4. If two aliases use different endpoints or accounts for the same driver, point them at different named connections.
+
+Startup errors include the complete property path for missing, unknown, or driver-inapplicable settings. Runtime resolution errors identify the skill, framework model, connection, driver, and provider model. Start diagnosis at the named connection, then verify its driver-specific requirements and the alias reference.
+
+For chat drivers, terminal provider failures emit one framework-owned WARN after retry policy decides that the request will escape. The warning identifies the framework model, connection, driver, and provider model and names the settings to investigate. Authentication points to the connection credential setting without claiming it is missing. Connectivity points to network reachability and the driver's applicable connection settings—`loomspan.connections.<name>.base-url` for OpenAI, Anthropic, and Ollama, or Gemini's `api-key`/`gemini.vertex-ai` mode plus `gemini.project-id` and `gemini.location`—without proving that the configured endpoint is wrong. Invalid-request and HTTP 404 guidance points to those driver-applicable connection settings and `loomspan.models.<framework-model>.provider-model` because endpoint, model, and access failures can be ambiguous. A retry that later recovers emits no terminal WARN.
+
+For chat drivers, the identical bounded guidance is recorded on every failed physical attempt, including recovered attempts, so diagnosis can continue in Console alongside the original provider evidence. TypeSafe records native attempt classification, retry decisions, stack evidence, and available provider-error content in canonical traces; inspect those facts for native failures. Provider evidence remains untrusted diagnostic content and may contain sensitive values; Loomspan does not generally scrub it. Follow [traces-and-debugging.md](traces-and-debugging.md) for the exact failure-to-attempt inspection path.
+
+## Source verification anchors
+
+- Configuration and validation: `LoomspanProperties`, `LoomspanPropertiesTest`, `ExecutionConfigurationParserTest`.
+- Skill model resolution: `YamlSkillCatalog`, `EffectiveSkillExecutionConfiguration`.
+- Connection construction and lookup: `NamedAiConnectionRegistry`, `SpringAiProviderIntegration`, `DefaultSkillChatModelResolver`.
+- Retry/profile ownership: `LoomspanPropertiesTest`, `ProviderRetryDeciderTest`,
+  `SpringAiProviderIntegrationTest`, `ConnectionProtocolTest`, and
+  `ModelAttemptCallAdvisorIntegrationTest`.
+- Response acceptance versus diagnostic capture: `SpringAiProviderIntegration#inspectOpenRouter`,
+  `SpringAiProviderIntegrationTest#validResponsesPreserveContentToolsAndMetadataAcrossProfilesAndDiagnosticBoundary`,
+  `#openRouterDiagnosticCaptureIsBoundedAtOneMebibyte`, and
+  `#inspectedResponsesReleaseOriginalStreamOnSuccessAndFailure`.
+- Request options and tool-loop assembly: `SpringAiChatOptionsContributorTest` and `SpringAiChatClientAssemblerIntegrationTest`.
+- Wire behavior: `ConnectionProtocolTest`.
+- Call budgets/default transport phases: `LoomspanProperties#validateRequestTimeout`,
+  `ProviderRequestTimeoutIntegrationTest` (actual standard/OpenRouter, Anthropic and both Gemini modes,
+  delayed headers, active body deadline, configured success, actual client defaults).
+- Captured timeout/publication and cutoff: `PublicSkillReloadIntegrationTest#publishedTimeoutCapturesOldRootAndSurvivesRepeatedSkillOnlyUpdates`,
+  `#delayedDescendantAndItsRetryRetainCapturedProviderBudget`, `#longerProviderBudgetCannotExtendMissionOrCallerInterruption`;
+  retry accounting: `ModelAttemptCallAdvisorIntegrationTest#realProviderTimeoutRetriesPreserveRequestCountsClassificationAndQuota`.
+- Operational identity: `ModelExecutionIdentity`, `ExecutionTraceContractTest`, `MicrometerUsageMetricsRecorderTest`.
+
+This topic does not fully specify provider SDK behavior or third-party compatibility guarantees. Inspect the pinned Spring AI version and the target service's protocol documentation when those details determine correctness.

@@ -1,0 +1,22 @@
+name: tsTriageScore
+description: Evaluate support-contact judgments; no ticket routing or customer action.
+model: typesafeTriage
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  additionalProperties: false
+typesafe:
+  state: ${/input/context}
+  questions:
+    impact:
+      type: score
+      instructions: Rate the reported loss of functionality.
+      criteria:
+      - No loss of functionality
+      - Some functions impaired
+      - Core operation blocked

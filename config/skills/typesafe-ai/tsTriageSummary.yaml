@@ -1,0 +1,57 @@
+name: tsTriageSummary
+description: Coordinate contact triage and preserve its judgments.
+model: coordination
+thinking_level: medium
+planning_mode: true
+max_steps: 1
+prompt: Have tsTriageFixed assess the supplied contact. Do not route tickets or take
+  customer actions.
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  additionalProperties: false
+allowed_skills:
+- name: tsTriageFixed
+  required: true
+  max_tasks: 1
+  input_bindings:
+    /context:
+      from: input
+      path: /context
+output_schema:
+  type: object
+  properties:
+    department:
+      type: string
+      enum:
+      - billing
+      - technical
+      - delivery
+      - other
+    repeatProbability:
+      type: number
+    impact:
+      type: number
+  required:
+  - department
+  - repeatProbability
+  - impact
+  additionalProperties: false
+output_bindings:
+  /department:
+    from: child_result
+    skill: tsTriageFixed
+    path: /department/choice
+  /repeatProbability:
+    from: child_result
+    skill: tsTriageFixed
+    path: /repeat/noul
+  /impact:
+    from: child_result
+    skill: tsTriageFixed
+    path: /impact/score

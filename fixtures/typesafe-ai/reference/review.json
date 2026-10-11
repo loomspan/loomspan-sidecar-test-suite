@@ -1,0 +1,390 @@
+{
+  "status": "ACCEPTED_BY_DELEGATED_REVIEW",
+  "reviewer": "Codex assistant, explicitly delegated by the user",
+  "date": "2026-10-11",
+  "basis": "Independent reading of the contacts and original criteria, comparison with predeclared rubrics, and exact captured responses from both hosts. Not a calibration study.",
+  "sources": {
+    "initial": {
+      "bundleSha256": "1571030b319e46c1ef38491ebb9cbb246efe12ae59b936ad041be501eea1d75a",
+      "capture": "evidence/typesafe-live-completed-2026-10-11/typesafe-ai"
+    },
+    "evidence": {
+      "bundleSha256": "97fbd35aada1d8523bba4777b731f9263f29456af15f9a3db449322caa446f66",
+      "capture": "evidence/typesafe-evidence-live-2026-10-11/typesafe-ai"
+    },
+    "holdout": {
+      "bundleSha256": "7e6fe66475813b5414a26adb3e73f4707b4e1c338f4a54178a5422f31da04eb2",
+      "capture": "evidence/typesafe-evidence-holdout-2026-10-11/typesafe-ai"
+    }
+  },
+  "accepted": {
+    "reference_department_only_java": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Duplicate charge unambiguously belongs to billing; both selected billing.",
+      "predeclaredFlags": []
+    },
+    "reference_department_only_sidecar": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Duplicate charge unambiguously belongs to billing; both selected billing.",
+      "predeclaredFlags": []
+    },
+    "reference_repeat_only_java": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "repeat"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit first contact supports low prior-contact probability (0.07).",
+      "predeclaredFlags": []
+    },
+    "reference_repeat_only_sidecar": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "repeat"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit first contact supports low prior-contact probability (0.07).",
+      "predeclaredFlags": []
+    },
+    "reference_impact_only_java": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit total functional outage warrants the top impact level (2.0).",
+      "predeclaredFlags": []
+    },
+    "reference_impact_only_sidecar": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit total functional outage warrants the top impact level (2.0).",
+      "predeclaredFlags": []
+    },
+    "reference_mixed_fixed_java": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department",
+        "repeat",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Technical failure and unresolved prior contact support technical/0.98. Impact 1.69-1.80 is reasonable because this scale ends at core operation blocked: checkout is blocked despite browsing working.",
+      "predeclaredFlags": []
+    },
+    "reference_mixed_fixed_sidecar": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department",
+        "repeat",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Technical failure and unresolved prior contact support technical/0.98. Impact 1.69-1.80 is reasonable because this scale ends at core operation blocked: checkout is blocked despite browsing working.",
+      "predeclaredFlags": []
+    },
+    "reference_mixed_dynamic_java": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department",
+        "repeat",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Late parcel and missing refund support either billing or delivery; no forced high confidence. Explicit normal application operation supports near-zero impact and first contact supports low repeat probability.",
+      "predeclaredFlags": []
+    },
+    "reference_mixed_dynamic_sidecar": {
+      "source": "initial",
+      "acceptedJudgments": [
+        "department",
+        "repeat",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Late parcel and missing refund support either billing or delivery; no forced high confidence. Explicit normal application operation supports near-zero impact and first contact supports low repeat probability.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_sparse_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Unspecified referent and no functional scope; do not interpret the raw impact score. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_sparse_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Unspecified referent and no functional scope; do not interpret the raw impact score. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_urgent_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Emotion alone supplies no functionality evidence. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_urgent_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Emotion alone supplies no functionality evidence. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_normal_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Billing issue with explicitly normal application operation.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_normal_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Billing issue with explicitly normal application operation.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_partial_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Concrete partial impairment, not complete outage. Accept as a reasonable yes-leaning judgment with a conservative-deferral caveat; it missed the provisional strong-yes range. Do not lower that range retrospectively.",
+      "predeclaredFlags": [
+        "impactEvidence: outside the predeclared expectation [0.8, 1]"
+      ]
+    },
+    "reference_evidence_partial_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Concrete partial impairment, not complete outage. Accept as a reasonable yes-leaning judgment with a conservative-deferral caveat; it missed the provisional strong-yes range. Do not lower that range retrospectively.",
+      "predeclaredFlags": [
+        "impactEvidence: outside the predeclared expectation [0.8, 1]"
+      ]
+    },
+    "reference_evidence_outage_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit total functional outage.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_outage_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit total functional outage.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_conflict_java": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Unresolved current contradiction; a numerical compromise is not an established impact. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_conflict_sidecar": {
+      "source": "evidence",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Unresolved current contradiction; a numerical compromise is not an established impact. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_resolved_history_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit current recovery overrides a resolved historical outage.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_resolved_history_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Explicit current recovery overrides a resolved historical outage.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_billing_unknown_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "A billing complaint alone does not establish whether application functions work. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_billing_unknown_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "A billing complaint alone does not establish whether application functions work. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_calm_outage_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Low emotional urgency does not reduce explicitly total functional loss.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_calm_outage_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Low emotional urgency does not reduce explicitly total functional loss. Accept as a reasonable yes-leaning judgment with a conservative-deferral caveat; it missed the provisional strong-yes range. Do not lower that range retrospectively.",
+      "predeclaredFlags": [
+        "impactEvidence: outside the predeclared expectation [0.8, 1]"
+      ]
+    },
+    "reference_evidence_emotional_normal_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Emotion does not establish functional loss when normal operation is explicit.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_emotional_normal_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Emotion does not establish functional loss when normal operation is explicit. Accept as a reasonable yes-leaning judgment with a conservative-deferral caveat; it missed the provisional strong-yes range. Do not lower that range retrospectively.",
+      "predeclaredFlags": [
+        "impactEvidence: outside the predeclared expectation [0.8, 1]"
+      ]
+    },
+    "reference_evidence_partial_checkout_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Checkout is important but this scale measures functional extent, not business criticality; several functions still work.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_partial_checkout_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence",
+        "impact"
+      ],
+      "ignoredJudgments": [],
+      "reason": "Checkout is important but this scale measures functional extent, not business criticality; several functions still work.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_detailed_nonfunctional_java": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Specific financial and delivery facts still supply no application-functionality evidence. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    },
+    "reference_evidence_detailed_nonfunctional_sidecar": {
+      "source": "holdout",
+      "acceptedJudgments": [
+        "impactEvidence"
+      ],
+      "ignoredJudgments": [
+        "impact"
+      ],
+      "reason": "Specific financial and delivery facts still supply no application-functionality evidence. Evidence probability is appropriately low; the forced Score has no defensible semantic interpretation and must be ignored.",
+      "predeclaredFlags": []
+    }
+  },
+  "excluded": {
+    "structured_substitution/java": "Sparse input does not establish severity; retain original diagnostic capture.",
+    "structured_substitution/sidecar": "Sparse input does not establish severity; retain original diagnostic capture."
+  },
+  "limits": [
+    "Accepted questions identify the judgments endorsed; exact replay also retains other raw fields without endorsing their meaning.",
+    "No application routing or impact gate is implemented by the host APIs; consumers must apply an explicit policy.",
+    "The provisional 0.80 evidence threshold deferred four clear cases. It remains unchanged; these diagnostic range misses are preserved, not converted into automatic passes.",
+    "Probabilities are plausible judgments, not independently verified calibration. Live calls used different correlation IDs.",
+    "Replay proves fidelity with recorded responses, not current provider quality. Historical token usage is replayed as integration data; paid replay calls are zero."
+  ],
+  "casesSha256": "e62f52ec08ba7cb3ef9d572f0dd4ef199543e09c13b9bf8991b887a8f82a9887"
+}

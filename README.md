@@ -1,4 +1,4 @@
-# Loomspan equipment-service reference runtime
+# Loomspan integration suites
 
 Phases 1 and 2 are complete. This workspace retains the working equipment-service
 example, equivalent Java/Framework and Python/Sidecar integrations, and the selected
@@ -7,6 +7,12 @@ six-Sol/two-Luna model pack at medium reasoning. Provider access is disabled by 
 The process gathers technical evidence, assesses four service/continuity options,
 compares them and publishes a recommendation. Creating a service request is a separate,
 authenticated action requiring explicit approval; assessment never books service.
+
+The workspace hosts named integration suites in one Java app and one Python/Sidecar
+app. `equipment-service` retains the accepted business example; `typesafe-ai` exercises
+native Choice, Noul and Score through customer-support triage. See [TypeSafe coverage](docs/typesafe-ai.md)
+and [suite boundaries](docs/suites.md)
+for the layout, selection and extension contract.
 
 ## Start here
 
@@ -24,6 +30,8 @@ authenticated action requiring explicit approval; assessment never books service
 .venv/Scripts/python.exe scripts/smoke.py
 .venv/Scripts/python.exe -m pytest tests -q
 .venv/Scripts/python.exe scripts/run_suite.py mock
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite typesafe-ai
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite all
 ```
 
 The smoke check uses both real integrations without model calls. It verifies pricing,
@@ -44,3 +52,13 @@ The final accepted Sol/Luna responses are retained separately as maintained
 [deterministic fixtures](fixtures/reference/README.md). `mock` runs all four cases on
 both real integrations, with zero paid calls, and checks the published results against
 the frozen reference. This verifies runtime regression behavior, not new model judgment.
+
+The TypeSafe suite uses 49 authored protocol fixtures and a separate
+[reviewed pack of 34 real responses](fixtures/typesafe-ai/reference/README.md), pinned
+`jev-1.13.0`, and Framework `1.0.0-beta.9-SNAPSHOT` in both hosts. Its mock results test
+integration fidelity; the linked review records semantic acceptance and limits.
+The example also exposes an [application impact policy](docs/typesafe-ai.md#application-impact-policy)
+that requests clarification when evidence is insufficient, plus parent-composition tests
+using the recorded real responses.
+Local authoring skills are installed under
+`.agents/skills`; see the runtime guide for source pins and build instructions.

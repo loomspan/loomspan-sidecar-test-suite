@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import yaml
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 CONTRACTS = json.loads(Path(__file__).with_name('workflow_contracts.json').read_text(encoding='utf-8'))
 LEAVES = {'assetContext': 'Retrieve registered asset identity, site access and approval-routing facts; directory facts never grant caller permissions.', 'serviceHistory': 'Retrieve versioned work orders, recurrence and maintenance observations.', 'referenceEvidence': 'Retrieve applicable manufacturer manual and bulletin passages.', 'serviceTerms': 'Retrieve warranty certificate, service agreement and rates.', 'entitlements': 'Evaluate date eligibility and documented findings; model hypotheses are not findings.', 'serviceResources': 'Check compatible parts and qualified attendance offers, without reservation.', 'continuityOptions': 'Check compatible loaner and replacement offers, without commitment.', 'quoteOptions': 'Calculate authoritative conditional amounts for checked service strategies.'}
 # Business methods are model-neutral. Runtime instructions are assembled separately.
@@ -339,14 +339,14 @@ def main():
             doc.pop('output_schema')
             doc.pop('output_schema_max_retries')
             doc['output_from'] = {'skill': 'compareOptions'}
-        save('config/skills/' + name + '.yaml', doc)
+        save('config/skills/equipment-service/' + name + '.yaml', doc)
     for name, (option, source) in FEASIBILITY.items():
         output_bindings = {'/' + key: {'from': 'input', 'path': '/context/offer/' + source_key}
                            for key, source_key in [('offerExpiresAt', 'expiresAt'),
                                                    ('offerReserved', 'reserved'), ('offerSourceId', 'sourceId')]}
         if source == 'serviceResources':
             output_bindings['/ownerDirectory'] = {'from': 'input', 'path': '/context/assetContext/contacts'}
-        save('config/skills/' + name + '.yaml', dict(
+        save('config/skills/equipment-service/' + name + '.yaml', dict(
             name=name, description='Assess ' + option + ' timing, capacity, access and commitment conditions.',
             model='reasoning', thinking_level='medium', rbac_roles=['ASSESS_EQUIPMENT'],
             input_schema=copy.deepcopy(CONTRACTS['feasibilityInput']),
@@ -358,14 +358,14 @@ def main():
             output_bindings=output_bindings))
     routes = {}
     for name, description in LEAVES.items():
-        save('config/rest-skills/' + name + '.yaml', dict(name=name, description=description,
+        save('config/rest-skills/equipment-service/' + name + '.yaml', dict(name=name, description=description,
              rest=True, rbac_roles=['ASSESS_EQUIPMENT'], input_schema=copy.deepcopy(CONTRACTS['lookup'])))
         routes[name] = dict(target='equipment', method='POST', path='/skills/' + name)
-    save('config/rest-skills/createServiceRequest.yaml', dict(name='createServiceRequest',
+    save('config/rest-skills/equipment-service/createServiceRequest.yaml', dict(name='createServiceRequest',
          description='Record explicit authorized approval against an immutable assessment and matching quote.',
          rest=True, rbac_roles=['REQUEST_SERVICE'], input_schema=copy.deepcopy(CONTRACTS['createServiceRequest'])))
     routes['createServiceRequest'] = dict(target='equipment', method='POST', path='/skills/createServiceRequest')
-    save('config/routes.yaml', {'targets': {'equipment': {'base-url': 'http://python:8080',
+    save('config/routes/equipment-service.yaml', {'targets': {'equipment': {'base-url': 'http://python:8080',
         'auth': {'mode': 'caller-passthrough'}, 'connect-timeout': '5s', 'read-timeout': '240s',
         'max-response-size': '1MB'}}, 'routes': routes})
 

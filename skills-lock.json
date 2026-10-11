@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "skills": {
+    "loomspan": {
+      "source": "../loomspan-framework/agent-skills",
+      "sourceType": "local",
+      "computedHash": "b80150bc4eddf7a5e15465db1987661a4a0f39bbaa2e13da1ca47bc1903c8136"
+    },
+    "loomspan-console": {
+      "source": "../loomspan-framework/loomspan-console/agent-skills/loomspan-console",
+      "sourceType": "local",
+      "computedHash": "8378a4fdcb64d3fd070288313c31f8d48bf81d3dd1f1d6b2e9e703d1bb1d81cd"
+    },
+    "loomspan-docs": {
+      "source": "../loomspan-framework/agent-skills",
+      "sourceType": "local",
+      "computedHash": "ca48c2aef122055da1f5adecfecdbf6f3aa45e5ddb8616ba221b8c108de3af58"
+    },
+    "typesafe-ai": {
+      "source": "typesafe-ai/skills",
+      "ref": "65a39f393687675ce170e6094757de20370365b9",
+      "sourceType": "github",
+      "skillPath": "skills/typesafe-ai/SKILL.md",
+      "computedHash": "a6ed7d8a3d2b2d962f8e44b17663767c433b7d1fc32d1ed0349a44f7372513e8"
+    }
+  }
+}

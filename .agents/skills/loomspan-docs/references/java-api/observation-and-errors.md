@@ -1,0 +1,129 @@
+---
+audience: loomspan-application-developer
+status: development
+applies_to: bundled-loomspan-revision
+coverage: source-verified
+---
+
+# Observation Values and Facade Errors
+
+## Completed Execution View
+
+Pass a `Consumer<SkillExecutionView>` to an observer overload of
+`SkillTemplate.invoke` when application code needs a completed-session view.
+
+`SkillExecutionView` is a record with:
+
+```java
+String sessionId;
+List<SkillExecutionEvent> events;
+```
+
+The session ID is non-null and nonblank. The event list is immutable and is
+defensively copied; a null list normalizes to an empty list.
+
+An observer is called at most once with available completed history after success or a
+post-session execution failure. Pre-session rejection and validation-only calls produce no
+callback. Delivery is synchronous on the caller after execution binding restoration and
+before the same admitted root is released. History is not guaranteed when session
+finalization or mapping fails and does not depend on Console storage or trace persistence.
+The same timing applies to `AdmittedSkillInvocation.invoke(observer)`; an
+explicit release racing a claimed execution cannot end root ownership early.
+
+Java, REST, and model-backed YAML roots all produce a skill mission and terminal outcome. Java and REST
+execution do not create a model interaction merely for observation. Existing
+canonical mission-frame records project into `SKILL_STARTED` and `SKILL_FINISHED`
+events for both direct sources, so a Java- or REST-only root has a meaningful public observer
+view even without model or tool events.
+
+## Execution Events
+
+`SkillExecutionEvent` is a current-version diagnostic value with:
+
+| Component | Contract |
+| --- | --- |
+| `timestamp` | Non-null event time |
+| `level` | Non-null, nonblank diagnostic level |
+| `type` | Non-null, nonblank event type |
+| `details` | Immutable map of diagnostic values; null normalizes to empty |
+| `frameId` | Optional; null or blank normalizes to null |
+| `route` | Optional; null or blank normalizes to null |
+
+Event details are deeply copied into immutable maps and lists. Supported detail
+values are JSON-like scalars, maps with non-null string keys, iterables, and
+arrays; invalid map keys or unsupported value types are rejected. A mapper may
+represent textual payload as `message` and array, scalar, or null payload as
+`value`.
+
+The current revision projects `MODEL_ATTEMPT_FAILED` as a `WARN`
+`MODEL_ATTEMPT_FAILURE` event. Its details are compact scalar attempt metadata
+only; stack text and provider diagnostics remain in the trace content selected
+through Console. This warning is not a terminal execution error and may be
+followed by a successful provider attempt.
+
+These events are intended for trusted development and debugging and may contain
+application business data. They are not a durable trace schema. Framework and
+Console must not classify sensitivity or mask, redact, or sanitize prompts or
+data outside the exception below: altering content can change user-request
+behavior and diagnostic meaning.
+Applications control access, retention, and export of events they consume.
+
+Known, supported exception: the derived execution journal underlying observer
+events retains its existing `ExecutionJournalProjector` field-name redaction.
+This heuristic is not comprehensive sensitivity detection. It does not alter
+canonical trace records, model prompts, tool execution inputs, or the skill
+result returned by `SkillTemplate.invoke()`. Preserve this existing exception
+without extending it to other paths or broadening it without an explicit product
+decision.
+
+Use the separate `loomspan-console` runtime-inspection skill when the task needs live
+trace discovery, retries, usage, failures, or raw artifacts rather than an
+application callback.
+
+## Error Taxonomy
+
+| Failure | Public behavior |
+| --- | --- |
+| Caller input violates the skill contract | `SkillInputValidationException` |
+| Skill is unknown, mismatched, or otherwise fails through the facade | `SkillException` or a subtype |
+| Spring Security denies access | The original `AccessDeniedException` propagates |
+| Spring authentication failure at a Java proxy | Remains a failure; never successful tool text |
+| Runtime implementation failure | Safe `SkillException` message with the original cause |
+| Admitted handle already executed, released, or cut off | Safe `SkillException`; no new session or work |
+| Observer throws after success | The observer's runtime exception propagates unchanged |
+| Mapping or observer throws after execution failure | The original execution failure remains primary; the later failure is suppressed |
+| JVM `Error` | Not caught by the facade |
+
+`SkillException` extends `RuntimeException` and supports a message or a message
+plus cause.
+
+`SkillInputValidationException` extends `SkillException`. Its `getIssues()`
+method returns an immutable defensive copy; a null issue list normalizes to an
+empty list. Its issue values are `SkillInputValidationIssue` records containing
+`path`, `code`, and `message`. Treat these fields as diagnostics for the current
+API revision; do not assume undocumented issue codes.
+
+Catch the narrow validation exception when the application can correct or
+report caller input. Catch `SkillException` at a boundary that can add
+application context or choose a safe response. Do not collapse
+`AccessDeniedException` into an ordinary execution error. Java authorization
+denials do not receive success/task/evidence credit. Ordinary Java method
+exceptions retain their established exception-to-text behavior; REST handler failures bypass
+that adapter and reach the facade for the handling above.
+
+## Source Anchors
+
+- `SkillExecutionView.java` and `SkillExecutionEvent.java` define value
+  validation and immutable copying.
+- `ApplicationApiValueTest` protects record shape, immutability, detail-value
+  validation, normalization, and public exception constructors.
+- `DefaultSkillTemplateTest#preservesAccessDeniedExceptionInstance` protects
+  the authorization boundary.
+- `DefaultSkillTemplateTest#preservesExistingSkillExceptionInstance` and
+  `#executionFailureDeliversAvailableHistoryOnceWithoutChangingFacadeFailure`
+  protect exception passthrough, safe wrapping, and failure-history delivery.
+- `SkillExecutionViewMapperTest#refusesToMapSessionWithoutRetainedFinalizedHistory`
+  protects the available-history limit after finalization failure.
+- `DefaultSkillTemplateTest#doesNotCatchError` protects the fatal-error boundary.
+- `DefaultSkillTemplateTest#invalidInputDoesNotInvokeObserver` protects the
+  pre-session invalid-input no-callback boundary.

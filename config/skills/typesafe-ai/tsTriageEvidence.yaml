@@ -1,0 +1,34 @@
+name: tsTriageEvidence
+description: Evaluate support-contact judgments; no ticket routing or customer action.
+model: typesafeTriage
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  additionalProperties: false
+typesafe:
+  state: ${/input/context}
+  questions:
+    impactEvidence:
+      type: noul
+      instructions: Does the supplied contact establish the current extent of application
+        functionality well enough to assess functional impact?
+      criteria:
+        'true': Concrete, mutually consistent current observations identify what works
+          or fails, including an explicit statement that everything works normally
+          or that all functionality is blocked.
+        'false': Only vague symptoms or urgency, no application-functionality observations,
+          or unresolved conflicting current reports. Do not infer scope from emotion
+          or assume that missing information means normal operation.
+    impact:
+      type: score
+      instructions: Rate the current reported loss of application functionality. Ignore
+        resolved past incidents and emotional urgency.
+      criteria:
+      - All application functions work normally
+      - Some application functions fail while others work
+      - All application functionality is blocked

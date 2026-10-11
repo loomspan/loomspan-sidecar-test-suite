@@ -1,6 +1,8 @@
 # One runner, four modes
 
-Use `scripts/run_suite.py`. The runner and provider-free tests are maintained tools. Historical results are
+Use `scripts/run_suite.py`. The four modes below describe `equipment-service` (the default).
+`typesafe-ai` has separate mock and bounded native live adapters; see its section below.
+The runner and provider-free tests are maintained tools. Historical results are
 retired; no experiment variants or captures are runtime prerequisites.
 
 | Mode | Scope |
@@ -16,7 +18,7 @@ by default; repeat `--scenario` to select cases. Optional Phase 2 variations are
 (baseline with a September 30 16:00 production start). These change mission inputs
 only; business rules are described in the foundation and source pack,
 and new live results require manual business review. Inputs and checks live in
-`scripts/scenarios.py`, separately from orchestration. Full service-request regression
+`scripts/suites/equipment_service/scenarios.py`, separately from orchestration. Full service-request regression
 is not part of this first runner; `scripts/smoke.py` remains the independent foundation check.
 
 ## Preview without running
@@ -57,7 +59,7 @@ it is never reported as a successful run.
 
 ## Results and retention
 
-By default, the next run replaces these three files in `evidence/latest`:
+By default, the next run replaces these three files in `evidence/latest/<suite>`:
 
 - `summary.md`: compact checks, usage and manual-review areas.
 - `report.json`: execution/check status, model selection, identities and hashes.
@@ -67,7 +69,7 @@ By default, the next run replaces these three files in `evidence/latest`:
 
 The ZIP is self-contained and checksummed. A newer report does not alter a previous
 accepted result. When accepting an improvement, save those three files in a manually
-maintained `evidence/accepted` directory before the next run. Keep latest plus accepted;
+maintained `evidence/accepted/<suite>` directory before the next run. Keep latest plus accepted;
 no permanent history of every unsuccessful attempt is required. For a result that must
 not replace latest, `--output NEW_DIRECTORY` writes a separate result and refuses an
 existing directory. There is no automatic retention or fixture-promotion service.
@@ -158,3 +160,56 @@ checksum-linked reviews and raw traces were retired at phase close; the phase su
 preserves their bounded conclusions. The final batch's responses were subsequently
 recovered as the maintained deterministic reference. New live outputs must receive
 their own business review; they never replace that reference automatically.
+
+## Suite selection
+
+`--suite equipment-service` selects the existing example (also the default).
+Repeat `--suite` for several named suites, or use `--suite all`. A scenario selection
+must exist in every selected suite; unsupported modes and missing replay support fail
+before execution. Per-skill model overrides require a single suite. Trial aliases and
+skill copies preserve other suites' authored model routing.
+
+```powershell
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite all --dry-run
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite equipment-service
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite all
+```
+
+The workspace lock spans the selection. Suites execute sequentially; restoration failure
+stops the remaining suites. `evidence/latest/summary.md` links only the current selection's
+results. Each suite has its own report, summary and bundle; unselected suite directories
+may retain older results and are not part of that summary. `--output NEW_DIRECTORY`
+uses the same grouped layout and refuses an existing root. A case records its suite,
+scenario and integration; its containing report records the execution mode.
+
+## TypeSafe protocol mock
+
+`mock --suite typesafe-ai` runs 49 authored protocol scenarios plus the separately
+reviewed native responses in `fixtures/typesafe-ai/reference` through both host APIs.
+It also derives 14 forwarding/assembly scenarios from those records and includes
+15 authored application-policy transport cases. The normal selection is 112 scenarios.
+Use `--path java|sidecar` to restrict an integration, or repeated `--scenario` values
+from `fixtures/typesafe-ai/cases.json` or `fixtures/typesafe-ai/reference/cases.json`.
+`--dry-run` lists the selection. There are no
+model overrides, provider calls or paid fallback in this mode.
+
+`PROTOCOL_PASS` means exact native requests, expected terminal results, trace fidelity,
+usage precision, planned parent calls and equipment-data preservation passed. The
+report identifies `fixtureOrigin: authored-protocol-and-reviewed-live-typesafe` and
+each case retains its own provenance. The reference review specifies which returned
+questions are semantically accepted. See [coverage and limits](typesafe-ai.md).
+`--suite all` groups this result alongside the equipment frozen replay result.
+
+For evidence skills, the runner reads the owner-authenticated `/executions/{id}/impact`
+view and checks policy outcomes separately from raw native fidelity. Live `report.json`
+includes `decisionEvaluation` counts separating incorrect/unsupported assessments from
+unnecessary clarification. Predeclared semantic labels and later checksum-linked
+`business-review.json` files are distinct from mechanical success.
+
+For the separately authorized native live scope, `capture --suite typesafe-ai --model
+jev-1.13.0` selects six direct-native cases on both hosts (maximum 12 sends).
+`evaluate --path java|sidecar` restricts to one host. The private key is
+`LOOMSPAN_TYPESAFE_API_KEY`; OpenRouter stays disabled. These modes have no retries,
+chat planning or model overrides and stop on unexpected mechanical failure. Live native
+runs require one named suite; `--suite all` remains available for mock. Use a new output
+directory to preserve the batch for review. See [the live rubric and controls](typesafe-ai.md).

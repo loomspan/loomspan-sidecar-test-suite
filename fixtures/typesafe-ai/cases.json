@@ -1,0 +1,6253 @@
+{
+  "formatVersion": 1,
+  "origin": "authored-protocol-fixtures",
+  "model": "jev-1.13.0",
+  "note": "Synthetic responses author protocol tests. They are not captured provider judgments or accepted business answers.",
+  "cases": [
+    {
+      "name": "department_only",
+      "skill": "tsTriageChoice",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "choice",
+        "single-question"
+      ]
+    },
+    {
+      "name": "repeat_only",
+      "skill": "tsTriageNoul",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "noul",
+        "single-question"
+      ]
+    },
+    {
+      "name": "impact_only",
+      "skill": "tsTriageScore",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "score",
+        "single-question"
+      ]
+    },
+    {
+      "name": "mixed_fixed",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "mixed-batch"
+      ]
+    },
+    {
+      "name": "duplicate_charge",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The same invoice was charged twice. Please refund the duplicate."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The same invoice was charged twice. Please refund the duplicate."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "distinct-state",
+        "fixture-not-model-judgment"
+      ]
+    },
+    {
+      "name": "delivery_refund",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My parcel is late and the promised refund has not arrived."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My parcel is late and the promised refund has not arrived."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "distinct-state",
+        "fixture-not-model-judgment"
+      ]
+    },
+    {
+      "name": "incomplete",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "It still does not work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "It still does not work."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "distinct-state",
+        "fixture-not-model-judgment"
+      ]
+    },
+    {
+      "name": "mixed_dynamic",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "billing": {
+            "includes": [
+              "invoice",
+              "refund"
+            ]
+          },
+          "technical": [
+            "checkout",
+            "login"
+          ],
+          "other": null
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "Working",
+            {
+              "condition": "partially impaired"
+            },
+            [
+              "core operation blocked"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": {
+                "includes": [
+                  "invoice",
+                  "refund"
+                ]
+              },
+              "technical": [
+                "checkout",
+                "login"
+              ],
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Working",
+              {
+                "condition": "partially impaired"
+              },
+              [
+                "core operation blocked"
+              ]
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "dynamic-criteria",
+        "structured-descriptions"
+      ]
+    },
+    {
+      "name": "dynamic_alternate",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "returns": "Exchanges",
+          "other": null
+        },
+        "noulCriteria": {
+          "true": null
+        },
+        "parameters": {
+          "levels": [
+            "No disruption",
+            "Disrupted"
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "returns": "Exchanges",
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": null
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No disruption",
+              "Disrupted"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "dynamic-criteria",
+        "structured-descriptions"
+      ]
+    },
+    {
+      "name": "boundary_max",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "team0": "Support team 0",
+          "team1": "Support team 1",
+          "team2": "Support team 2",
+          "team3": "Support team 3",
+          "team4": "Support team 4",
+          "team5": "Support team 5",
+          "team6": "Support team 6",
+          "team7": "Support team 7",
+          "team8": "Support team 8",
+          "team9": "Support team 9",
+          "team10": "Support team 10",
+          "team11": "Support team 11",
+          "team12": "Support team 12",
+          "team13": "Support team 13",
+          "team14": "Support team 14",
+          "team15": "Support team 15",
+          "team16": "Support team 16",
+          "team17": "Support team 17",
+          "team18": "Support team 18",
+          "team19": "Support team 19",
+          "team20": "Support team 20",
+          "team21": "Support team 21",
+          "team22": "Support team 22",
+          "team23": "Support team 23",
+          "team24": "Support team 24",
+          "team25": "Support team 25",
+          "team26": "Support team 26",
+          "team27": "Support team 27",
+          "team28": "Support team 28",
+          "team29": "Support team 29",
+          "team30": "Support team 30",
+          "team31": "Support team 31",
+          "team32": "Support team 32",
+          "team33": "Support team 33",
+          "team34": "Support team 34",
+          "team35": "Support team 35",
+          "team36": "Support team 36",
+          "team37": "Support team 37",
+          "team38": "Support team 38",
+          "team39": "Support team 39",
+          "team40": "Support team 40",
+          "team41": "Support team 41",
+          "team42": "Support team 42",
+          "team43": "Support team 43",
+          "team44": "Support team 44",
+          "team45": "Support team 45",
+          "team46": "Support team 46",
+          "team47": "Support team 47",
+          "team48": "Support team 48",
+          "team49": "Support team 49",
+          "team50": "Support team 50",
+          "team51": "Support team 51",
+          "team52": "Support team 52",
+          "team53": "Support team 53",
+          "team54": "Support team 54",
+          "team55": "Support team 55",
+          "team56": "Support team 56",
+          "team57": "Support team 57",
+          "team58": "Support team 58",
+          "team59": "Support team 59",
+          "team60": "Support team 60",
+          "team61": "Support team 61",
+          "team62": "Support team 62",
+          "team63": "Support team 63",
+          "team64": "Support team 64",
+          "team65": "Support team 65",
+          "team66": "Support team 66",
+          "team67": "Support team 67",
+          "team68": "Support team 68",
+          "team69": "Support team 69",
+          "team70": "Support team 70",
+          "team71": "Support team 71",
+          "team72": "Support team 72",
+          "team73": "Support team 73",
+          "team74": "Support team 74",
+          "team75": "Support team 75",
+          "team76": "Support team 76",
+          "team77": "Support team 77",
+          "team78": "Support team 78",
+          "team79": "Support team 79",
+          "team80": "Support team 80",
+          "team81": "Support team 81",
+          "team82": "Support team 82",
+          "team83": "Support team 83",
+          "team84": "Support team 84",
+          "team85": "Support team 85",
+          "team86": "Support team 86",
+          "team87": "Support team 87",
+          "team88": "Support team 88",
+          "team89": "Support team 89",
+          "team90": "Support team 90",
+          "team91": "Support team 91",
+          "team92": "Support team 92",
+          "team93": "Support team 93",
+          "team94": "Support team 94",
+          "team95": "Support team 95",
+          "team96": "Support team 96",
+          "team97": "Support team 97",
+          "team98": "Support team 98",
+          "team99": "Support team 99",
+          "team100": "Support team 100",
+          "team101": "Support team 101",
+          "team102": "Support team 102",
+          "team103": "Support team 103",
+          "team104": "Support team 104",
+          "team105": "Support team 105",
+          "team106": "Support team 106",
+          "team107": "Support team 107",
+          "team108": "Support team 108",
+          "team109": "Support team 109",
+          "team110": "Support team 110",
+          "team111": "Support team 111",
+          "team112": "Support team 112",
+          "team113": "Support team 113",
+          "team114": "Support team 114",
+          "team115": "Support team 115",
+          "team116": "Support team 116",
+          "team117": "Support team 117",
+          "team118": "Support team 118",
+          "team119": "Support team 119",
+          "team120": "Support team 120",
+          "team121": "Support team 121",
+          "team122": "Support team 122",
+          "team123": "Support team 123",
+          "team124": "Support team 124",
+          "team125": "Support team 125",
+          "team126": "Support team 126",
+          "team127": "Support team 127",
+          "team128": "Support team 128",
+          "team129": "Support team 129",
+          "team130": "Support team 130",
+          "team131": "Support team 131",
+          "team132": "Support team 132",
+          "team133": "Support team 133",
+          "team134": "Support team 134",
+          "team135": "Support team 135",
+          "team136": "Support team 136",
+          "team137": "Support team 137",
+          "team138": "Support team 138",
+          "team139": "Support team 139",
+          "team140": "Support team 140",
+          "team141": "Support team 141",
+          "team142": "Support team 142",
+          "team143": "Support team 143",
+          "team144": "Support team 144",
+          "team145": "Support team 145",
+          "team146": "Support team 146",
+          "team147": "Support team 147",
+          "team148": "Support team 148",
+          "team149": "Support team 149",
+          "team150": "Support team 150",
+          "team151": "Support team 151",
+          "team152": "Support team 152",
+          "team153": "Support team 153",
+          "team154": "Support team 154",
+          "team155": "Support team 155",
+          "team156": "Support team 156",
+          "team157": "Support team 157",
+          "team158": "Support team 158",
+          "team159": "Support team 159",
+          "team160": "Support team 160",
+          "team161": "Support team 161",
+          "team162": "Support team 162",
+          "team163": "Support team 163",
+          "team164": "Support team 164",
+          "team165": "Support team 165",
+          "team166": "Support team 166",
+          "team167": "Support team 167",
+          "team168": "Support team 168",
+          "team169": "Support team 169",
+          "team170": "Support team 170",
+          "team171": "Support team 171",
+          "team172": "Support team 172",
+          "team173": "Support team 173",
+          "team174": "Support team 174",
+          "team175": "Support team 175",
+          "team176": "Support team 176",
+          "team177": "Support team 177",
+          "team178": "Support team 178",
+          "team179": "Support team 179",
+          "team180": "Support team 180",
+          "team181": "Support team 181",
+          "team182": "Support team 182",
+          "team183": "Support team 183",
+          "team184": "Support team 184",
+          "team185": "Support team 185",
+          "team186": "Support team 186",
+          "team187": "Support team 187",
+          "team188": "Support team 188",
+          "team189": "Support team 189",
+          "team190": "Support team 190",
+          "team191": "Support team 191",
+          "team192": "Support team 192",
+          "team193": "Support team 193",
+          "team194": "Support team 194",
+          "team195": "Support team 195",
+          "team196": "Support team 196",
+          "team197": "Support team 197",
+          "team198": "Support team 198",
+          "team199": "Support team 199",
+          "team200": "Support team 200",
+          "team201": "Support team 201",
+          "team202": "Support team 202",
+          "team203": "Support team 203",
+          "team204": "Support team 204",
+          "team205": "Support team 205",
+          "team206": "Support team 206",
+          "team207": "Support team 207",
+          "team208": "Support team 208",
+          "team209": "Support team 209",
+          "team210": "Support team 210",
+          "team211": "Support team 211",
+          "team212": "Support team 212",
+          "team213": "Support team 213",
+          "team214": "Support team 214",
+          "team215": "Support team 215",
+          "team216": "Support team 216",
+          "team217": "Support team 217",
+          "team218": "Support team 218",
+          "team219": "Support team 219",
+          "team220": "Support team 220",
+          "team221": "Support team 221",
+          "team222": "Support team 222",
+          "team223": "Support team 223",
+          "team224": "Support team 224",
+          "team225": "Support team 225",
+          "team226": "Support team 226",
+          "team227": "Support team 227",
+          "team228": "Support team 228",
+          "team229": "Support team 229",
+          "team230": "Support team 230",
+          "team231": "Support team 231",
+          "team232": "Support team 232",
+          "team233": "Support team 233",
+          "team234": "Support team 234",
+          "team235": "Support team 235",
+          "team236": "Support team 236",
+          "team237": "Support team 237",
+          "team238": "Support team 238",
+          "team239": "Support team 239",
+          "team240": "Support team 240",
+          "team241": "Support team 241",
+          "team242": "Support team 242",
+          "team243": "Support team 243",
+          "team244": "Support team 244",
+          "team245": "Support team 245",
+          "team246": "Support team 246",
+          "team247": "Support team 247",
+          "team248": "Support team 248",
+          "team249": "Support team 249",
+          "team250": "Support team 250",
+          "team251": "Support team 251",
+          "team252": "Support team 252",
+          "team253": "Support team 253",
+          "team254": "Support team 254"
+        },
+        "noulCriteria": {},
+        "parameters": {
+          "levels": [
+            "Impact level 0",
+            "Impact level 1",
+            "Impact level 2",
+            "Impact level 3",
+            "Impact level 4",
+            "Impact level 5",
+            "Impact level 6",
+            "Impact level 7",
+            "Impact level 8",
+            "Impact level 9"
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "team0": "Support team 0",
+              "team1": "Support team 1",
+              "team2": "Support team 2",
+              "team3": "Support team 3",
+              "team4": "Support team 4",
+              "team5": "Support team 5",
+              "team6": "Support team 6",
+              "team7": "Support team 7",
+              "team8": "Support team 8",
+              "team9": "Support team 9",
+              "team10": "Support team 10",
+              "team11": "Support team 11",
+              "team12": "Support team 12",
+              "team13": "Support team 13",
+              "team14": "Support team 14",
+              "team15": "Support team 15",
+              "team16": "Support team 16",
+              "team17": "Support team 17",
+              "team18": "Support team 18",
+              "team19": "Support team 19",
+              "team20": "Support team 20",
+              "team21": "Support team 21",
+              "team22": "Support team 22",
+              "team23": "Support team 23",
+              "team24": "Support team 24",
+              "team25": "Support team 25",
+              "team26": "Support team 26",
+              "team27": "Support team 27",
+              "team28": "Support team 28",
+              "team29": "Support team 29",
+              "team30": "Support team 30",
+              "team31": "Support team 31",
+              "team32": "Support team 32",
+              "team33": "Support team 33",
+              "team34": "Support team 34",
+              "team35": "Support team 35",
+              "team36": "Support team 36",
+              "team37": "Support team 37",
+              "team38": "Support team 38",
+              "team39": "Support team 39",
+              "team40": "Support team 40",
+              "team41": "Support team 41",
+              "team42": "Support team 42",
+              "team43": "Support team 43",
+              "team44": "Support team 44",
+              "team45": "Support team 45",
+              "team46": "Support team 46",
+              "team47": "Support team 47",
+              "team48": "Support team 48",
+              "team49": "Support team 49",
+              "team50": "Support team 50",
+              "team51": "Support team 51",
+              "team52": "Support team 52",
+              "team53": "Support team 53",
+              "team54": "Support team 54",
+              "team55": "Support team 55",
+              "team56": "Support team 56",
+              "team57": "Support team 57",
+              "team58": "Support team 58",
+              "team59": "Support team 59",
+              "team60": "Support team 60",
+              "team61": "Support team 61",
+              "team62": "Support team 62",
+              "team63": "Support team 63",
+              "team64": "Support team 64",
+              "team65": "Support team 65",
+              "team66": "Support team 66",
+              "team67": "Support team 67",
+              "team68": "Support team 68",
+              "team69": "Support team 69",
+              "team70": "Support team 70",
+              "team71": "Support team 71",
+              "team72": "Support team 72",
+              "team73": "Support team 73",
+              "team74": "Support team 74",
+              "team75": "Support team 75",
+              "team76": "Support team 76",
+              "team77": "Support team 77",
+              "team78": "Support team 78",
+              "team79": "Support team 79",
+              "team80": "Support team 80",
+              "team81": "Support team 81",
+              "team82": "Support team 82",
+              "team83": "Support team 83",
+              "team84": "Support team 84",
+              "team85": "Support team 85",
+              "team86": "Support team 86",
+              "team87": "Support team 87",
+              "team88": "Support team 88",
+              "team89": "Support team 89",
+              "team90": "Support team 90",
+              "team91": "Support team 91",
+              "team92": "Support team 92",
+              "team93": "Support team 93",
+              "team94": "Support team 94",
+              "team95": "Support team 95",
+              "team96": "Support team 96",
+              "team97": "Support team 97",
+              "team98": "Support team 98",
+              "team99": "Support team 99",
+              "team100": "Support team 100",
+              "team101": "Support team 101",
+              "team102": "Support team 102",
+              "team103": "Support team 103",
+              "team104": "Support team 104",
+              "team105": "Support team 105",
+              "team106": "Support team 106",
+              "team107": "Support team 107",
+              "team108": "Support team 108",
+              "team109": "Support team 109",
+              "team110": "Support team 110",
+              "team111": "Support team 111",
+              "team112": "Support team 112",
+              "team113": "Support team 113",
+              "team114": "Support team 114",
+              "team115": "Support team 115",
+              "team116": "Support team 116",
+              "team117": "Support team 117",
+              "team118": "Support team 118",
+              "team119": "Support team 119",
+              "team120": "Support team 120",
+              "team121": "Support team 121",
+              "team122": "Support team 122",
+              "team123": "Support team 123",
+              "team124": "Support team 124",
+              "team125": "Support team 125",
+              "team126": "Support team 126",
+              "team127": "Support team 127",
+              "team128": "Support team 128",
+              "team129": "Support team 129",
+              "team130": "Support team 130",
+              "team131": "Support team 131",
+              "team132": "Support team 132",
+              "team133": "Support team 133",
+              "team134": "Support team 134",
+              "team135": "Support team 135",
+              "team136": "Support team 136",
+              "team137": "Support team 137",
+              "team138": "Support team 138",
+              "team139": "Support team 139",
+              "team140": "Support team 140",
+              "team141": "Support team 141",
+              "team142": "Support team 142",
+              "team143": "Support team 143",
+              "team144": "Support team 144",
+              "team145": "Support team 145",
+              "team146": "Support team 146",
+              "team147": "Support team 147",
+              "team148": "Support team 148",
+              "team149": "Support team 149",
+              "team150": "Support team 150",
+              "team151": "Support team 151",
+              "team152": "Support team 152",
+              "team153": "Support team 153",
+              "team154": "Support team 154",
+              "team155": "Support team 155",
+              "team156": "Support team 156",
+              "team157": "Support team 157",
+              "team158": "Support team 158",
+              "team159": "Support team 159",
+              "team160": "Support team 160",
+              "team161": "Support team 161",
+              "team162": "Support team 162",
+              "team163": "Support team 163",
+              "team164": "Support team 164",
+              "team165": "Support team 165",
+              "team166": "Support team 166",
+              "team167": "Support team 167",
+              "team168": "Support team 168",
+              "team169": "Support team 169",
+              "team170": "Support team 170",
+              "team171": "Support team 171",
+              "team172": "Support team 172",
+              "team173": "Support team 173",
+              "team174": "Support team 174",
+              "team175": "Support team 175",
+              "team176": "Support team 176",
+              "team177": "Support team 177",
+              "team178": "Support team 178",
+              "team179": "Support team 179",
+              "team180": "Support team 180",
+              "team181": "Support team 181",
+              "team182": "Support team 182",
+              "team183": "Support team 183",
+              "team184": "Support team 184",
+              "team185": "Support team 185",
+              "team186": "Support team 186",
+              "team187": "Support team 187",
+              "team188": "Support team 188",
+              "team189": "Support team 189",
+              "team190": "Support team 190",
+              "team191": "Support team 191",
+              "team192": "Support team 192",
+              "team193": "Support team 193",
+              "team194": "Support team 194",
+              "team195": "Support team 195",
+              "team196": "Support team 196",
+              "team197": "Support team 197",
+              "team198": "Support team 198",
+              "team199": "Support team 199",
+              "team200": "Support team 200",
+              "team201": "Support team 201",
+              "team202": "Support team 202",
+              "team203": "Support team 203",
+              "team204": "Support team 204",
+              "team205": "Support team 205",
+              "team206": "Support team 206",
+              "team207": "Support team 207",
+              "team208": "Support team 208",
+              "team209": "Support team 209",
+              "team210": "Support team 210",
+              "team211": "Support team 211",
+              "team212": "Support team 212",
+              "team213": "Support team 213",
+              "team214": "Support team 214",
+              "team215": "Support team 215",
+              "team216": "Support team 216",
+              "team217": "Support team 217",
+              "team218": "Support team 218",
+              "team219": "Support team 219",
+              "team220": "Support team 220",
+              "team221": "Support team 221",
+              "team222": "Support team 222",
+              "team223": "Support team 223",
+              "team224": "Support team 224",
+              "team225": "Support team 225",
+              "team226": "Support team 226",
+              "team227": "Support team 227",
+              "team228": "Support team 228",
+              "team229": "Support team 229",
+              "team230": "Support team 230",
+              "team231": "Support team 231",
+              "team232": "Support team 232",
+              "team233": "Support team 233",
+              "team234": "Support team 234",
+              "team235": "Support team 235",
+              "team236": "Support team 236",
+              "team237": "Support team 237",
+              "team238": "Support team 238",
+              "team239": "Support team 239",
+              "team240": "Support team 240",
+              "team241": "Support team 241",
+              "team242": "Support team 242",
+              "team243": "Support team 243",
+              "team244": "Support team 244",
+              "team245": "Support team 245",
+              "team246": "Support team 246",
+              "team247": "Support team 247",
+              "team248": "Support team 248",
+              "team249": "Support team 249",
+              "team250": "Support team 250",
+              "team251": "Support team 251",
+              "team252": "Support team 252",
+              "team253": "Support team 253",
+              "team254": "Support team 254"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {}
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Impact level 0",
+              "Impact level 1",
+              "Impact level 2",
+              "Impact level 3",
+              "Impact level 4",
+              "Impact level 5",
+              "Impact level 6",
+              "Impact level 7",
+              "Impact level 8",
+              "Impact level 9"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "dynamic-criteria",
+        "structured-descriptions"
+      ]
+    },
+    {
+      "name": "boundary_singleton_null",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "only": null
+        },
+        "noulCriteria": {
+          "false": null
+        },
+        "parameters": {
+          "levels": [
+            null
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "only": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "false": null
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              null
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "dynamic-criteria",
+        "structured-descriptions"
+      ]
+    },
+    {
+      "name": "empty_choice",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {},
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "Working",
+            {
+              "condition": "partially impaired"
+            },
+            [
+              "core operation blocked"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {}
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Working",
+              {
+                "condition": "partially impaired"
+              },
+              [
+                "core operation blocked"
+              ]
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "too_many_choices",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "t0": null,
+          "t1": null,
+          "t2": null,
+          "t3": null,
+          "t4": null,
+          "t5": null,
+          "t6": null,
+          "t7": null,
+          "t8": null,
+          "t9": null,
+          "t10": null,
+          "t11": null,
+          "t12": null,
+          "t13": null,
+          "t14": null,
+          "t15": null,
+          "t16": null,
+          "t17": null,
+          "t18": null,
+          "t19": null,
+          "t20": null,
+          "t21": null,
+          "t22": null,
+          "t23": null,
+          "t24": null,
+          "t25": null,
+          "t26": null,
+          "t27": null,
+          "t28": null,
+          "t29": null,
+          "t30": null,
+          "t31": null,
+          "t32": null,
+          "t33": null,
+          "t34": null,
+          "t35": null,
+          "t36": null,
+          "t37": null,
+          "t38": null,
+          "t39": null,
+          "t40": null,
+          "t41": null,
+          "t42": null,
+          "t43": null,
+          "t44": null,
+          "t45": null,
+          "t46": null,
+          "t47": null,
+          "t48": null,
+          "t49": null,
+          "t50": null,
+          "t51": null,
+          "t52": null,
+          "t53": null,
+          "t54": null,
+          "t55": null,
+          "t56": null,
+          "t57": null,
+          "t58": null,
+          "t59": null,
+          "t60": null,
+          "t61": null,
+          "t62": null,
+          "t63": null,
+          "t64": null,
+          "t65": null,
+          "t66": null,
+          "t67": null,
+          "t68": null,
+          "t69": null,
+          "t70": null,
+          "t71": null,
+          "t72": null,
+          "t73": null,
+          "t74": null,
+          "t75": null,
+          "t76": null,
+          "t77": null,
+          "t78": null,
+          "t79": null,
+          "t80": null,
+          "t81": null,
+          "t82": null,
+          "t83": null,
+          "t84": null,
+          "t85": null,
+          "t86": null,
+          "t87": null,
+          "t88": null,
+          "t89": null,
+          "t90": null,
+          "t91": null,
+          "t92": null,
+          "t93": null,
+          "t94": null,
+          "t95": null,
+          "t96": null,
+          "t97": null,
+          "t98": null,
+          "t99": null,
+          "t100": null,
+          "t101": null,
+          "t102": null,
+          "t103": null,
+          "t104": null,
+          "t105": null,
+          "t106": null,
+          "t107": null,
+          "t108": null,
+          "t109": null,
+          "t110": null,
+          "t111": null,
+          "t112": null,
+          "t113": null,
+          "t114": null,
+          "t115": null,
+          "t116": null,
+          "t117": null,
+          "t118": null,
+          "t119": null,
+          "t120": null,
+          "t121": null,
+          "t122": null,
+          "t123": null,
+          "t124": null,
+          "t125": null,
+          "t126": null,
+          "t127": null,
+          "t128": null,
+          "t129": null,
+          "t130": null,
+          "t131": null,
+          "t132": null,
+          "t133": null,
+          "t134": null,
+          "t135": null,
+          "t136": null,
+          "t137": null,
+          "t138": null,
+          "t139": null,
+          "t140": null,
+          "t141": null,
+          "t142": null,
+          "t143": null,
+          "t144": null,
+          "t145": null,
+          "t146": null,
+          "t147": null,
+          "t148": null,
+          "t149": null,
+          "t150": null,
+          "t151": null,
+          "t152": null,
+          "t153": null,
+          "t154": null,
+          "t155": null,
+          "t156": null,
+          "t157": null,
+          "t158": null,
+          "t159": null,
+          "t160": null,
+          "t161": null,
+          "t162": null,
+          "t163": null,
+          "t164": null,
+          "t165": null,
+          "t166": null,
+          "t167": null,
+          "t168": null,
+          "t169": null,
+          "t170": null,
+          "t171": null,
+          "t172": null,
+          "t173": null,
+          "t174": null,
+          "t175": null,
+          "t176": null,
+          "t177": null,
+          "t178": null,
+          "t179": null,
+          "t180": null,
+          "t181": null,
+          "t182": null,
+          "t183": null,
+          "t184": null,
+          "t185": null,
+          "t186": null,
+          "t187": null,
+          "t188": null,
+          "t189": null,
+          "t190": null,
+          "t191": null,
+          "t192": null,
+          "t193": null,
+          "t194": null,
+          "t195": null,
+          "t196": null,
+          "t197": null,
+          "t198": null,
+          "t199": null,
+          "t200": null,
+          "t201": null,
+          "t202": null,
+          "t203": null,
+          "t204": null,
+          "t205": null,
+          "t206": null,
+          "t207": null,
+          "t208": null,
+          "t209": null,
+          "t210": null,
+          "t211": null,
+          "t212": null,
+          "t213": null,
+          "t214": null,
+          "t215": null,
+          "t216": null,
+          "t217": null,
+          "t218": null,
+          "t219": null,
+          "t220": null,
+          "t221": null,
+          "t222": null,
+          "t223": null,
+          "t224": null,
+          "t225": null,
+          "t226": null,
+          "t227": null,
+          "t228": null,
+          "t229": null,
+          "t230": null,
+          "t231": null,
+          "t232": null,
+          "t233": null,
+          "t234": null,
+          "t235": null,
+          "t236": null,
+          "t237": null,
+          "t238": null,
+          "t239": null,
+          "t240": null,
+          "t241": null,
+          "t242": null,
+          "t243": null,
+          "t244": null,
+          "t245": null,
+          "t246": null,
+          "t247": null,
+          "t248": null,
+          "t249": null,
+          "t250": null,
+          "t251": null,
+          "t252": null,
+          "t253": null,
+          "t254": null,
+          "t255": null
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "Working",
+            {
+              "condition": "partially impaired"
+            },
+            [
+              "core operation blocked"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "t0": null,
+              "t1": null,
+              "t2": null,
+              "t3": null,
+              "t4": null,
+              "t5": null,
+              "t6": null,
+              "t7": null,
+              "t8": null,
+              "t9": null,
+              "t10": null,
+              "t11": null,
+              "t12": null,
+              "t13": null,
+              "t14": null,
+              "t15": null,
+              "t16": null,
+              "t17": null,
+              "t18": null,
+              "t19": null,
+              "t20": null,
+              "t21": null,
+              "t22": null,
+              "t23": null,
+              "t24": null,
+              "t25": null,
+              "t26": null,
+              "t27": null,
+              "t28": null,
+              "t29": null,
+              "t30": null,
+              "t31": null,
+              "t32": null,
+              "t33": null,
+              "t34": null,
+              "t35": null,
+              "t36": null,
+              "t37": null,
+              "t38": null,
+              "t39": null,
+              "t40": null,
+              "t41": null,
+              "t42": null,
+              "t43": null,
+              "t44": null,
+              "t45": null,
+              "t46": null,
+              "t47": null,
+              "t48": null,
+              "t49": null,
+              "t50": null,
+              "t51": null,
+              "t52": null,
+              "t53": null,
+              "t54": null,
+              "t55": null,
+              "t56": null,
+              "t57": null,
+              "t58": null,
+              "t59": null,
+              "t60": null,
+              "t61": null,
+              "t62": null,
+              "t63": null,
+              "t64": null,
+              "t65": null,
+              "t66": null,
+              "t67": null,
+              "t68": null,
+              "t69": null,
+              "t70": null,
+              "t71": null,
+              "t72": null,
+              "t73": null,
+              "t74": null,
+              "t75": null,
+              "t76": null,
+              "t77": null,
+              "t78": null,
+              "t79": null,
+              "t80": null,
+              "t81": null,
+              "t82": null,
+              "t83": null,
+              "t84": null,
+              "t85": null,
+              "t86": null,
+              "t87": null,
+              "t88": null,
+              "t89": null,
+              "t90": null,
+              "t91": null,
+              "t92": null,
+              "t93": null,
+              "t94": null,
+              "t95": null,
+              "t96": null,
+              "t97": null,
+              "t98": null,
+              "t99": null,
+              "t100": null,
+              "t101": null,
+              "t102": null,
+              "t103": null,
+              "t104": null,
+              "t105": null,
+              "t106": null,
+              "t107": null,
+              "t108": null,
+              "t109": null,
+              "t110": null,
+              "t111": null,
+              "t112": null,
+              "t113": null,
+              "t114": null,
+              "t115": null,
+              "t116": null,
+              "t117": null,
+              "t118": null,
+              "t119": null,
+              "t120": null,
+              "t121": null,
+              "t122": null,
+              "t123": null,
+              "t124": null,
+              "t125": null,
+              "t126": null,
+              "t127": null,
+              "t128": null,
+              "t129": null,
+              "t130": null,
+              "t131": null,
+              "t132": null,
+              "t133": null,
+              "t134": null,
+              "t135": null,
+              "t136": null,
+              "t137": null,
+              "t138": null,
+              "t139": null,
+              "t140": null,
+              "t141": null,
+              "t142": null,
+              "t143": null,
+              "t144": null,
+              "t145": null,
+              "t146": null,
+              "t147": null,
+              "t148": null,
+              "t149": null,
+              "t150": null,
+              "t151": null,
+              "t152": null,
+              "t153": null,
+              "t154": null,
+              "t155": null,
+              "t156": null,
+              "t157": null,
+              "t158": null,
+              "t159": null,
+              "t160": null,
+              "t161": null,
+              "t162": null,
+              "t163": null,
+              "t164": null,
+              "t165": null,
+              "t166": null,
+              "t167": null,
+              "t168": null,
+              "t169": null,
+              "t170": null,
+              "t171": null,
+              "t172": null,
+              "t173": null,
+              "t174": null,
+              "t175": null,
+              "t176": null,
+              "t177": null,
+              "t178": null,
+              "t179": null,
+              "t180": null,
+              "t181": null,
+              "t182": null,
+              "t183": null,
+              "t184": null,
+              "t185": null,
+              "t186": null,
+              "t187": null,
+              "t188": null,
+              "t189": null,
+              "t190": null,
+              "t191": null,
+              "t192": null,
+              "t193": null,
+              "t194": null,
+              "t195": null,
+              "t196": null,
+              "t197": null,
+              "t198": null,
+              "t199": null,
+              "t200": null,
+              "t201": null,
+              "t202": null,
+              "t203": null,
+              "t204": null,
+              "t205": null,
+              "t206": null,
+              "t207": null,
+              "t208": null,
+              "t209": null,
+              "t210": null,
+              "t211": null,
+              "t212": null,
+              "t213": null,
+              "t214": null,
+              "t215": null,
+              "t216": null,
+              "t217": null,
+              "t218": null,
+              "t219": null,
+              "t220": null,
+              "t221": null,
+              "t222": null,
+              "t223": null,
+              "t224": null,
+              "t225": null,
+              "t226": null,
+              "t227": null,
+              "t228": null,
+              "t229": null,
+              "t230": null,
+              "t231": null,
+              "t232": null,
+              "t233": null,
+              "t234": null,
+              "t235": null,
+              "t236": null,
+              "t237": null,
+              "t238": null,
+              "t239": null,
+              "t240": null,
+              "t241": null,
+              "t242": null,
+              "t243": null,
+              "t244": null,
+              "t245": null,
+              "t246": null,
+              "t247": null,
+              "t248": null,
+              "t249": null,
+              "t250": null,
+              "t251": null,
+              "t252": null,
+              "t253": null,
+              "t254": null,
+              "t255": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Working",
+              {
+                "condition": "partially impaired"
+              },
+              [
+                "core operation blocked"
+              ]
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "case_collision",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "Billing": null,
+          "billing": null
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "Working",
+            {
+              "condition": "partially impaired"
+            },
+            [
+              "core operation blocked"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "Billing": null,
+              "billing": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Working",
+              {
+                "condition": "partially impaired"
+              },
+              [
+                "core operation blocked"
+              ]
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "empty_score",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "billing": {
+            "includes": [
+              "invoice",
+              "refund"
+            ]
+          },
+          "technical": [
+            "checkout",
+            "login"
+          ],
+          "other": null
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": []
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": {
+                "includes": [
+                  "invoice",
+                  "refund"
+                ]
+              },
+              "technical": [
+                "checkout",
+                "login"
+              ],
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": []
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "too_many_levels",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "billing": {
+            "includes": [
+              "invoice",
+              "refund"
+            ]
+          },
+          "technical": [
+            "checkout",
+            "login"
+          ],
+          "other": null
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level",
+            "level"
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": {
+                "includes": [
+                  "invoice",
+                  "refund"
+                ]
+              },
+              "technical": [
+                "checkout",
+                "login"
+              ],
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level",
+              "level"
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "invalid_noul",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "candidates": {
+          "billing": {
+            "includes": [
+              "invoice",
+              "refund"
+            ]
+          },
+          "technical": [
+            "checkout",
+            "login"
+          ],
+          "other": null
+        },
+        "noulCriteria": {
+          "yes": "yes"
+        },
+        "parameters": {
+          "levels": [
+            "Working",
+            {
+              "condition": "partially impaired"
+            },
+            [
+              "core operation blocked"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": {
+                "includes": [
+                  "invoice",
+                  "refund"
+                ]
+              },
+              "technical": [
+                "checkout",
+                "login"
+              ],
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "yes": "yes"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "Working",
+              {
+                "condition": "partially impaired"
+              },
+              [
+                "core operation blocked"
+              ]
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "structured_substitution",
+      "skill": "tsTriageStructured",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "A literal ${/input/notASecondPass} remains in this contact.",
+          "history": [
+            "Previous contact",
+            null
+          ],
+          "a/b": {
+            "value": 1
+          },
+          "a~b": null,
+          "repeat": true,
+          "count": 2
+        },
+        "policy": {
+          "routing": "review-only"
+        },
+        "candidates": {
+          "technical": {
+            "meaning": "Product failure"
+          },
+          "other": null
+        },
+        "parameters": {
+          "levels": [
+            "Operational",
+            {
+              "meaning": "Blocked"
+            }
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "contact": {
+            "caseId": "__CASE__",
+            "message": "A literal ${/input/notASecondPass} remains in this contact.",
+            "history": [
+              "Previous contact",
+              null
+            ],
+            "a/b": {
+              "value": 1
+            },
+            "a~b": null,
+            "repeat": true,
+            "count": 2
+          },
+          "slash": {
+            "value": 1
+          },
+          "tilde": null,
+          "literal": "${/input/notResolved}",
+          "note": "Repeat=true; count=2"
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": {
+              "question": "Which team should review A literal ${/input/notASecondPass} remains in this contact.?",
+              "policy": {
+                "routing": "review-only"
+              }
+            },
+            "criteria": {
+              "technical": {
+                "meaning": "Product failure"
+              },
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": [
+              "Check contact history.",
+              "Previous contact"
+            ],
+            "criteria": {
+              "true": null
+            }
+          },
+          "impact": {
+            "type": "score",
+            "criteria": [
+              "Operational",
+              {
+                "meaning": "Blocked"
+              }
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "typed-substitution",
+        "pointer-escapes",
+        "array-index",
+        "literal-escape",
+        "no-rescan",
+        "structured-instructions"
+      ]
+    },
+    {
+      "name": "embedded_object_rejected",
+      "skill": "tsTriageStructured",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": {
+            "unexpected": "object"
+          },
+          "history": [
+            "Previous contact",
+            null
+          ],
+          "a/b": {
+            "value": 1
+          },
+          "a~b": null,
+          "repeat": true,
+          "count": 2
+        },
+        "policy": {
+          "routing": "review-only"
+        },
+        "candidates": {
+          "technical": {
+            "meaning": "Product failure"
+          },
+          "other": null
+        },
+        "parameters": {
+          "levels": [
+            "Operational",
+            {
+              "meaning": "Blocked"
+            }
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "contact": {
+            "caseId": "__CASE__",
+            "message": "A literal ${/input/notASecondPass} remains in this contact.",
+            "history": [
+              "Previous contact",
+              null
+            ],
+            "a/b": {
+              "value": 1
+            },
+            "a~b": null,
+            "repeat": true,
+            "count": 2
+          },
+          "slash": {
+            "value": 1
+          },
+          "tilde": null,
+          "literal": "${/input/notResolved}",
+          "note": "Repeat=true; count=2"
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": {
+              "question": "Which team should review A literal ${/input/notASecondPass} remains in this contact.?",
+              "policy": {
+                "routing": "review-only"
+              }
+            },
+            "criteria": {
+              "technical": {
+                "meaning": "Product failure"
+              },
+              "other": null
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": [
+              "Check contact history.",
+              "Previous contact"
+            ],
+            "criteria": {
+              "true": null
+            }
+          },
+          "impact": {
+            "type": "score",
+            "criteria": [
+              "Operational",
+              {
+                "meaning": "Blocked"
+              }
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "local-request-rejection"
+      ]
+    },
+    {
+      "name": "missing_path",
+      "skill": "tsTriageMissingPath",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "missing-pointer"
+      ]
+    },
+    {
+      "name": "role_denied",
+      "skill": "tsTriageRestricted",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "HTTP_403",
+      "usagePrecision": null,
+      "coverage": [
+        "authorization"
+      ]
+    },
+    {
+      "name": "input_rejected",
+      "skill": "tsTriageFixed",
+      "input": {
+        "unexpected": true,
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "HTTP_400",
+      "usagePrecision": null,
+      "coverage": [
+        "input-contract"
+      ]
+    },
+    {
+      "name": "unauthenticated",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "HTTP_401",
+      "usagePrecision": null,
+      "coverage": [
+        "authentication"
+      ]
+    },
+    {
+      "name": "router_prefix",
+      "skill": "tsTriageRouter",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "path-prefix"
+      ],
+      "nativePrefix": "/api"
+    },
+    {
+      "name": "forward",
+      "skill": "tsTriageForward",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "child-input-binding",
+        "forwarding"
+      ],
+      "parent": true
+    },
+    {
+      "name": "summary",
+      "skill": "tsTriageSummary",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": "technical",
+        "repeatProbability": 0.9,
+        "impact": 1.75
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "child-input-binding",
+        "output-binding"
+      ],
+      "parent": true
+    },
+    {
+      "name": "binding_rejects_value",
+      "skill": "tsTriageSummary",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "unknown",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "unknown",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "receiving-contract"
+      ],
+      "parent": true
+    },
+    {
+      "name": "binding_missing_answer",
+      "skill": "tsTriageSummary",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "missing-binding-source"
+      ],
+      "parent": true
+    },
+    {
+      "name": "empty_answers",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {},
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {},
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "answer-passthrough"
+      ]
+    },
+    {
+      "name": "extended_answers",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "unexpected": {
+                "type": "noul",
+                "noul": 4.25,
+                "providerExtension": {
+                  "keep": true
+                }
+              },
+              "department": {
+                "type": "score",
+                "choice": "unlisted",
+                "confidence": -1
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "unexpected": {
+          "type": "noul",
+          "noul": 4.25,
+          "providerExtension": {
+            "keep": true
+          }
+        },
+        "department": {
+          "type": "score",
+          "choice": "unlisted",
+          "confidence": -1
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "answer-passthrough",
+        "no-repair",
+        "no-coercion"
+      ]
+    },
+    {
+      "name": "forward_extended",
+      "skill": "tsTriageForward",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "unexpected": {
+                "type": "noul",
+                "noul": 4.25,
+                "providerExtension": {
+                  "keep": true
+                }
+              },
+              "department": {
+                "type": "score",
+                "choice": "unlisted",
+                "confidence": -1
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "unexpected": {
+          "type": "noul",
+          "noul": 4.25,
+          "providerExtension": {
+            "keep": true
+          }
+        },
+        "department": {
+          "type": "score",
+          "choice": "unlisted",
+          "confidence": -1
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "verbatim-forwarding"
+      ],
+      "parent": true
+    },
+    {
+      "name": "missing_answers",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "terminal-extraction-failure"
+      ]
+    },
+    {
+      "name": "null_answers",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "answers": null,
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "terminal-extraction-failure"
+      ]
+    },
+    {
+      "name": "array_answers",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "answers": [],
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "terminal-extraction-failure"
+      ]
+    },
+    {
+      "name": "string_answers",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "answers": "text",
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "terminal-extraction-failure"
+      ]
+    },
+    {
+      "name": "malformed_json",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "raw": "not JSON"
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "terminal-extraction-failure"
+      ]
+    },
+    {
+      "name": "usage_zero",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "usage-accounting"
+      ]
+    },
+    {
+      "name": "usage_missing",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "UNAVAILABLE",
+      "coverage": [
+        "usage-accounting"
+      ]
+    },
+    {
+      "name": "usage_partial",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 3
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "UNAVAILABLE",
+      "coverage": [
+        "usage-accounting"
+      ]
+    },
+    {
+      "name": "usage_decimal",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 1.0,
+              "output_tokens": 2
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "UNAVAILABLE",
+      "coverage": [
+        "usage-accounting"
+      ]
+    },
+    {
+      "name": "usage_negative",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": -1,
+              "output_tokens": 2
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "UNAVAILABLE",
+      "coverage": [
+        "usage-accounting"
+      ]
+    },
+    {
+      "name": "http_400",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 400,
+          "body": {
+            "error": "authored rejection",
+            "usage": {
+              "input_tokens": 999,
+              "output_tokens": 999
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "terminal-provider-error"
+      ]
+    },
+    {
+      "name": "http_401",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 401,
+          "body": {
+            "error": "authored rejection",
+            "usage": {
+              "input_tokens": 999,
+              "output_tokens": 999
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "terminal-provider-error"
+      ]
+    },
+    {
+      "name": "http_403",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 403,
+          "body": {
+            "error": "authored rejection",
+            "usage": {
+              "input_tokens": 999,
+              "output_tokens": 999
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "terminal-provider-error"
+      ]
+    },
+    {
+      "name": "http_422",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 422,
+          "body": {
+            "error": "authored rejection",
+            "usage": {
+              "input_tokens": 999,
+              "output_tokens": 999
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "terminal-provider-error"
+      ]
+    },
+    {
+      "name": "retry_recovers",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 529,
+          "body": {
+            "error": "overloaded"
+          }
+        },
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "COMPLETED",
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "transient-retry",
+        "same-resolved-request"
+      ]
+    },
+    {
+      "name": "retry_exhausts",
+      "skill": "tsTriageRetry",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 529,
+          "body": {
+            "error": "overloaded"
+          }
+        },
+        {
+          "status": 529,
+          "body": {
+            "error": "overloaded"
+          }
+        },
+        {
+          "status": 529,
+          "body": {
+            "error": "overloaded"
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "retry-limit"
+      ]
+    },
+    {
+      "name": "retry_disabled",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "status": 529,
+          "body": {
+            "error": "overloaded"
+          }
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "single-attempt"
+      ]
+    },
+    {
+      "name": "read_timeout",
+      "skill": "tsTriageTimeout",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "department": {
+                "type": "choice",
+                "choice": "technical",
+                "confidence": 0.8,
+                "probabilities": {
+                  "billing": 0.05,
+                  "technical": 0.85,
+                  "delivery": 0.05,
+                  "other": 0.05
+                }
+              },
+              "repeat": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.75,
+                "confidence": 0.7,
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.25,
+                  "2": 0.75
+                },
+                "legend": {
+                  "0": "No loss of functionality",
+                  "1": "Some functions impaired",
+                  "2": "Core operation blocked"
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 37,
+              "output_tokens": 13
+            }
+          },
+          "delaySeconds": 2
+        }
+      ],
+      "expected": {
+        "department": {
+          "type": "choice",
+          "choice": "technical",
+          "confidence": 0.8,
+          "probabilities": {
+            "billing": 0.05,
+            "technical": 0.85,
+            "delivery": 0.05,
+            "other": 0.05
+          }
+        },
+        "repeat": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.75,
+          "confidence": 0.7,
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.25,
+            "2": 0.75
+          },
+          "legend": {
+            "0": "No loss of functionality",
+            "1": "Some functions impaired",
+            "2": "Core operation blocked"
+          }
+        }
+      },
+      "outcome": "FAILED",
+      "usagePrecision": null,
+      "coverage": [
+        "transport-timeout"
+      ]
+    }
+  ]
+}

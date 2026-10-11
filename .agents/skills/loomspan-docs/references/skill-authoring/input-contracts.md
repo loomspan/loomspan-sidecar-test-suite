@@ -1,0 +1,138 @@
+---
+audience: loomspan-skill-builder
+status: development
+applies_to: bundled-loomspan-revision
+coverage: initial-source-verified
+---
+
+# Reflected Java Input Contracts
+
+## Applicability
+
+Use this topic for an annotation-defined Java skill. Loomspan reflects its Java signature and `@SkillParam` metadata as the provider-facing schema, planner guidance, and root/child runtime validation contract. There is no companion YAML or input-contract inheritance layer.
+
+For REST manifests, use [REST leaf skills](rest-skills.md): their optional `input_schema` uses the YAML validator and their public handler receives a recursively immutable snapshot after reference resolution.
+
+This topic does not define the complete pure-YAML `input_schema` language.
+
+## Type Decision Table
+
+| Java declaration | Enforced reflected meaning | Authoring decision |
+| --- | --- | --- |
+| `Object` | Any JSON-compatible value: JSON null where existing optionality permits it, string, boolean, number, object, or array | Use only when the value is deliberately shape-free |
+| `Map<String, Object>` | A JSON object with arbitrary string keys whose values may be any JSON-compatible value | Use for genuinely open metadata or heterogeneous dictionaries |
+| `Map<String, T>` | A JSON object whose every entry value follows the reflected contract for `T` | Use when keys are open but values have one stable type |
+| Record or DTO | A closed JSON object with reflected named properties | SHOULD be the default when planners need discoverable field names and types |
+| Array or `List<T>` | A JSON array whose items follow the reflected contract for `T` | Choose `T` to communicate the real item shape |
+| Recursive DTO | A bounded object-shaped schema; cycle protection does not turn the recursive leaf into arbitrary JSON | Use only when the recursive domain shape is intentional |
+
+`@SkillParam(required = false)` controls omission at the method-parameter boundary. It does not make a typed value accept JSON null generally. Optional primitive parameters are invalid because omission binds `null`; use the boxed type. This change does not alter those requiredness rules.
+
+## Enforced Semantics
+
+- Java `Object` is emitted as the JSON Schema empty schema `{}` at that value node. Loomspan preserves this unconstrained meaning through internal resolution and provider publication; it does not rewrite it to `type: object`.
+- Unconstrained values preserve scalar kinds and recursively normalize maps and lists into immutable containers. Non-JSON application objects, non-string map keys, and non-finite floating-point values are rejected with path-qualified validation issues.
+- `Map<String, Object>` does not infer keys, property names, or domain constraints. Scalars, nested objects, arrays, and JSON null values may appear under its string keys.
+- Typed maps remain typed. Existing string, integer, number, boolean, enum, DTO, required-field, coercion, and closed-object rules apply to each entry value.
+- Planner examples and verbose rules label unconstrained leaves as `any JSON value`. An open generic map is not a no-argument tool.
+- Root invocation and receiving validation use the same reflected contract. A planning parent with [declared input bindings](input-bindings.md) publishes a separate projected argument contract for that child call. Java does not declare a YAML `input_schema`.
+- A root captures its complete skill generation before object conversion and input validation. That captured contract remains authoritative for the admitted invocation and all descendants; a later generation affects only later roots.
+
+Minimal Java skill:
+
+```java
+@SkillMethod(name = "rankTransportOptions", description = "Rank transport choices.")
+Map<String, Object> rank(
+        @SkillParam(description = "Compact transport choices.")
+        List<Map<String, Object>> options) {
+    // deterministic implementation
+}
+```
+
+The exact callable name is `rankTransportOptions`; use it in `SkillTemplate` or a YAML parent's `allowed_skills`. No YAML wrapper is required or accepted.
+
+## Generated Input Guidance
+
+Assigned-tool examples illustrate declared structure; they are not actual argument
+values. Optional declared fields may be omitted. Both compact and verbose guidance
+list required and optional fields at each object location, including objects inside
+arrays and schema-constrained additional values. For ordinary unbound input, child requirements apply when the containing object is supplied. A binding creates its ancestors; remaining required unbound siblings then become required model contributions. See [declared bindings](input-bindings.md).
+
+- At `$` (top level), a closed rule permits only that object's listed keys. Nested
+  closed rules apply only at their stated paths. An empty closed root requires `{}`.
+- Open objects explicitly permit additional fields with any JSON value. Their
+  illustrative fields are not exhaustive; an empty illustration may receive fields.
+- Typed additional values follow their own type and nested rules at `.*`. These
+  restrictions apply to unlisted fields, not to declared properties with different
+  types. `[]` denotes array items; quoted bracket paths distinguish literal dotted
+  keys from nested properties. `<key>` is an illustrative key, not a required name.
+- Generic contracts omit structured guidance. Verbose correction adds type detail
+  while retaining the same object boundaries as ordinary compact guidance.
+- Assigned-task guidance explicitly distinguishes required unbound fields, optional
+  contributions for contracts that accept `{}`, and exact-empty arguments for
+  proven contribution-free tools. Unknown/unsupported summaries retain neutral
+  guidance. Read [declared bindings](input-bindings.md#two-contracts-and-dependencies)
+  for ownership and optional authored contributions; examples never override task
+  instructions or make bound destinations model-owned.
+- For supported structured summaries, nonblank authored descriptions appear once per described node in a separate
+  section in both compact and verbose assigned-tool guidance, including corrective
+  requests. This shared resolved-contract behavior also covers declared YAML
+  inputs. Root/object descriptions, properties, array items and typed additional
+  values retain their own paths; ancestor descriptions are not copied to children.
+  Paths and description text are JSON-quoted, preserving multiline text, whitespace,
+  punctuation and literal key characters through escaping. Blank or absent
+  descriptions add no text. A described empty closed root retains its empty-object
+  rule; generic contracts still omit structured guidance.
+  Unknown/unsupported shapes retain their schema text and authored descriptions
+  without a structured field summary.
+
+These are descriptions of the resolved contract, not new validation or dataflow
+rules. Skill instructions must identify required business data, including any
+undeclared fields in open objects. Openness does not require copying all available
+context, and Loomspan does not infer or automatically forward business values.
+Descriptions explain meaning, units, provenance or intended use; they do not add
+validation rules, defaults, data bindings or permission to invent absent values.
+
+`SkillInputPromptRendererTest` protects recursive scoped rules and examples;
+`StepPromptBuilderTest#compactAndVerboseSelectionsKeepObjectRulesAcrossPropertyThreshold`
+protects detail selection. `StepLoopMissionExecutionEngineTest#preservesScopedGuidanceAndEvidenceThroughObjectBoundaryCorrection`
+captures ordinary and corrective requests and checks evidence fidelity and
+validation before execution. `SkillInputValidatorTest#scopedRenderingContractRetainsValidationAndTypedExtraValueBoundaries`
+protects unchanged enforcement separately from model guidance. This subsection
+describes generated guidance for resolved contracts; it does not document the
+complete pure-YAML schema language.
+
+`SkillInputPromptRendererTest#preservesDescriptionsAtExactPathsInBothModes` checks
+lossless path/text association; `rendersYamlDescriptionsThroughSharedResolvedNodes`
+checks manifest resolution. `StepLoopMissionExecutionEngineTest#sendsAuthoredDescriptionsInCompactVerboseAndCorrectiveModelRequests`
+captures actual deterministic model requests and validation before execution;
+`SkillInputValidatorTest#descriptionsDoNotChangeValidationOrNormalization` compares
+enforcement with and without descriptions. These tests establish prompt coverage,
+not measured model accuracy. Live model comparisons are optional and are not a
+prerequisite for relying on this rendering behavior.
+
+## Design Guidance
+
+Read [Designing useful input contracts](input-contract-design.md) for choosing
+required data, nested object boundaries, and verification that separates structural
+validity from source fidelity and model decision quality.
+
+Use a record or DTO when the planner should discover stable fields such as `operator`, `price`, and `durationMinutes`. A generic map truthfully communicates that keys and value kinds are open; a detailed parameter description can give examples, but examples do not become enforced property schemas. Do not use `Object` or a generic map merely to avoid modeling a stable contract.
+
+Use a typed map when arbitrary keys are part of the domain but all values share a type. For example, `Map<String, Integer>` communicates and validates integer values while retaining open keys.
+
+## Known Boundaries
+
+- Loomspan does not infer fixed fields or domain rules from generic-map usage.
+- This contract supports JSON-compatible values; arbitrary Java objects and resource/container types are not accepted under unconstrained leaves. Attachment and runtime-reference inputs use their dedicated reflected contracts.
+- Requiredness and typed-null behavior outside deliberate unconstrained leaves are unchanged.
+- Complete pure-YAML schema syntax and validation remain outside this topic.
+
+## Executable Evidence and Implementation Anchors
+
+- `LoomspanMethodInputSchemaGeneratorTest` (`src/test/java/ai/loomspan/internal/serialization/LoomspanMethodInputSchemaGeneratorTest.java`) protects direct `Object`, generic-map transport payloads, typed maps, and recursive DTO generation.
+- `SkillInputContractResolverTest` (`src/test/java/ai/loomspan/internal/runtime/input/SkillInputContractResolverTest.java`) protects empty-schema parsing/serialization and the distinction between unconstrained, generic top-level, and strict empty-object contracts.
+- `SkillInputValidatorTest` (`src/test/java/ai/loomspan/internal/runtime/input/SkillInputValidatorTest.java`) protects JSON-kind preservation, immutable recursive normalization, and visible rejection of unsupported values and schema kinds.
+- `StepPromptBuilderTest` (`src/test/java/ai/loomspan/internal/runtime/step/StepPromptBuilderTest.java`) and `StepActionValidatorTest` (`src/test/java/ai/loomspan/internal/runtime/step/StepActionValidatorTest.java`) protect planner guidance and pre-side-effect validation.
+- `SkillGenerationManagerTest` (`src/test/java/ai/loomspan/internal/skill/SkillGenerationManagerTest.java`) protects complete immutable generation assembly and fixed Java declarations.
+- `LoomspanMethodInputSchemaGenerator` (`src/main/java/ai/loomspan/internal/serialization/LoomspanMethodInputSchemaGenerator.java`), `SkillInputContractResolver` (`src/main/java/ai/loomspan/internal/runtime/input/SkillInputContractResolver.java`), `SkillInputValidator` (`src/main/java/ai/loomspan/internal/runtime/input/SkillInputValidator.java`), and `SkillInputPromptRenderer` (`src/main/java/ai/loomspan/internal/runtime/input/SkillInputPromptRenderer.java`) define the current production path.

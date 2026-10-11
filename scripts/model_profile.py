@@ -23,10 +23,10 @@ def model_profile(paths=('java', 'sidecar')):
         models = yaml.safe_load(raw)['loomspan']['models']
         skill_models = {}
         skill_directory = Path(os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY', ROOT / 'config')) / 'skills'
-        for file in sorted(skill_directory.glob('*.yaml')):
+        for file in sorted(skill_directory.rglob('*.yaml')):
             skill = yaml.safe_load(file.read_bytes())
             mounted_skill = yaml.safe_load(subprocess.check_output(
-                target_env.execute(path, 'cat', '/config/skills/' + file.name)))
+                target_env.execute(path, 'cat', '/config/skills/' + file.relative_to(skill_directory).as_posix())))
             if skill != mounted_skill:
                 raise RuntimeError('Mounted skill differs: ' + file.stem)
             selected = models[skill['model']]

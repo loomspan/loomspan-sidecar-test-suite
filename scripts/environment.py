@@ -32,6 +32,8 @@ def issuer():
 
 
 def compose():
+    from suite_config import prepare
+    prepare(ROOT)
     value = settings()
     command = ['docker', 'compose', '--project-directory', str(ROOT), '-p', value['project'],
                '--env-file', str(ROOT / '.runtime/compose.env')]

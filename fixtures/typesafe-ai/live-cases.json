@@ -1,0 +1,1319 @@
+{
+  "model": "jev-1.13.0",
+  "maxCalls": 12,
+  "note": "Expectations authored before the first provider call. Diagnostic ranges are provisional, not calibrated thresholds or automatic acceptance.",
+  "cases": [
+    {
+      "name": "department_only",
+      "skill": "tsTriageChoice",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This is my first support contact. Invoice 42 was charged twice. Please review the duplicate charge."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This is my first support contact. Invoice 42 was charged twice. Please review the duplicate charge."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "billing"
+        ],
+        "reason": "Explicit duplicate charge; no competing issue."
+      }
+    },
+    {
+      "name": "repeat_only",
+      "skill": "tsTriageNoul",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This is my first support contact. I have never opened a support ticket before."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This is my first support contact. I have never opened a support ticket before."
+        },
+        "questions": {
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          }
+        }
+      },
+      "rubric": {
+        "repeat": [
+          0,
+          0.2
+        ],
+        "reason": "Explicit first contact; prior support probability should be low."
+      }
+    },
+    {
+      "name": "impact_only",
+      "skill": "tsTriageScore",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        },
+        "questions": {
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impact": [
+          1.5,
+          2
+        ],
+        "reason": "Explicit complete functional outage; upper end of the three-level rubric."
+      }
+    },
+    {
+      "name": "mixed_fixed",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Again: checkout fails, but browsing still works. My prior support ticket is unresolved."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "technical"
+        ],
+        "repeat": [
+          0.8,
+          1
+        ],
+        "impact": [
+          1,
+          2
+        ],
+        "reason": "Prior unresolved support and blocked checkout, with browsing still available."
+      }
+    },
+    {
+      "name": "mixed_dynamic",
+      "skill": "tsTriageDynamic",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My parcel is late, and the promised refund has not arrived. This is my first contact with support. The shopping application works normally."
+        },
+        "candidates": {
+          "billing": {
+            "includes": [
+              "invoice",
+              "refund"
+            ]
+          },
+          "delivery": [
+            "parcel",
+            "shipment"
+          ],
+          "technical": "Application malfunction",
+          "other": "None of the listed teams"
+        },
+        "noulCriteria": {
+          "true": "Previous support attempt",
+          "false": "First support contact"
+        },
+        "parameters": {
+          "levels": [
+            "All functions available",
+            {
+              "condition": "Some functions unavailable"
+            },
+            [
+              "All functions unavailable"
+            ]
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My parcel is late, and the promised refund has not arrived. This is my first contact with support. The shopping application works normally."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": {
+                "includes": [
+                  "invoice",
+                  "refund"
+                ]
+              },
+              "delivery": [
+                "parcel",
+                "shipment"
+              ],
+              "technical": "Application malfunction",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?",
+            "criteria": {
+              "true": "Previous support attempt",
+              "false": "First support contact"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "All functions available",
+              {
+                "condition": "Some functions unavailable"
+              },
+              [
+                "All functions unavailable"
+              ]
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "billing",
+          "delivery"
+        ],
+        "repeat": [
+          0,
+          0.2
+        ],
+        "impact": [
+          0,
+          0.5
+        ],
+        "reason": "Two legitimate routing choices; first contact and explicitly normal application functionality. No minimum Choice confidence required."
+      }
+    },
+    {
+      "name": "structured_substitution",
+      "skill": "tsTriageStructuredLive",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work.",
+          "history": []
+        },
+        "policy": {
+          "routing": "Review only; insufficient information may require clarification."
+        },
+        "candidates": {
+          "technical": {
+            "meaning": "Product malfunction"
+          },
+          "other": "No identifiable support team"
+        },
+        "parameters": {
+          "levels": [
+            "No loss of functionality",
+            "Some functions impaired",
+            "Core operation blocked"
+          ]
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work.",
+          "history": []
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": {
+              "question": "Which support team should review this contact?",
+              "policy": {
+                "routing": "Review only; insufficient information may require clarification."
+              }
+            },
+            "criteria": {
+              "technical": {
+                "meaning": "Product malfunction"
+              },
+              "other": "No identifiable support team"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": [
+              "Does the contact describe a previous support attempt?",
+              "Consider only the supplied contact and its history."
+            ],
+            "criteria": {
+              "true": "Previous support attempt is described",
+              "false": "No previous attempt is described"
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": {
+              "question": "Rate the reported loss of functionality.",
+              "guidance": "Do not infer detailed symptoms absent from the contact."
+            },
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "technical",
+          "other"
+        ],
+        "repeat": [
+          0,
+          0.5
+        ],
+        "reason": "Sparse symptom suggests technical/other; no previous attempt described. Impact has no defensible narrow expected value, so review its distribution without treating it as established severity.",
+        "manual": [
+          "Impact is indeterminate; do not automatically route or act."
+        ]
+      }
+    },
+    {
+      "name": "evidence_sparse",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unspecified referent and no functional scope; do not interpret the raw impact score."
+      }
+    },
+    {
+      "name": "evidence_urgent",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Emotion alone supplies no functionality evidence."
+      }
+    },
+    {
+      "name": "evidence_normal",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Billing issue with explicitly normal application operation.",
+        "impact": [
+          0,
+          0.3
+        ]
+      }
+    },
+    {
+      "name": "evidence_partial",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Concrete partial impairment, not complete outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      }
+    },
+    {
+      "name": "evidence_outage",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit total functional outage.",
+        "impact": [
+          1.7,
+          2
+        ]
+      }
+    },
+    {
+      "name": "evidence_conflict",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved current contradiction; a numerical compromise is not an established impact."
+      }
+    },
+    {
+      "name": "evidence_resolved_history",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit current recovery overrides a resolved historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      }
+    },
+    {
+      "name": "evidence_billing_unknown",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A billing complaint alone does not establish whether application functions work."
+      }
+    },
+    {
+      "name": "evidence_calm_outage",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Low emotional urgency does not reduce explicitly total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      }
+    },
+    {
+      "name": "evidence_emotional_normal",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Emotion does not establish functional loss when normal operation is explicit.",
+        "impact": [
+          0,
+          0.3
+        ]
+      }
+    },
+    {
+      "name": "evidence_partial_checkout",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Checkout is important but this scale measures functional extent, not business criticality; several functions still work.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      }
+    },
+    {
+      "name": "evidence_detailed_nonfunctional",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Specific financial and delivery facts still supply no application-functionality evidence."
+      }
+    },
+    {
+      "name": "policy_partial_unknown",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A failed function is known, but partial versus total loss is not established."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      }
+    },
+    {
+      "name": "policy_history_current",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Current explicit recovery supersedes a historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0,
+          0.3
+        ]
+      }
+    },
+    {
+      "name": "policy_conflict_current",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved equally credible conflict cannot establish current functional extent."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      }
+    },
+    {
+      "name": "policy_regional_partial",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Functionality is impaired for one group while explicitly available to another; not a total application outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0.7,
+          1.3
+        ]
+      }
+    },
+    {
+      "name": "policy_recovery_unverified",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday\u2019s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday\u2019s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "An administrative status is not a current observation of functionality."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      }
+    },
+    {
+      "name": "policy_complete_calm",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "criteria": {
+              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
+              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Calm wording does not reduce observed total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          1.7,
+          2
+        ]
+      }
+    },
+    {
+      "name": "routing_competing_issues",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My package is lost and I want a refund. This is my first support contact. All application functions work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My package is lost and I want a refund. This is my first support contact. All application functions work normally."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "billing",
+          "delivery"
+        ],
+        "repeat": [
+          0,
+          0.2
+        ],
+        "impact": [
+          0,
+          0.5
+        ],
+        "reason": "Both delivery and billing are legitimate reviewers; no forced single correct department."
+      }
+    },
+    {
+      "name": "routing_no_match",
+      "skill": "tsTriageFixed",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This is my first contact. Please stop sending promotional emails. All application functions work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This is my first contact. Please stop sending promotional emails. All application functions work normally."
+        },
+        "questions": {
+          "department": {
+            "type": "choice",
+            "instructions": "Which support team should review this contact?",
+            "criteria": {
+              "billing": "Charges, invoices and refunds",
+              "technical": "Product failures",
+              "delivery": "Shipment and delivery problems",
+              "other": "None of the listed teams"
+            }
+          },
+          "repeat": {
+            "type": "noul",
+            "instructions": "Does the customer describe a previous support attempt?"
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the reported loss of functionality.",
+            "criteria": [
+              "No loss of functionality",
+              "Some functions impaired",
+              "Core operation blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "department": [
+          "other"
+        ],
+        "repeat": [
+          0,
+          0.2
+        ],
+        "impact": [
+          0,
+          0.5
+        ],
+        "reason": "Marketing preferences do not match billing, technical failure or delivery."
+      }
+    }
+  ],
+  "defaultScenarios": [
+    "department_only",
+    "repeat_only",
+    "impact_only",
+    "mixed_fixed",
+    "mixed_dynamic",
+    "structured_substitution"
+  ]
+}

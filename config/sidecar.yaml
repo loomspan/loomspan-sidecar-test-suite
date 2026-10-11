@@ -23,17 +23,61 @@ loomspan:
         compatibility-profile: openrouter
       provider-retry:
         max-attempts: 1
+    typesafeTriage:
+      driver: typesafe
+      base-url: http://fixtures:8080/typesafe/sidecar
+      api-key: fixture-typesafe-transport
+      request-timeout: 5s
+      provider-retry:
+        max-attempts: 1
+    typesafeTriageRouter:
+      driver: typesafe
+      base-url: http://fixtures:8080/typesafe/sidecar/api
+      api-key: fixture-typesafe-transport
+      request-timeout: 5s
+      provider-retry:
+        max-attempts: 1
+    typesafeTriageRetry:
+      driver: typesafe
+      base-url: http://fixtures:8080/typesafe/sidecar
+      api-key: fixture-typesafe-transport
+      request-timeout: 5s
+      provider-retry:
+        max-attempts: 3
+    typesafeTriageTimeout:
+      driver: typesafe
+      base-url: http://fixtures:8080/typesafe/sidecar
+      api-key: fixture-typesafe-transport
+      request-timeout: 500ms
+      provider-retry:
+        max-attempts: 1
   models:
     reasoning:
       connection: model
       provider-model: openai/gpt-6-sol
-      thinking-levels: [medium]
+      thinking-levels:
+      - medium
     coordination:
       connection: model
       provider-model: openai/gpt-6-luna
-      thinking-levels: [medium]
+      thinking-levels:
+      - medium
+    typesafeTriage:
+      connection: typesafeTriage
+      provider-model: jev-1.13.0
+    typesafeTriageRouter:
+      connection: typesafeTriageRouter
+      provider-model: jev-1.13.0
+    typesafeTriageRetry:
+      connection: typesafeTriageRetry
+      provider-model: jev-1.13.0
+    typesafeTriageTimeout:
+      connection: typesafeTriageTimeout
+      provider-model: jev-1.13.0
   skills:
-    locations: [file:/config/skills/*.yaml, file:/config/rest-skills/*.yaml]
+    locations:
+    - file:/config/skills/*/*.yaml
+    - file:/config/rest-skills/*/*.yaml
   session:
     mission-timeout: 600s
     quotas:

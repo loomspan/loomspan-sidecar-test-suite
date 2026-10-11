@@ -1,0 +1,146 @@
+{
+  "reference_evidence_sparse_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.04
+  },
+  "reference_evidence_sparse_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.04
+  },
+  "reference_evidence_urgent_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.02
+  },
+  "reference_evidence_urgent_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.02
+  },
+  "reference_evidence_normal_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 0.0,
+    "evidenceProbability": 0.87
+  },
+  "reference_evidence_normal_sidecar": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 0.0,
+    "evidenceProbability": 0.89
+  },
+  "reference_evidence_partial_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.77
+  },
+  "reference_evidence_partial_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.79
+  },
+  "reference_evidence_outage_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 2.0,
+    "evidenceProbability": 0.84
+  },
+  "reference_evidence_outage_sidecar": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 2.0,
+    "evidenceProbability": 0.85
+  },
+  "reference_evidence_conflict_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.04
+  },
+  "reference_evidence_conflict_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.04
+  },
+  "reference_evidence_resolved_history_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 0.0,
+    "evidenceProbability": 0.9
+  },
+  "reference_evidence_resolved_history_sidecar": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 0.0,
+    "evidenceProbability": 0.9
+  },
+  "reference_evidence_billing_unknown_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.08
+  },
+  "reference_evidence_billing_unknown_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.08
+  },
+  "reference_evidence_calm_outage_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 2.0,
+    "evidenceProbability": 0.81
+  },
+  "reference_evidence_calm_outage_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.79
+  },
+  "reference_evidence_emotional_normal_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 0.0,
+    "evidenceProbability": 0.81
+  },
+  "reference_evidence_emotional_normal_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.79
+  },
+  "reference_evidence_partial_checkout_java": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 1.0,
+    "evidenceProbability": 0.85
+  },
+  "reference_evidence_partial_checkout_sidecar": {
+    "status": "ASSESSED",
+    "reason": "SUFFICIENT_EVIDENCE",
+    "impactScore": 1.0,
+    "evidenceProbability": 0.86
+  },
+  "reference_evidence_detailed_nonfunctional_java": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.14
+  },
+  "reference_evidence_detailed_nonfunctional_sidecar": {
+    "status": "NEEDS_CLARIFICATION",
+    "reason": "INSUFFICIENT_EVIDENCE",
+    "impactScore": null,
+    "evidenceProbability": 0.12
+  }
+}

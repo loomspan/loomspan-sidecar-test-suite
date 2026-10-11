@@ -1,4 +1,4 @@
-"""Record the pinned release build and verify that both packaged hosts embed its bytes."""
+"""Record the pinned snapshot build and verify that both packaged hosts embed its bytes."""
 import hashlib
 import argparse
 import json
@@ -8,7 +8,8 @@ import zipfile
 import yaml
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-VERSION='1.0.0-beta.8'
+SOURCE=json.loads((ROOT/'config/runtime-source.json').read_bytes())
+VERSION=SOURCE['frameworkVersion']
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -27,9 +28,16 @@ def main():
                     ['loomspan']['session'].get('quotas', {}).get('max-usage-units', 200000)
                     for name in ['java', 'sidecar']]
     assert usage_limits[0] == usage_limits[1], 'Equivalent hosts must use the same usage quota'
-    result={'framework':VERSION,'frameworkCommit':subprocess.check_output(['git','-C',str(ROOT.parent/'loomspan-framework'),'rev-parse','v1.0.0-beta.8^{commit}'],text=True).strip(),
+    repo = ROOT.parent/'loomspan-framework'
+    commit = subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip()
+    if commit != SOURCE['frameworkCommit'] or subprocess.check_output(['git','-C',str(repo),'status','--porcelain'],text=True).strip():
+        raise RuntimeError('Framework source must match the clean pinned snapshot before recording its build')
+    built = repo/'target'/('loomspan-spring-boot-starter-'+VERSION+'.jar')
+    if hashlib.sha256(built.read_bytes()).hexdigest() != digest:
+        raise RuntimeError('Installed snapshot differs from the pinned source build')
+    result={'framework':VERSION,'frameworkCommit':commit,
             'sidecar':'1.0.0-beta.3',
-            'sidecarCommit':'3eff6befd95f73b7d4091ed0da32498e0f64c488','buildMode':'pinned release source; installed release Framework artifact',
+            'sidecarCommit':SOURCE['sidecarCommit'],'buildMode':SOURCE['note'],
             'providerRequestTimeoutSeconds':request_timeout,'missionTimeoutSeconds':mission_timeout,
             'sessionMaxUsageUnits':usage_limits[0],
             'installedFrameworkSha256':digest,'artifacts':{},'configurationSha256':{}}
@@ -42,6 +50,6 @@ def main():
     for path in [ROOT/'compose.runtime.yaml',*(ROOT/'config').rglob('*.yaml')]:
         result['configurationSha256'][path.relative_to(ROOT).as_posix()]=hashlib.sha256(path.read_bytes()).hexdigest()
     (ROOT/'.runtime/build-baseline.json').write_text(json.dumps(result,indent=2))
-    print('Both packaged hosts match the installed Framework release; build baseline recorded.')
+    print('Both packaged hosts match the pinned Framework snapshot; build baseline recorded.')
 
 if __name__=='__main__':main()

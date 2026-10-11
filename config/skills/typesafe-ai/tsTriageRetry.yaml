@@ -1,0 +1,33 @@
+name: tsTriageRetry
+description: Evaluate support-contact judgments; no ticket routing or customer action.
+model: typesafeTriageRetry
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  additionalProperties: false
+typesafe:
+  state: ${/input/context}
+  questions:
+    department:
+      type: choice
+      instructions: Which support team should review this contact?
+      criteria:
+        billing: Charges, invoices and refunds
+        technical: Product failures
+        delivery: Shipment and delivery problems
+        other: None of the listed teams
+    repeat:
+      type: noul
+      instructions: Does the customer describe a previous support attempt?
+    impact:
+      type: score
+      instructions: Rate the reported loss of functionality.
+      criteria:
+      - No loss of functionality
+      - Some functions impaired
+      - Core operation blocked

@@ -1,0 +1,414 @@
+[
+  {
+    "name": "at_threshold",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "ASSESSED",
+      "reason": "SUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.8,
+      "impactScore": 1.0,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "below_threshold",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.799
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INSUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.799,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "configured_threshold",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.77
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.75,
+    "expected": {
+      "status": "ASSESSED",
+      "reason": "SUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.77,
+      "impactScore": 1.0,
+      "evidenceThreshold": 0.75
+    }
+  },
+  {
+    "name": "boolean_evidence",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": true
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": null,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "string_evidence",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": "0.99"
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": null,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "negative_evidence",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": -0.1
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": null,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "excess_evidence",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 1.1
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": null,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "missing_evidence",
+    "answers": {
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": null,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "string_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": "1",
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": 0.8,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "boolean_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": true,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": 0.8,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "invalid_distribution",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.5,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": 0.8,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "inconsistent_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": 2.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": 0.8,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "missing_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INVALID_JUDGMENTS",
+      "evidenceProbability": 0.8,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "unused_malformed_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.1
+      },
+      "impact": "malformed"
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "NEEDS_CLARIFICATION",
+      "reason": "INSUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.1,
+      "impactScore": null,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "fractional_score",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": 0.5,
+        "confidence": 0.25,
+        "probabilities": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.0
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "ASSESSED",
+      "reason": "SUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.8,
+      "impactScore": 0.5,
+      "evidenceThreshold": 0.8
+    }
+  },
+  {
+    "name": "extended_answer",
+    "answers": {
+      "impactEvidence": {
+        "type": "noul",
+        "noul": 0.8
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.0,
+        "confidence": 1.0,
+        "probabilities": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0
+        },
+        "providerExtension": {
+          "kept": true
+        }
+      }
+    },
+    "threshold": 0.8,
+    "expected": {
+      "status": "ASSESSED",
+      "reason": "SUFFICIENT_EVIDENCE",
+      "evidenceProbability": 0.8,
+      "impactScore": 1.0,
+      "evidenceThreshold": 0.8
+    }
+  }
+]

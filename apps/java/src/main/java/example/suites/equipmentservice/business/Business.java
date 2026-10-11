@@ -1,4 +1,4 @@
-package example.equipment;
+package example.suites.equipmentservice.business;
 
 import ai.loomspan.api.*;
 import tools.jackson.databind.json.JsonMapper;
@@ -39,7 +39,7 @@ public class Business {
         return c;
     }
 
-    Map<String, Object> read(String text) {
+    public Map<String, Object> read(String text) {
         return json.readValue(text, Map.class);
     }
 
@@ -56,7 +56,7 @@ public class Business {
                 .toString();
     }
 
-    void scoped(String asset) {
+    public void scoped(String asset) {
         if (!Set.of("maya", "luis").contains(user()) || !Set.of("NB-P240-017", "NB-P240-018").contains(asset))
             throw new org.springframework.security.access.AccessDeniedException("site scope denied");
     }
@@ -76,62 +76,55 @@ public class Business {
         return value;
     }
 
-    @SkillMethod(description = "Retrieve registered asset identity, site access and approval-routing facts; directory facts never grant caller permissions.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> assetContext(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         var value = fetch("assetContext", caseId, assetId);
         if (!assetId.equals(((Map<?, ?>) value.get("data")).get("assetId")))
             throw new IllegalArgumentException("Registered asset context unavailable");
         return value;
     }
 
-    @SkillMethod(description = "Retrieve versioned work orders, recurrence and maintenance observations.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> serviceHistory(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         return fetch("serviceHistory", caseId, assetId);
     }
 
-    @SkillMethod(description = "Retrieve applicable manufacturer manual and bulletin passages.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> referenceEvidence(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         return fetch("referenceEvidence", caseId, assetId);
     }
 
-    @SkillMethod(description = "Retrieve warranty certificate, service agreement and rates.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> serviceTerms(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         return fetch("serviceTerms", caseId, assetId);
     }
 
-    @SkillMethod(description = "Check compatible parts and qualified attendance offers, without reservation.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> serviceResources(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         return fetch("serviceResources", caseId, assetId);
     }
 
-    @SkillMethod(description = "Check compatible loaner and replacement offers, without commitment.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> continuityOptions(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         return fetch("continuityOptions", caseId, assetId);
     }
 
-    @SkillMethod(description = "Evaluate date eligibility and documented findings; model hypotheses are not findings.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> entitlements(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId) {
+            String caseId,
+            String assetId) {
         var result = fetch("entitlements", caseId, assetId);
         var terms = data(caseId, "serviceTerms");
         var cert = (Map<String, Object>) terms.get("certificate");
@@ -152,11 +145,10 @@ public class Business {
         return result;
     }
 
-    @SkillMethod(description = "Calculate authoritative conditional amounts for checked service strategies.")
     @RolesAllowed("ASSESS_EQUIPMENT")
     public Map<String, Object> quoteOptions(
-            @SkillParam(description = "Case correlation identifier supplied by the caller.") String caseId,
-            @SkillParam(description = "Registered asset identifier; does not grant caller authority.") String assetId)
+            String caseId,
+            String assetId)
             throws Exception {
         scoped(assetId);
         var terms = data(caseId, "serviceTerms");
@@ -218,7 +210,7 @@ public class Business {
                 "entitlement", entitlement);
     }
 
-    String saveAssessment(String execution, String result) throws Exception {
+    public String saveAssessment(String execution, String result) throws Exception {
         var value = read(result);
         scoped((String) value.get("assetId"));
         for (String key : List.of("uncertainty", "quotes", "selectedOption", "acceptedRisk", "nextDecision",
@@ -261,10 +253,9 @@ public class Business {
             RepairScope scope, int cap, String idempotencyKey, boolean approved) {
     }
 
-    @SkillMethod(description = "Deterministically record explicit authorized approval and a pending-dispatch request. Requires immutable assessment and matching quote.")
     @RolesAllowed("REQUEST_SERVICE")
     public synchronized Map<String, Object> createServiceRequest(
-            @SkillParam(description = "Explicit caller approval bound to an immutable assessment and issued quote; cap is integer USD cents. Authority is verified independently.") Approval approval)
+            Approval approval)
             throws Exception {
         var approvedInput = read(encode(approval));
         if (!user().equals("luis"))

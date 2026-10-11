@@ -1,0 +1,39 @@
+name: tsTriageDynamic
+description: Evaluate support-contact judgments; no ticket routing or customer action.
+model: typesafeTriage
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+    candidates:
+      type: object
+      additionalProperties: true
+    noulCriteria:
+      type: object
+      additionalProperties: true
+    parameters:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  - candidates
+  - noulCriteria
+  - parameters
+  additionalProperties: false
+typesafe:
+  state: ${/input/context}
+  questions:
+    department:
+      type: choice
+      instructions: Which support team should review this contact?
+      criteria: ${/input/candidates}
+    repeat:
+      type: noul
+      instructions: Does the customer describe a previous support attempt?
+      criteria: ${/input/noulCriteria}
+    impact:
+      type: score
+      instructions: Rate the reported loss of functionality.
+      criteria: ${/input/parameters/levels}

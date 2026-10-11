@@ -36,12 +36,12 @@ def load_reference(root=ROOT):
         if source_hash((root / name).read_bytes()) != expected:
             raise ValueError('Reference source changed; explicit fixture review required: ' + name)
     for name, expected in manifest['skillContracts'].items():
-        if contract_hash((root / 'config/skills' / (name + '.yaml')).read_bytes()) != expected:
+        if contract_hash((root / 'config/skills/equipment-service' / (name + '.yaml')).read_bytes()) != expected:
             raise ValueError('Skill contract changed; explicit fixture review required: ' + name)
     for host in ['java', 'sidecar']:
         models = yaml.safe_load((root / 'config' / (host + '.yaml')).read_bytes())['loomspan']['models']
         for name, expected in manifest['skillModels'].items():
-            skill = yaml.safe_load((root / 'config/skills' / (name + '.yaml')).read_bytes())
+            skill = yaml.safe_load((root / 'config/skills/equipment-service' / (name + '.yaml')).read_bytes())
             if models[skill['model']]['provider-model'] != expected or skill.get('thinking_level') != manifest['reasoning']:
                 raise ValueError('Reference model assignment changed: ' + host + '/' + name)
     return manifest, {name: json.loads((directory / (name + '.json')).read_bytes()) for name in manifest['scenarios']}

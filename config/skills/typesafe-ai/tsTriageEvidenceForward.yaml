@@ -1,0 +1,27 @@
+name: tsTriageEvidenceForward
+description: Demonstrate native evidence handoff to an application impact policy.
+model: coordination
+thinking_level: medium
+planning_mode: true
+max_steps: 1
+prompt: Have tsTriageEvidence assess the supplied contact. Preserve its judgments
+  for the application policy.
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  additionalProperties: false
+allowed_skills:
+- name: tsTriageEvidence
+  required: true
+  max_tasks: 1
+  input_bindings:
+    /context:
+      from: input
+      path: /context
+output_from:
+  skill: tsTriageEvidence
