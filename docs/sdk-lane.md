@@ -20,9 +20,12 @@ From this suite checkout:
 ```
 
 `local` selects `foundation-smoke`, `blocking-client`, `shutdown-completion`,
-`shutdown-cutoff` and `deployment-transport-baseline`. It runs root `clean verify`
+`shutdown-cutoff`, `deployment-transport-baseline`, `local-issuance-roles`,
+`local-ownership`, `local-restart`, `local-trust-recovery` and `local-queue-expiry`.
+It runs root `clean verify`
 (including tests), SDK `clean install`, packages the plain Java driver with its
-runtime dependencies, and builds the actual checkout's Dockerfile. Its own
+runtime dependencies, packages `sdk/reference-app` against the locally installed
+SDK Spring Boot starter, and builds the actual checkout's Dockerfile. Its baseline
 two-service Compose project uses an internal network, temporary file configuration
 and tmpfs database, and a deterministic OpenAI/REST fixture. Only the fixed lost-response proxy forwards a
 submission, to one Sidecar path; model requests never reach a provider.
@@ -71,8 +74,8 @@ supplied Caddy with the shipped fixed-upstream/header policy. A separate namespa
 client checks ingress, redirect origin, normalized headers and backend refusal. It
 does not test certificate persistence, issuance, replacement, renewal or reload.
 These are deployment baselines, not full Standard/Hardened SDK recipes or SDK Spring
-callback authentication. PRs 8.1.5–8.1.8 retain the form-login app, issuance,
-callback authorization, bidirectional TLS/mTLS, signing and rotation obligations.
+callback authentication. Later tickets retain callback authorization,
+bidirectional TLS/mTLS, provided signing and trusted-group rotation obligations.
 
 `standard` and `hardened` are recognized but currently have no scenarios. They
 exit nonzero with `no-scenarios-for-recipe` and write explicit failed evidence.
@@ -82,7 +85,8 @@ Every valid invocation creates `evidence/sdk/<unique-run-id>/report.json`. Use
 `--output NEW_DIRECTORY` to select a different new destination; existing directories
 are refused. Reports include recipe/scenarios, Git revision and dirty state,
 packaged Sidecar SHA-256, Framework version read from the packaged JAR, SDK
-coordinates/hashes, the consumer JAR hash, each build/runtime stage with elapsed seconds and total duration, explicit passed
+coordinates/hashes, both consumer JAR hashes, suite source revision/dirty state,
+shipped sample hash, each build/runtime stage with elapsed seconds and total duration, explicit passed
 scenario results, readiness,
 driver outcome booleans, independent request/effect counters, graceful exit and cleanup.
 Unavailable identities remain null. A dirty revision is identified by its build
@@ -120,3 +124,46 @@ build (306.614s), SDK reactor (29.542s) and driver (6.308s). TERM process exits 
 The [Sidecar ownership inventory](../../loomspan-sidecar/docs/verification.md)
 accounts for retired duplicate checks and distinguishes historical costs, failed
 attempts and future full-recipe obligations.
+
+
+## Local form-login and colocated integration
+
+The Local app scenario group derives Compose from the supplied Sidecar checkout's
+`examples/quickstart/compose.yaml`; evidence records its hash. It retains Sidecar's
+loopback/colocated environment, UID 10001 and read-only public-key mount. The clean
+Java app and deterministic fixture share Sidecar's namespace, with no host ports and
+an internal network. The harness prepares one unique external key volume at UID
+10001/mode 0700 before startup. App startup depends on Sidecar being started, because
+the app must export JWKS before trust becomes ready. Test substitutions replace the
+Python host, omit ingress/operational/mail placeholders, and supply temporary file-mode
+skills, local models, one worker and tmpfs database. No business configuration is mounted.
+
+Real Spring form login and CSRF establish Alice/Bob's exact `ROLE_ORDER_EDITOR`
+authority and the negative user's `ORDER_EDITOR`. Fixed controller operations call
+the SDK directly over loopback, issue a fresh credential per request, and propagate
+only Sidecar HTTP statuses on failure. Assertions cover completion, exact-role 403
+without dispatch, different-subject 404 and fresh-owner polling. A separately scoped
+SDK capture client sends one credential to a fixed discovery fixture; its value stays
+in fixture memory and can only be probed against the fixed Sidecar catalog path.
+
+App-only restart changes the public kid and proves old-credential 401/new acceptance.
+A disposable operator retains only public JWKS in memory, injects empty trust, observes
+status-only readiness 503/authentication 401, atomically restores the file and observes
+both recover. A model barrier holds the single worker while a two-second SDK credential
+is observed QUEUED; fresh authenticated polls do not extend it. After release, the exact
+`execution credential expired before start` failure and a separate zero effect counter
+prove non-dispatch, including a quiet observation after recovery. All waits are bounded.
+Cleanup attempts project teardown and explicit removal of its external key volume.
+No callback authorization or TLS recipe completion is claimed by this Local group.
+
+
+Current complete Local evidence: [report 20261018T222714Z-48aad3a2b736](../evidence/sdk/20261018T222714Z-48aad3a2b736/report.json)
+passes all ten scenarios, builds and cleanup in 518.105s. Root components:
+61 classes / 261 tests, zero failures/errors/skips; focused harness: 66 passed;
+full safe Python suite: 176 passed. Ruff/diff checks and independent exact-label
+resource/external-key-volume absence checks passed. The report records both source
+revisions/dirty state, Sidecar/SDK/plain-Java/Boot hashes and shipped sample hash.
+The initial [failed report](../evidence/sdk/20261018T221808Z-eef7285741cc/report.json)
+retains its Local readiness failure and not-run outcomes; the initial fixture's
+unsupported connection key was replaced with beta.8 `request-timeout` before the
+fresh complete run. No operational/reference data reset or provider call occurred.

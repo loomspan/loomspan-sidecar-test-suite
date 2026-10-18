@@ -259,7 +259,140 @@ class LossHandler(BaseHTTPRequestHandler):
             self.connection.close()
 
 
-if __name__ == "__main__":
+class LocalServer(ThreadingHTTPServer):
+    """Fixed colocated model, effect, barrier and in-memory credential boundary."""
+
+    def __init__(self, address, destination=("127.0.0.1", 8080)):
+        super().__init__(address, LocalHandler)
+        self.destination = destination
+        self.credential = None
+        self.lock = threading.Lock()
+        self.entered = threading.Event()
+        self.release = threading.Event()
+        self.effects = 0
+        self.models = 0
+
+    def server_close(self):
+        self.release.set()
+        self.credential = None
+        super().server_close()
+
+
+class LocalHandler(Handler):
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(3)
+
+    def do_GET(self):
+        if self.path == "/capture/v1/skills":
+            credential = self.headers.get("Authorization", "")
+            if not credential.startswith("Bearer ") or not 8 < len(credential) <= 16384:
+                self.respond(400, {})
+                return
+            with self.server.lock:
+                self.server.credential = credential
+            self.respond(200, [])
+        elif self.path == "/probe":
+            with self.server.lock:
+                credential = self.server.credential
+            if credential is None:
+                self.respond(409, {})
+                return
+            connection = HTTPConnection(*self.server.destination, timeout=3)
+            try:
+                connection.request(
+                    "GET", "/v1/skills", headers={"Authorization": credential}
+                )
+                response = connection.getresponse()
+                status = response.status
+                response.read(1024 * 1024)
+            except (OSError, ValueError):
+                self.respond(502, {})
+                return
+            finally:
+                connection.close()
+            self.respond(200, {"status": status})
+        elif self.path == "/status":
+            with self.server.lock:
+                value = {
+                    "entered": self.server.entered.is_set(),
+                    "effects": self.server.effects,
+                    "models": self.server.models,
+                }
+            self.respond(200, value)
+        else:
+            self.respond(404, {})
+
+    def do_POST(self):
+        routes = (
+            "/model/chat/completions",
+            "/block/chat/completions",
+            "/effect",
+            "/release",
+            "/reset",
+        )
+        if self.path not in routes:
+            self.respond(404, {})
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            self.respond(400, {})
+            return
+        if not 0 <= length <= 1024 * 1024:
+            self.respond(413, {})
+            return
+        self.rfile.read(length)
+        if self.path == "/release":
+            self.server.release.set()
+            self.respond(200, {})
+            return
+        if self.path == "/reset":
+            self.server.entered.clear()
+            self.server.release.clear()
+            with self.server.lock:
+                self.server.effects = self.server.models = 0
+                self.server.credential = None
+            self.respond(200, {})
+            return
+        if self.path == "/effect":
+            with self.server.lock:
+                self.server.effects += 1
+            self.respond(200, {"effect": "recorded"})
+            return
+        with self.server.lock:
+            self.server.models += 1
+        if self.path == "/block/chat/completions":
+            self.server.entered.set()
+            if not self.server.release.wait(30):
+                self.respond(504, {})
+                return
+        self.respond(
+            200,
+            {
+                "id": "local-fixture",
+                "object": "chat.completion",
+                "created": 0,
+                "model": "fixture",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": "fixture result"},
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 1,
+                    "total_tokens": 2,
+                },
+            },
+        )
+
+
+if __name__ == "__main__" and os.environ.get("SDK_LOCAL") == "1":
+    LocalServer(("127.0.0.1", 8090)).serve_forever()
+elif __name__ == "__main__":
     fixture = FixtureServer((os.environ.get("SDK_FIXTURE_BIND", "0.0.0.0"), 8080))
     proxy = LossProxy(("0.0.0.0", 8081), fixture)
     threading.Thread(target=proxy.serve_forever, daemon=True).start()

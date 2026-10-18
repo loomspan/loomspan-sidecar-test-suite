@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import yaml
 
-from sdk_lane import transport
+from sdk_lane import local, transport
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +31,7 @@ RECIPES = {
         "shutdown-completion",
         "shutdown-cutoff",
         "deployment-transport-baseline",
+        *local.SCENARIOS,
     ],
     "standard": [],
     "hardened": [],
@@ -42,6 +43,7 @@ STAGES = (
     "sdkBuild",
     "artifacts",
     "driverBuild",
+    "referenceAppBuild",
     "imageBuild",
     "startup",
     "readiness",
@@ -52,6 +54,12 @@ STAGES = (
     "shutdownCompletion",
     "shutdownCutoff",
     "deploymentTransport",
+    "localStartup",
+    "localIssuance",
+    "localRestart",
+    "localTrust",
+    "localQueue",
+    "localCleanup",
     "cleanup",
 )
 
@@ -113,6 +121,10 @@ def stage(report, name, action):
         "shutdownCompletion": "shutdown-completion",
         "shutdownCutoff": "shutdown-cutoff",
         "deploymentTransport": "deployment-transport-baseline",
+        "localIssuance": "local-issuance-roles",
+        "localRestart": "local-restart",
+        "localTrust": "local-trust-recovery",
+        "localQueue": "local-queue-expiry",
     }.get(name)
     started = time.monotonic()
     report["stages"][name] = {"status": "running"}
@@ -679,6 +691,7 @@ def build_checkout(report, checkout):
     def prepare():
         maven = preflight(checkout)
         report["source"] = revision(checkout)
+        report["suiteSource"] = revision(ROOT)
         return maven
 
     maven = stage(report, "preflight", prepare)
@@ -722,6 +735,23 @@ def build_checkout(report, checkout):
 
     report["driver"] = stage(report, "driverBuild", driver_build)
 
+    def reference_build():
+        version = identity["sdk"][0]["coordinate"].rsplit(":", 1)[1]
+        command(
+            base
+            + [
+                ROOT / "sdk/reference-app/pom.xml",
+                f"-Dsdk.version={version}",
+                "clean",
+                "package",
+            ],
+            cwd=ROOT,
+            timeout=300,
+        )
+        return {"sha256": digest(find_jar(ROOT / "sdk/reference-app/target"))}
+
+    report["referenceApp"] = stage(report, "referenceAppBuild", reference_build)
+
 
 def run_smoke(report, checkout, directory):
     runtime = Runtime(directory, checkout, "sdk-" + uuid.uuid4().hex[:16])
@@ -746,7 +776,47 @@ def run_smoke(report, checkout, directory):
         report["deploymentTransport"] = stage(
             report, "deploymentTransport", runtime.deployment_transport
         )
-        report["scenarioResults"] = {name: "passed" for name in report["scenarios"]}
+        local_runtime = local.Runtime(
+            directory / "local",
+            checkout,
+            ROOT,
+            runtime.project,
+            runtime.image,
+            command,
+            LaneFailure,
+        )
+        report["localRecipe"] = {
+            "sampleSha256": local_runtime.sample_hash,
+            "project": local_runtime.project,
+            "keyVolume": local_runtime.volume,
+        }
+        local_failure = None
+        try:
+            stage(report, "localStartup", local_runtime.start)
+            report["localRecipe"]["issuance"] = stage(
+                report, "localIssuance", lambda: local_runtime.probe("issuance")
+            )
+            report["scenarioResults"]["local-ownership"] = "passed"
+            report["localRecipe"]["restart"] = stage(
+                report, "localRestart", local_runtime.restart
+            )
+            report["localRecipe"]["trust"] = stage(
+                report, "localTrust", lambda: local_runtime.probe("trust")
+            )
+            report["localRecipe"]["queue"] = stage(
+                report, "localQueue", lambda: local_runtime.probe("queue")
+            )
+        except BaseException as failure:
+            local_failure = failure
+            raise
+        finally:
+            try:
+                stage(report, "localCleanup", local_runtime.cleanup)
+            except Exception:
+                if local_failure is None:
+                    raise LaneFailure("local-cleanup-failed") from None
+        if any(value != "passed" for value in report["scenarioResults"].values()):
+            raise LaneFailure("incomplete-scenario-results")
         report["status"] = "passed"
     finally:
         try:
@@ -781,10 +851,13 @@ def main(argv=None):
         "scenarioResults": {name: "not-run" for name in RECIPES[args.recipe]},
         "status": "failed",
         "source": {"revision": None, "dirty": None},
+        "suiteSource": {"revision": None, "dirty": None},
         "frameworkVersion": None,
         "sidecarJarSha256": None,
         "sdk": None,
         "driver": None,
+        "referenceApp": None,
+        "localRecipe": None,
         "readiness": None,
         "startupFixture": None,
         "blockingClient": None,

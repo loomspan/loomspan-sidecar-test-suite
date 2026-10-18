@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 
 import run_sdk as runner
-from sdk_lane.fixture import FixtureServer, LossProxy
+from sdk_lane.fixture import FixtureServer, LocalServer, LossProxy
 
 
 SENTINELS = ("secret-provider-123", "PRIVATE-KEY-456", "business-payload-789")
@@ -37,6 +37,13 @@ def checkout(tmp_path):
     (root / "Dockerfile").touch()
     (root / "sdks/java").mkdir(parents=True)
     (root / "sdks/java/pom.xml").touch()
+    sample = root / "examples/quickstart/compose.yaml"
+    sample.parent.mkdir(parents=True)
+    sample.write_bytes(
+        (
+            runner.ROOT.parent / "loomspan-sidecar/examples/quickstart/compose.yaml"
+        ).read_bytes()
+    )
     target = root / "target"
     target.mkdir()
     with zipfile.ZipFile(target / "sidecar.jar", "w") as archive:
@@ -74,17 +81,23 @@ def fake_lane(monkeypatch, tmp_path):
     original_find = runner.find_jar
     driver = tmp_path / "driver.jar"
     driver.write_bytes(b"plain-java-driver")
+    boot = tmp_path / "boot.jar"
+    boot.write_bytes(b"boot-reference")
     monkeypatch.setattr(
         runner,
         "find_jar",
         lambda directory: driver
         if directory == runner.ROOT / "sdk/driver/target"
+        else boot
+        if directory == runner.ROOT / "sdk/reference-app/target"
         else original_find(directory),
     )
 
     class Runtime:
         def __init__(self, directory, checkout, project):
             assert project.startswith("sdk-")
+            self.project = project
+            self.image = "fixture-image"
 
         def image_build(self):
             calls.append("imageBuild")
@@ -135,6 +148,27 @@ def fake_lane(monkeypatch, tmp_path):
             calls.append("cleanup")
 
     monkeypatch.setattr(runner, "Runtime", Runtime)
+
+    class LocalRuntime:
+        def __init__(self, directory, checkout, root, project, image, call, failure):
+            self.project = project + "-local"
+            self.volume = self.project + "-keys"
+            self.sample_hash = "b" * 64
+
+        def start(self):
+            calls.append("localStartup")
+
+        def probe(self, name):
+            calls.append("local-" + name)
+            return runner.local.RESULTS[name]
+
+        def restart(self):
+            return self.probe("restart") | {"kidChanged": True}
+
+        def cleanup(self):
+            calls.append("localCleanup")
+
+    monkeypatch.setattr(runner.local, "Runtime", LocalRuntime)
     return calls
 
 
@@ -144,6 +178,346 @@ def invoke(checkout, tmp_path, recipe="local"):
         [recipe, "--sidecar-checkout", str(checkout), "--output", str(output)]
     )
     return code, json.loads((output / "report.json").read_bytes())
+
+
+def test_local_recipe_builds_boot_consumer_and_records_colocated_scenarios(
+    checkout, tmp_path, fake_lane
+):
+    code, report = invoke(checkout, tmp_path)
+    assert code == 0
+    commands = [item[0] for item in fake_lane if isinstance(item, tuple)]
+    assert any(
+        str(runner.ROOT / "sdk/reference-app/pom.xml") in args for args in commands
+    )
+    assert report["referenceApp"]["sha256"]
+    assert report["suiteSource"]["revision"]
+    assert report["localRecipe"]["sampleSha256"]
+    for name in (
+        "local-issuance-roles",
+        "local-ownership",
+        "local-restart",
+        "local-trust-recovery",
+        "local-queue-expiry",
+    ):
+        assert report["scenarioResults"][name] == "passed"
+
+
+def test_local_composition_preserves_shipped_colocated_boundary(checkout, tmp_path):
+    document, source_hash = runner.local.composition(
+        checkout, runner.ROOT, tmp_path, "unique-image", "unique-keys"
+    )
+    sidecar = document["services"]["sidecar"]
+    host = document["services"]["host"]
+    assert sidecar["user"] == host["user"] == "10001:10001"
+    assert sidecar["environment"]["SERVER_ADDRESS"] == "127.0.0.1"
+    assert sidecar["environment"]["LOOMSPAN_SIDECAR_TRUST_MODE"] == "colocated"
+    assert (
+        sidecar["environment"]["LOOMSPAN_SIDECAR_TRUST_COLOCATED_KEY_DIRECTORY"]
+        == "/sidecar/keys"
+    )
+    assert "sidecar-keys:/sidecar/keys:ro" in sidecar["volumes"]
+    assert "sidecar-keys:/keys" in host["volumes"]
+    assert host["network_mode"] == "service:sidecar"
+    assert host["depends_on"]["sidecar"]["condition"] == "service_started"
+    assert document["networks"]["sdk"]["internal"]
+    assert document["volumes"] == {
+        "sidecar-keys": {"external": True, "name": "unique-keys"}
+    }
+    assert all("ports" not in service for service in document["services"].values())
+    serialized = json.dumps(document)
+    assert all(
+        value not in serialized
+        for value in ("docker.sock", ".runtime", "SMTP", "PASSWORD", "ingress")
+    )
+    sample = checkout / "examples/quickstart/compose.yaml"
+    changed = yaml.safe_load(sample.read_bytes())
+    changed["services"]["sidecar"]["healthcheck"]["interval"] = "7s"
+    sample.write_text(yaml.safe_dump(changed))
+    actual, changed_hash = runner.local.composition(
+        checkout, runner.ROOT, tmp_path, "unique-image", "unique-keys"
+    )
+    assert actual["services"]["sidecar"]["healthcheck"]["interval"] == "7s"
+    assert source_hash != changed_hash
+    sample.unlink()
+    with pytest.raises(FileNotFoundError):
+        runner.local.composition(
+            checkout, runner.ROOT, tmp_path, "unique-image", "unique-keys"
+        )
+
+
+def test_local_capture_and_probe_keep_credentials_in_memory(capsys):
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    seen = []
+
+    class Destination(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            seen.append((self.path, self.headers.get("Authorization")))
+            self.send_response(200)
+            self.send_header("Content-Length", "2")
+            self.end_headers()
+            self.wfile.write(b"[]")
+
+    backend = ThreadingHTTPServer(("127.0.0.1", 0), Destination)
+    fixture = LocalServer(("127.0.0.1", 0), ("127.0.0.1", backend.server_port))
+    threads = [
+        threading.Thread(target=server.serve_forever, daemon=True)
+        for server in (backend, fixture)
+    ]
+    for thread in threads:
+        thread.start()
+    token = "Bearer " + SENTINELS[0]
+    responses = []
+    try:
+        with httpx.Client(trust_env=False, timeout=3) as client:
+            base = f"http://127.0.0.1:{fixture.server_port}"
+            assert client.get(base + "/probe").status_code == 409
+            assert client.get(base + "/capture/v1/skills").status_code == 400
+            response = client.get(
+                base + "/capture/v1/skills", headers={"Authorization": token}
+            )
+            assert response.status_code == 200 and response.json() == []
+            responses.append(response.text)
+            response = client.get(base + "/probe")
+            assert response.json() == {"status": 200}
+            responses.append(response.text)
+            assert seen == [("/v1/skills", token)]
+            for route in (
+                "/headers",
+                "/probe?url=http://example.invalid",
+                "/capture/arbitrary",
+            ):
+                assert (
+                    client.get(
+                        base + route, headers={"Authorization": token}
+                    ).status_code
+                    == 404
+                )
+            # Send the oversized declared length without transmitting its body:
+            # rejection happens at headers, avoiding platform TCP reset races.
+            from http.client import HTTPConnection
+
+            oversized = HTTPConnection("127.0.0.1", fixture.server_port, timeout=3)
+            oversized.putrequest("POST", "/effect")
+            oversized.putheader("Content-Length", str(1024 * 1024 + 1))
+            oversized.endheaders()
+            assert oversized.getresponse().status == 413
+            oversized.close()
+            assert client.get(base + "/status").json()["effects"] == 0
+            client.post(base + "/reset", json={})
+            assert fixture.credential is None
+            assert client.get(base + "/probe").status_code == 409
+        assert all(
+            value not in str(responses) + str(capsys.readouterr())
+            for value in SENTINELS
+        )
+    finally:
+        for server in (backend, fixture):
+            server.shutdown()
+            server.server_close()
+        for thread in threads:
+            thread.join(timeout=2)
+    assert fixture.credential is None
+
+
+def test_local_queue_fixture_has_bounded_barrier_and_independent_effect_count(capsys):
+    fixture = LocalServer(("127.0.0.1", 0))
+    server = threading.Thread(target=fixture.serve_forever, daemon=True)
+    server.start()
+    completed = threading.Event()
+    errors = []
+
+    def blocker():
+        try:
+            with httpx.Client(trust_env=False, timeout=4) as client:
+                assert (
+                    client.post(
+                        base + "/block/chat/completions", content=SENTINELS[2]
+                    ).status_code
+                    == 200
+                )
+                completed.set()
+        except BaseException as error:
+            errors.append(type(error).__name__)
+
+    base = f"http://127.0.0.1:{fixture.server_port}"
+    worker = threading.Thread(target=blocker)
+    try:
+        worker.start()
+        assert fixture.entered.wait(2)
+        assert not completed.is_set()
+        with httpx.Client(trust_env=False, timeout=3) as client:
+            assert client.get(base + "/status").json() == {
+                "entered": True,
+                "models": 1,
+                "effects": 0,
+            }
+            client.post(base + "/release", json={})
+            assert completed.wait(2)
+            client.post(base + "/effect", json={})
+            assert client.get(base + "/status").json()["effects"] == 1
+            assert client.post(base + "/unknown", json={}).status_code == 404
+            client.post(base + "/reset", json={})
+            assert client.get(base + "/status").json() == {
+                "entered": False,
+                "models": 0,
+                "effects": 0,
+            }
+        assert not errors
+        assert all(value not in str(capsys.readouterr()) for value in SENTINELS)
+    finally:
+        fixture.release.set()
+        worker.join(timeout=2)
+        fixture.shutdown()
+        fixture.server_close()
+        server.join(timeout=2)
+
+
+@pytest.mark.parametrize(
+    "phase", ["start", "issuance", "restart", "trust", "queue", "cleanup", "interrupt"]
+)
+def test_local_failures_and_interruptions_clean_unique_resources_without_secrets(
+    checkout, tmp_path, fake_lane, monkeypatch, capsys, phase
+):
+    original = runner.local.Runtime.probe
+
+    def fail(*args):
+        if phase == "interrupt":
+            raise KeyboardInterrupt(SENTINELS[0])
+        raise runner.LaneFailure("local-fixture-failed")
+
+    if phase in ("start", "cleanup", "restart"):
+        monkeypatch.setattr(runner.local.Runtime, phase, fail)
+    else:
+
+        def probe(self, name):
+            if name == phase or phase == "interrupt":
+                fail()
+            return original(self, name)
+
+        monkeypatch.setattr(runner.local.Runtime, "probe", probe)
+    code, report = invoke(checkout, tmp_path)
+    assert code == 1
+    assert report["diagnostic"] in (
+        "local-fixture-failed",
+        "local-cleanup-failed",
+        "interrupted",
+    )
+    assert report["stages"]["localCleanup"]["status"] in ("passed", "failed")
+    assert fake_lane[-1] == "cleanup"
+    assert all(
+        value not in json.dumps(report) + str(capsys.readouterr())
+        for value in SENTINELS
+    )
+    assert (
+        not all(result == "passed" for result in report["scenarioResults"].values())
+        or phase == "cleanup"
+    )
+
+
+def test_local_runtime_prepares_and_removes_only_unique_external_volume(
+    checkout, tmp_path
+):
+    calls = []
+    instance = runner.local.Runtime(
+        tmp_path / "local",
+        checkout,
+        runner.ROOT,
+        "sdk-unique",
+        "image",
+        lambda args, **kwargs: calls.append(args),
+        runner.LaneFailure,
+    )
+
+    # Inspect initialization before deliberately stopping startup at Compose.
+    def call(args, **kwargs):
+        calls.append(args)
+        if "up" in args:
+            raise runner.LaneFailure("startup-failed")
+
+    instance.call = call
+    with pytest.raises(runner.LaneFailure):
+        instance.start()
+    instance.cleanup()
+    assert calls[0] == [
+        "docker",
+        "volume",
+        "create",
+        "--label",
+        "com.docker.compose.project=sdk-unique-local",
+        "sdk-unique-local-keys",
+    ]
+    assert calls[-1] == ["docker", "volume", "rm", "sdk-unique-local-keys"]
+    assert "chown 10001:10001 /keys && chmod 0700 /keys" in calls[1]
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        {},
+        {"formLogin": True},
+        {**runner.local.RESULTS["issuance"], "csrf": False},
+        {**runner.local.RESULTS["issuance"], "csrf": 1},
+    ],
+)
+def test_local_partial_or_false_results_fail(checkout, tmp_path, result):
+    instance = runner.local.Runtime(
+        tmp_path / "local",
+        checkout,
+        runner.ROOT,
+        "sdk-unique",
+        "image",
+        lambda *args, **kwargs: json.dumps(result),
+        runner.LaneFailure,
+    )
+    with pytest.raises(runner.LaneFailure, match="local-issuance-invalid-result"):
+        instance.probe("issuance")
+
+
+def test_local_cleanup_failure_preserves_primary_failure(
+    checkout, tmp_path, fake_lane, monkeypatch
+):
+    def primary(*args):
+        raise runner.LaneFailure("local-primary-failed")
+
+    def cleanup(*args):
+        raise runner.LaneFailure("local-secondary-failed")
+
+    monkeypatch.setattr(runner.local.Runtime, "probe", primary)
+    monkeypatch.setattr(runner.local.Runtime, "cleanup", cleanup)
+    code, report = invoke(checkout, tmp_path)
+    assert code == 1 and report["diagnostic"] == "local-primary-failed"
+    assert report["stages"]["localCleanup"]["status"] == "failed"
+    assert fake_lane[-1] == "cleanup"
+
+
+def test_local_helper_cleanup_failure_still_attempts_teardown_and_volume(
+    checkout, tmp_path
+):
+    calls = []
+
+    def call(args, **kwargs):
+        calls.append(args)
+        if args[:3] == ["docker", "ps", "-aq"]:
+            raise runner.LaneFailure("helper-list-failed")
+        return ""
+
+    instance = runner.local.Runtime(
+        tmp_path / "local",
+        checkout,
+        runner.ROOT,
+        "sdk-unique",
+        "image",
+        call,
+        runner.LaneFailure,
+    )
+    with pytest.raises(runner.LaneFailure, match="helper-list-failed"):
+        instance.cleanup()
+    assert "down" in calls[-2]
+    assert calls[-1] == ["docker", "volume", "rm", "sdk-unique-local-keys"]
 
 
 def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(

@@ -1,0 +1,17 @@
+server:
+  address: 127.0.0.1
+  port: 8081
+loomspan-sdk:
+  base-url: http://127.0.0.1:8080
+  response-timeout: 3s
+  signing:
+    mode: colocated
+    colocated:
+      key-directory: /keys
+  issuance:
+    issuer: loomspan-app
+    lifetime: 5m
+    roles: [ROLE_ORDER_EDITOR, ORDER_EDITOR]
+logging:
+  level:
+    root: WARN
