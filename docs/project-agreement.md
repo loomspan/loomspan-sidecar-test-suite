@@ -280,3 +280,17 @@ provider deployment. Keep the runner small, readable and formatted. The canonica
 Sidecar acceptance matrix owns the bounded test inventory. Completion includes builds,
 consumer packaging, integration, documentation and independent security review; no
 release/version/publication decisions, commit or push are authorized by this work.
+
+
+### Deployment verification ownership (2026-10-18)
+
+The Sidecar simplification ticket restores the plain-Java Local fixture using
+public JWKS/current execution JWT claims and application-port 8080 readiness.
+The same SDK runner also owns `deployment-transport-baseline`,
+`shutdown-completion` and `shutdown-cutoff`; see [SDK lane](sdk-lane.md) for evidence
+and limits. No certificate-lifecycle tests are moved here. These baselines do not
+complete the future form-login/reference-app callback or full Standard/Hardened
+recipes in Sidecar PRs 8.1.5–8.1.8. Empty recipe selectors continue to fail explicitly.
+One root Sidecar component build remains per SDK run; no recursive smoke or suite
+invocation is introduced. Business-lane configuration/data/reference packs remain
+outside this isolated SDK lane, and no development-data reset is required.

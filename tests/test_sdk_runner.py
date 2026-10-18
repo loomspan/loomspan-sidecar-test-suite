@@ -13,7 +13,7 @@ import zipfile
 import httpx
 import pytest
 import yaml
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -123,6 +123,14 @@ def fake_lane(monkeypatch, tmp_path):
                 "acceptanceUnknown": True,
             }
 
+        def shutdown_scenario(self, cutoff):
+            calls.append("shutdownCutoff" if cutoff else "shutdownCompletion")
+            return {"finished": not cutoff}
+
+        def deployment_transport(self):
+            calls.append("deploymentTransport")
+            return {"trusted": True}
+
         def cleanup(self):
             calls.append("cleanup")
 
@@ -224,6 +232,7 @@ def test_unknown_recipe_is_usage_error():
         "blocking_client",
         "shutdown",
         "fixture",
+        "deployment_transport",
         "cleanup",
     ],
 )
@@ -364,7 +373,7 @@ def test_readiness_polls_bounded_container_http_until_up(monkeypatch):
     responses = iter([None, "[]", '{"status":"UP"}'])
 
     def command(args, **kwargs):
-        assert args[-1] == "http://localhost:9091/actuator/health/readiness"
+        assert args[-1] == "http://localhost:8080/actuator/health/readiness"
         assert args[-3:-1] == ["--max-time", "2"]
         assert kwargs["timeout"] == 10
         response = next(responses)
@@ -441,12 +450,12 @@ def test_compose_has_no_provider_or_retained_data_access(tmp_path):
         == "http://fixtures:8080/v1"
     )
     assert config["loomspan-sidecar"]["configuration"]["mode"] == "file"
-    public = (tmp_path / "config/jwt-public.pem").read_text()
-    assert "PUBLIC KEY" in public and "PRIVATE KEY" not in public
+    public = json.loads((tmp_path / "config/jwks.json").read_text())
+    assert public["keys"][0]["kty"] == "RSA"
     assert instance.compose[instance.compose.index("-p") + 1] == "sdk-unique"
     assert set(path.name for path in (tmp_path / "config").iterdir()) == {
         "application.yaml",
-        "jwt-public.pem",
+        "jwks.json",
         "smoke.yaml",
         "sdkFailure.yaml",
         "sdkEffect.yaml",
@@ -458,10 +467,6 @@ def test_compose_has_no_provider_or_retained_data_access(tmp_path):
     def decode(value):
         return base64.urlsafe_b64decode(value + b"=" * (-len(value) % 4))
 
-    public_key = serialization.load_pem_public_key(public.encode())
-    public_key.verify(
-        decode(signature), header + b"." + claims, padding.PKCS1v15(), hashes.SHA256()
-    )
     claims = json.loads(decode(claims))
     assert claims["iss"] == "https://sdk.invalid"
     assert claims["aud"] == "sdk-smoke" and claims["exp"] > claims["iat"]
@@ -571,3 +576,233 @@ def test_driver_outcome_validation_and_bounded_effect_counts(monkeypatch):
     monkeypatch.setattr(runner.time, "monotonic", lambda: next(clock))
     with pytest.raises(runner.LaneFailure, match="unexpected-fixture-counts"):
         instance.fixture()
+
+
+def test_write_config_uses_current_jwks_execution_contract(tmp_path):
+    config = tmp_path / "config"
+    credentials = tmp_path / "credentials"
+    config.mkdir()
+    credentials.mkdir()
+    runner.write_config(config, credentials)
+    settings = yaml.safe_load((config / "application.yaml").read_bytes())[
+        "loomspan-sidecar"
+    ]
+    assert settings["trust"] == {"mode": "file", "file": {"jwks": "/config/jwks.json"}}
+    assert settings["auth"]["jwt"] == {"audience": "sdk-smoke"}
+    (key,) = json.loads((config / "jwks.json").read_bytes())["keys"]
+    assert key["kid"] and not ({"d", "p", "q", "dp", "dq", "qi"} & key.keys())
+    parts = (credentials / "execution.jwt").read_bytes().split(b".")
+
+    def decoded(value):
+        return base64.urlsafe_b64decode(value + b"=" * (-len(value) % 4))
+
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    public = rsa.RSAPublicNumbers(
+        int.from_bytes(decoded(key["e"].encode())),
+        int.from_bytes(decoded(key["n"].encode())),
+    ).public_key()
+    public.verify(
+        decoded(parts[2]), b".".join(parts[:2]), padding.PKCS1v15(), hashes.SHA256()
+    )
+    header, claims = (json.loads(decoded(part)) for part in parts[:2])
+    assert header == {
+        "alg": "RS256",
+        "typ": "loomspan-execution+jwt",
+        "kid": key["kid"],
+    }
+    assert claims["token_use"] == "loomspan_execution"
+    assert claims["iss"] and claims["sub"] and claims["aud"] == "sdk-smoke"
+    assert 0 < claims["exp"] - claims["iat"] <= 600
+    assert not list(config.glob("*.pem"))
+
+
+@pytest.mark.parametrize("phase", ["shutdown_scenario", "deployment_transport"])
+def test_new_scenario_failure_is_not_passing_evidence(
+    checkout, tmp_path, fake_lane, monkeypatch, phase
+):
+    def fail(*args):
+        raise runner.LaneFailure("baseline-failed")
+
+    monkeypatch.setattr(runner.Runtime, phase, fail)
+    code, report = invoke(checkout, tmp_path)
+    assert code == 1 and report["diagnostic"] == "baseline-failed"
+    assert "failed" in report["scenarioResults"].values()
+    assert (
+        "not-run" in report["scenarioResults"].values()
+        or phase == "deployment_transport"
+    )
+    assert fake_lane[-1] == "cleanup"
+    assert report["elapsedSeconds"] >= 0
+    assert any(
+        value["status"] == "failed" and value["elapsedSeconds"] >= 0
+        for value in report["stages"].values()
+    )
+
+
+def test_shutdown_fixture_latch_sequences_nested_effects():
+    server = FixtureServer(("127.0.0.1", 0))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    errors = []
+
+    def identity():
+        try:
+            with httpx.Client(trust_env=False, timeout=5) as client:
+                assert (
+                    client.post(
+                        f"http://127.0.0.1:{server.server_port}/callbacks/identity",
+                        json={},
+                    ).status_code
+                    == 200
+                )
+        except BaseException as error:
+            errors.append(error)
+
+    worker = threading.Thread(target=identity)
+    try:
+        with httpx.Client(trust_env=False, timeout=3) as client:
+            base = f"http://127.0.0.1:{server.server_port}"
+            worker.start()
+            assert server.entered.wait(2)
+            assert worker.is_alive()
+            assert client.get(base + "/shutdown/status").json() == {
+                "entered": True,
+                "detail": False,
+                "finished": False,
+            }
+            assert client.post(base + "/shutdown/release", json={}).status_code == 200
+            worker.join(timeout=3)
+            assert not worker.is_alive() and not errors
+            client.post(base + "/callbacks/detail", json={})
+            for _ in range(4):
+                assert (
+                    client.post(base + "/planner/chat/completions", json={}).status_code
+                    == 200
+                )
+            assert client.get(base + "/shutdown/status").json() == {
+                "entered": True,
+                "detail": True,
+                "finished": True,
+            }
+            client.post(base + "/shutdown/reset", json={})
+            assert client.get(base + "/shutdown/status").json() == {
+                "entered": False,
+                "detail": False,
+                "finished": False,
+            }
+    finally:
+        server.release.set()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_transport_rejection_does_not_accept_unavailable_service(monkeypatch):
+    from sdk_lane import transport
+
+    instance = SimpleNamespace(failure=runner.LaneFailure)
+    instance.python = lambda *args: (_ for _ in ()).throw(
+        runner.LaneFailure("command-failed")
+    )
+    with pytest.raises(runner.LaneFailure, match="command-failed"):
+        transport.probe(instance, "sidecar", 8080, "wrong-ca")
+
+
+def test_transport_certificates_are_public_trust_and_separate_expired_server(tmp_path):
+    from sdk_lane import transport
+    from cryptography import x509
+    from datetime import datetime, timezone
+
+    transport.certificates(tmp_path)
+    ca = x509.load_pem_x509_certificate((tmp_path / "ca.pem").read_bytes())
+    valid = x509.load_pem_x509_certificate((tmp_path / "valid.pem").read_bytes())
+    expired = x509.load_pem_x509_certificate((tmp_path / "expired.pem").read_bytes())
+    assert (
+        valid.not_valid_after_utc
+        > datetime.now(timezone.utc)
+        > expired.not_valid_after_utc
+    )
+    for certificate in (valid, expired):
+        ca.public_key().verify(
+            certificate.signature,
+            certificate.tbs_certificate_bytes,
+            padding.PKCS1v15(),
+            certificate.signature_hash_algorithm,
+        )
+    assert not list(tmp_path.glob("*ca*key*"))
+
+
+def test_shutdown_fixture_supplies_required_rest_target_contract(tmp_path, monkeypatch):
+    instance = runner.Runtime(tmp_path, tmp_path, "sdk-fixture-contract")
+
+    def stop_before_network(*args):
+        raise runner.LaneFailure("fixture-prepared")
+
+    monkeypatch.setattr(instance, "fixture_request", stop_before_network)
+    with pytest.raises(runner.LaneFailure, match="fixture-prepared"):
+        instance.shutdown_scenario(False)
+    routes = yaml.safe_load((tmp_path / "config/routes.yaml").read_bytes())
+    target = routes["targets"]["fixture"]
+    assert target["connect-timeout"] == "2s"
+    assert target["read-timeout"] == "20s"
+    assert target["max-response-size"] == "16KB"
+    assert {route["target"] for route in routes["routes"].values()} == {"fixture"}
+
+
+@pytest.mark.parametrize(
+    "label,host,trusted,expected",
+    [
+        ("valid", "sidecar", True, True),
+        ("valid", "wrong.invalid", True, False),
+        ("valid", "sidecar", False, False),
+        ("expired", "sidecar", True, False),
+    ],
+)
+def test_transport_material_passes_strict_tls_and_rejects_invalid_peers(
+    tmp_path, label, host, trusted, expected
+):
+    import socket
+    import ssl
+    from sdk_lane import transport
+
+    transport.certificates(tmp_path)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(
+        str(tmp_path / f"{label}.pem"), str(tmp_path / f"{label}-key.pem")
+    )
+    listener = socket.socket()
+    listener.bind(("127.0.0.1", 0))
+    listener.listen()
+    listener.settimeout(3)
+    errors = []
+
+    def accept():
+        try:
+            connection, _ = listener.accept()
+            with connection:
+                try:
+                    with context.wrap_socket(connection, server_side=True) as stream:
+                        stream.recv(1)
+                except OSError:
+                    pass
+        except BaseException as error:
+            errors.append(error)
+
+    thread = threading.Thread(target=accept)
+    thread.start()
+    client = ssl.create_default_context(
+        cafile=str(tmp_path / "ca.pem") if trusted else None
+    )
+    try:
+        with socket.create_connection(listener.getsockname(), timeout=3) as raw:
+            if expected:
+                with client.wrap_socket(raw, server_hostname=host) as stream:
+                    stream.sendall(b"x")
+            else:
+                with pytest.raises(ssl.SSLCertVerificationError):
+                    client.wrap_socket(raw, server_hostname=host)
+    finally:
+        thread.join(timeout=3)
+        listener.close()
+    assert not errors and not thread.is_alive()

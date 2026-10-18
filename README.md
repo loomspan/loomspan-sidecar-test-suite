@@ -19,7 +19,7 @@ for the layout, selection and extension contract.
 - [Project agreement](docs/project-agreement.md): settled scope and boundaries.
 - [Foundation](docs/foundation.md): architecture, skill ownership and business rules.
 - [Runtime guide](docs/runtime.md): start, build, verify and package both integrations.
-- [SDK integration lane](docs/sdk-lane.md): independent build, startup and provider-free blocking client/no-replay scenarios.
+- [SDK integration lane](docs/sdk-lane.md): independent build, provider-free blocking client/no-replay and deployment transport/TERM baselines.
 - [Phase 2 summary](docs/phase2-summary.md): journey, destination and validation limits.
 - [Skill-design lessons](docs/mid-tier-skill-design.md): transferable practices and evidence limits.
 - [Business source pack](docs/equipment-service-source-pack.md): independent fictional records.

@@ -16,14 +16,22 @@ import uuid
 from xml.etree import ElementTree
 import zipfile
 
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import yaml
+
+from sdk_lane import transport
 
 
 ROOT = Path(__file__).resolve().parents[1]
 RECIPES = {
-    "local": ["foundation-smoke", "blocking-client"],
+    "local": [
+        "foundation-smoke",
+        "blocking-client",
+        "shutdown-completion",
+        "shutdown-cutoff",
+        "deployment-transport-baseline",
+    ],
     "standard": [],
     "hardened": [],
 }
@@ -41,6 +49,9 @@ STAGES = (
     "blockingClient",
     "shutdown",
     "fixture",
+    "shutdownCompletion",
+    "shutdownCutoff",
+    "deploymentTransport",
     "cleanup",
 )
 
@@ -96,13 +107,31 @@ def command(args, *, cwd=None, timeout=300):
 
 
 def stage(report, name, action):
+    scenario = {
+        "shutdown": "foundation-smoke",
+        "fixture": "blocking-client",
+        "shutdownCompletion": "shutdown-completion",
+        "shutdownCutoff": "shutdown-cutoff",
+        "deploymentTransport": "deployment-transport-baseline",
+    }.get(name)
+    started = time.monotonic()
     report["stages"][name] = {"status": "running"}
     try:
         value = action()
     except BaseException:
-        report["stages"][name] = {"status": "failed"}
+        if scenario:
+            report["scenarioResults"][scenario] = "failed"
+        report["stages"][name] = {
+            "status": "failed",
+            "elapsedSeconds": round(time.monotonic() - started, 3),
+        }
         raise
-    report["stages"][name] = {"status": "passed"}
+    report["stages"][name] = {
+        "status": "passed",
+        "elapsedSeconds": round(time.monotonic() - started, 3),
+    }
+    if scenario:
+        report["scenarioResults"][scenario] = "passed"
     return value
 
 
@@ -193,16 +222,33 @@ def preflight(checkout):
 def write_config(directory, credentials):
     # Private key lives only in memory; the token mount belongs to the driver alone.
     private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    public = private.public_key()
-    (directory / "jwt-public.pem").write_bytes(
-        public.public_bytes(
-            serialization.Encoding.PEM,
-            serialization.PublicFormat.SubjectPublicKeyInfo,
-        )
-    )
 
     def encoded(value):
         return base64.urlsafe_b64encode(value).rstrip(b"=")
+
+    numbers = private.public_key().public_numbers()
+
+    def integer(value):
+        return encoded(value.to_bytes((value.bit_length() + 7) // 8, "big")).decode()
+
+    kid = "sdk-fixture"
+    (directory / "jwks.json").write_text(
+        json.dumps(
+            {
+                "keys": [
+                    {
+                        "kty": "RSA",
+                        "kid": kid,
+                        "alg": "RS256",
+                        "use": "sig",
+                        "n": integer(numbers.n),
+                        "e": integer(numbers.e),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
 
     now = int(time.time())
     claims = {
@@ -212,9 +258,14 @@ def write_config(directory, credentials):
         "iat": now,
         "exp": now + 600,
         "roles": [],
+        "token_use": "loomspan_execution",
     }
     signing_input = (
-        encoded(b'{"alg":"RS256","typ":"JWT"}')
+        encoded(
+            json.dumps(
+                {"alg": "RS256", "typ": "loomspan-execution+jwt", "kid": kid}
+            ).encode()
+        )
         + b"."
         + encoded(json.dumps(claims).encode())
     )
@@ -272,13 +323,8 @@ def write_config(directory, credentials):
         "loomspan-sidecar": {
             "configuration": {"mode": "file"},
             "rest-routes": {"location": "file:/config/routes.yaml"},
-            "auth": {
-                "jwt": {
-                    "issuer-uri": "https://sdk.invalid",
-                    "audience": "sdk-smoke",
-                    "public-key-location": "file:/config/jwt-public.pem",
-                }
-            },
+            "trust": {"mode": "file", "file": {"jwks": "/config/jwks.json"}},
+            "auth": {"jwt": {"audience": "sdk-smoke"}},
         },
         "loomspan": {
             "connections": {
@@ -312,6 +358,10 @@ def write_config(directory, credentials):
 
 class Runtime:
     def __init__(self, directory, checkout, project):
+        self.directory = directory
+        self.extra_compose = None
+        self.failure = LaneFailure
+        self.call = command
         self.project = project
         self.checkout = checkout
         self.image = f"loomspan-sdk-smoke:{project}"
@@ -340,6 +390,155 @@ class Runtime:
             "-f",
             str(ROOT / "sdk/compose.yaml"),
         ]
+
+    def python(self, service, script, service_python=True):
+        compose = self.extra_compose or self.compose
+        if service_python:
+            args = compose + ["exec", "-T", service, "python", "-c", script]
+        else:
+            args = compose + [
+                "run",
+                "--rm",
+                "--no-deps",
+                "-T",
+                "--entrypoint",
+                "python",
+                "fixtures",
+                "-c",
+                script,
+            ]
+        return json.loads(command(args, timeout=30))
+
+    def fixture_request(self, path, post=False):
+        return self.python(
+            "fixtures",
+            "import urllib.request,json; print(urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8080"
+            + path
+            + "', data="
+            + ("b'{}'" if post else "None")
+            + "), timeout=3).read().decode())",
+        )
+
+    def shutdown_scenario(self, cutoff):
+        config = self.directory / "config"
+        settings = yaml.safe_load((config / "application.yaml").read_bytes())
+        settings["loomspan"]["shutdown"]["timeout"] = "3s"
+        settings["loomspan"]["connections"]["fixture"]["base-url"] = (
+            "http://fixtures:8080/planner"
+        )
+        settings["loomspan"]["skills"]["locations"] = [
+            "file:/config/planner.yaml",
+            "file:/config/identity.yaml",
+            "file:/config/detail.yaml",
+        ]
+        (config / "application.yaml").write_text(
+            yaml.safe_dump(settings), encoding="utf-8"
+        )
+        planner = {
+            "name": "shutdownPlanner",
+            "description": "Deterministic nested shutdown work",
+            "model": "fixture",
+            "planning_mode": True,
+            "concurrency": False,
+            "max_steps": 4,
+            "allowed_skills": [{"name": "identityLeaf"}, {"name": "detailLeaf"}],
+            "input_schema": {"type": "object"},
+        }
+        (config / "planner.yaml").write_text(yaml.safe_dump(planner), encoding="utf-8")
+        routes = {
+            "targets": {
+                "fixture": {
+                    "base-url": "http://fixtures:8080",
+                    "auth": {"mode": "none"},
+                    "read-timeout": "20s",
+                    "connect-timeout": "2s",
+                    "max-response-size": "16KB",
+                }
+            },
+            "routes": {},
+        }
+        for name in ("identity", "detail"):
+            (config / f"{name}.yaml").write_text(
+                yaml.safe_dump(
+                    {
+                        "name": name + "Leaf",
+                        "description": "Nested fixture",
+                        "rest": True,
+                        "input_schema": {
+                            "type": "object",
+                            "properties": {"message": {"type": "string"}},
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            routes["routes"][name + "Leaf"] = {
+                "target": "fixture",
+                "method": "POST",
+                "path": "/callbacks/" + name,
+            }
+        (config / "routes.yaml").write_text(yaml.safe_dump(routes), encoding="utf-8")
+        self.fixture_request("/shutdown/reset", True)
+        command(self.compose + ["up", "-d", "--force-recreate", "sidecar"], timeout=180)
+        self.readiness()
+        # Token read inside this disposable client; it never appears in command arguments.
+        script = "import urllib.request,json; token=open('/credentials/execution.jwt').read(); request=urllib.request.Request('http://sidecar:8080/v1/skills/shutdownPlanner/executions',data=b'{}',headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'}); response=urllib.request.urlopen(request,timeout=5); assert response.status == 202; print('{}')"
+        command(
+            self.compose
+            + [
+                "run",
+                "--rm",
+                "--no-deps",
+                "-T",
+                "-v",
+                str(self.directory / "credentials") + ":/credentials:ro",
+                "--entrypoint",
+                "python",
+                "fixtures",
+                "-c",
+                script,
+            ],
+            timeout=30,
+        )
+        deadline = time.monotonic() + 20
+        while not self.fixture_request("/shutdown/status")["entered"]:
+            if time.monotonic() >= deadline:
+                raise LaneFailure("shutdown-work-not-entered")
+            time.sleep(0.05)
+        container = command(self.compose + ["ps", "-q", "sidecar"]).strip()
+        started = time.monotonic()
+        command(["docker", "kill", "--signal=TERM", container], timeout=10)
+        time.sleep(0.3)
+        if not self.container_state().get("Running"):
+            raise LaneFailure("shutdown-premature-exit")
+        if not cutoff:
+            self.fixture_request("/shutdown/release", True)
+        command(["docker", "wait", container], timeout=15)
+        elapsed = time.monotonic() - started
+        state = self.container_state()
+        progress = self.fixture_request("/shutdown/status")
+        if (
+            state.get("Running")
+            or state.get("ExitCode") not in (0, 143)
+            or state.get("OOMKilled")
+            or state.get("Error")
+            or elapsed >= 12
+        ):
+            raise LaneFailure("shutdown-process-failed")
+        if cutoff:
+            if elapsed < 2.5 or progress["detail"] or progress["finished"]:
+                raise LaneFailure("shutdown-cutoff-failed")
+        elif not progress["detail"] or not progress["finished"]:
+            raise LaneFailure("shutdown-completion-failed")
+        return {
+            "elapsedSeconds": round(elapsed, 3),
+            "exitCode": state["ExitCode"],
+            "oomKilled": False,
+            **progress,
+        }
+
+    def deployment_transport(self):
+        return transport.run(self)
 
     def image_build(self):
         command(
@@ -373,11 +572,11 @@ class Runtime:
                         "--silent",
                         "--max-time",
                         "2",
-                        "http://localhost:9091/actuator/health/readiness",
+                        "http://localhost:8080/actuator/health/readiness",
                     ],
                     timeout=10,
                 )
-                if json.loads(raw).get("status") == "UP":
+                if json.loads(raw) == {"status": "UP"}:
                     return {"status": "UP"}
             except (LaneFailure, ValueError, AttributeError):
                 pass
@@ -464,7 +663,9 @@ class Runtime:
 
     def cleanup(self):
         command(
-            self.compose + ["down", "--timeout", "20", "--remove-orphans"], timeout=60
+            (self.extra_compose or self.compose)
+            + ["down", "--timeout", "20", "--volumes", "--remove-orphans"],
+            timeout=90,
         )
 
 
@@ -536,6 +737,16 @@ def run_smoke(report, checkout, directory):
         )
         report["fixture"] = stage(report, "fixture", runtime.fixture)
         report["shutdown"] = stage(report, "shutdown", runtime.shutdown)
+        report["shutdownCompletion"] = stage(
+            report, "shutdownCompletion", lambda: runtime.shutdown_scenario(False)
+        )
+        report["shutdownCutoff"] = stage(
+            report, "shutdownCutoff", lambda: runtime.shutdown_scenario(True)
+        )
+        report["deploymentTransport"] = stage(
+            report, "deploymentTransport", runtime.deployment_transport
+        )
+        report["scenarioResults"] = {name: "passed" for name in report["scenarios"]}
         report["status"] = "passed"
     finally:
         try:
@@ -548,6 +759,7 @@ def run_smoke(report, checkout, directory):
 
 
 def main(argv=None):
+    started = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("recipe", choices=RECIPES)
     parser.add_argument(
@@ -566,6 +778,7 @@ def main(argv=None):
         "runId": run_id,
         "recipe": args.recipe,
         "scenarios": RECIPES[args.recipe],
+        "scenarioResults": {name: "not-run" for name in RECIPES[args.recipe]},
         "status": "failed",
         "source": {"revision": None, "dirty": None},
         "frameworkVersion": None,
@@ -602,6 +815,7 @@ def main(argv=None):
         report["status"] = "failed"
         report["diagnostic"] = "unexpected-error"
     finally:
+        report["elapsedSeconds"] = round(time.monotonic() - started, 3)
         write_report(output, report)
     print(
         f"SDK {args.recipe}: {report['status']} ({report['diagnostic'] or 'foundation-smoke'})."
