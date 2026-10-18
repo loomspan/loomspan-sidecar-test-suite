@@ -1,6 +1,7 @@
 """Build the actual Sidecar/SDK checkout and run isolated SDK recipe scenarios."""
 
 import argparse
+import base64
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -15,22 +16,29 @@ import uuid
 from xml.etree import ElementTree
 import zipfile
 
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RECIPES = {"local": ["foundation-smoke"], "standard": [], "hardened": []}
+RECIPES = {
+    "local": ["foundation-smoke", "blocking-client"],
+    "standard": [],
+    "hardened": [],
+}
 STAGES = (
     "selection",
     "preflight",
     "sidecarBuild",
     "sdkBuild",
     "artifacts",
+    "driverBuild",
     "imageBuild",
     "startup",
     "readiness",
+    "startupFixture",
+    "blockingClient",
     "shutdown",
     "fixture",
     "cleanup",
@@ -182,22 +190,88 @@ def preflight(checkout):
     return maven
 
 
-def write_config(directory):
-    # Only public verification material is serialized; there is no token issuer.
-    public = rsa.generate_private_key(public_exponent=65537, key_size=2048).public_key()
+def write_config(directory, credentials):
+    # Private key lives only in memory; the token mount belongs to the driver alone.
+    private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    public = private.public_key()
     (directory / "jwt-public.pem").write_bytes(
         public.public_bytes(
             serialization.Encoding.PEM,
             serialization.PublicFormat.SubjectPublicKeyInfo,
         )
     )
+
+    def encoded(value):
+        return base64.urlsafe_b64encode(value).rstrip(b"=")
+
+    now = int(time.time())
+    claims = {
+        "iss": "https://sdk.invalid",
+        "sub": "sdk-driver",
+        "aud": "sdk-smoke",
+        "iat": now,
+        "exp": now + 600,
+        "roles": [],
+    }
+    signing_input = (
+        encoded(b'{"alg":"RS256","typ":"JWT"}')
+        + b"."
+        + encoded(json.dumps(claims).encode())
+    )
+    token = (
+        signing_input
+        + b"."
+        + encoded(private.sign(signing_input, padding.PKCS1v15(), hashes.SHA256()))
+    )
+    (credentials / "execution.jwt").write_bytes(token)
     (directory / "smoke.yaml").write_text(
         "name: sdkSmoke\ndescription: SDK startup fixture\nmodel: fixture\nprompt: Return fixture result\n",
+        encoding="utf-8",
+    )
+    for name in ("sdkFailure", "sdkEffect"):
+        (directory / f"{name}.yaml").write_text(
+            yaml.safe_dump(
+                {
+                    "name": name,
+                    "description": "SDK deterministic REST fixture",
+                    "rest": True,
+                    "input_schema": {"type": "object"},
+                }
+            ),
+            encoding="utf-8",
+        )
+    (directory / "routes.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "targets": {
+                    "fixture": {
+                        "base-url": "http://fixtures:8080",
+                        "auth": {"mode": "none"},
+                        "connect-timeout": "2s",
+                        "read-timeout": "5s",
+                        "max-response-size": "1KB",
+                    }
+                },
+                "routes": {
+                    "sdkFailure": {
+                        "target": "fixture",
+                        "method": "POST",
+                        "path": "/fail",
+                    },
+                    "sdkEffect": {
+                        "target": "fixture",
+                        "method": "POST",
+                        "path": "/effect",
+                    },
+                },
+            }
+        ),
         encoding="utf-8",
     )
     config = {
         "loomspan-sidecar": {
             "configuration": {"mode": "file"},
+            "rest-routes": {"location": "file:/config/routes.yaml"},
             "auth": {
                 "jwt": {
                     "issuer-uri": "https://sdk.invalid",
@@ -218,7 +292,13 @@ def write_config(directory):
             "models": {
                 "fixture": {"connection": "fixture", "provider-model": "sdk-fixture"}
             },
-            "skills": {"locations": ["file:/config/smoke.yaml"]},
+            "skills": {
+                "locations": [
+                    "file:/config/smoke.yaml",
+                    "file:/config/sdkFailure.yaml",
+                    "file:/config/sdkEffect.yaml",
+                ]
+            },
             "observability": {"enabled": False},
             "shutdown": {"timeout": "5s"},
         },
@@ -237,11 +317,15 @@ class Runtime:
         self.image = f"loomspan-sdk-smoke:{project}"
         config = directory / "config"
         config.mkdir()
-        write_config(config)
+        credentials = directory / "credentials"
+        credentials.mkdir()
+        write_config(config, credentials)
         envfile = directory / "compose.env"
         envfile.write_text(
             f"SDK_IMAGE={self.image}\nSDK_CONFIG={config.as_posix()}\n"
-            f"SDK_FIXTURE={(ROOT / 'scripts/sdk_lane/fixture.py').as_posix()}\n",
+            f"SDK_FIXTURE={(ROOT / 'scripts/sdk_lane/fixture.py').as_posix()}\n"
+            f"SDK_DRIVER={(ROOT / 'sdk/driver/target').as_posix()}\n"
+            f"SDK_CREDENTIALS={credentials.as_posix()}\n",
             encoding="utf-8",
         )
         self.compose = [
@@ -315,7 +399,7 @@ class Runtime:
             raise LaneFailure("shutdown-not-graceful")
         return {"exitCode": state["ExitCode"], "graceful": True, "oomKilled": False}
 
-    def fixture(self):
+    def counts(self):
         raw = command(
             self.compose
             + [
@@ -327,10 +411,56 @@ class Runtime:
                 "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8080/counts', timeout=2).read().decode())",
             ]
         )
-        count = json.loads(raw).get("modelRequests")
+        return json.loads(raw)
+
+    def startup_fixture(self):
+        count = self.counts().get("modelRequests")
         if type(count) is not int or count != 0:
             raise LaneFailure("unexpected-model-requests")
         return {"modelRequests": count}
+
+    def blocking_client(self):
+        raw = command(
+            self.compose + ["run", "--rm", "--no-deps", "-T", "driver"], timeout=90
+        )
+        try:
+            outcomes = json.loads(raw)
+        except ValueError:
+            raise LaneFailure("invalid-driver-report") from None
+        expected = {
+            "completed",
+            "opaqueResultPreserved",
+            "failed",
+            "primaryFailurePreserved",
+            "acceptanceUnknown",
+        }
+        if (
+            not isinstance(outcomes, dict)
+            or set(outcomes) != expected
+            or any(value is not True for value in outcomes.values())
+        ):
+            raise LaneFailure("blocking-client-failed")
+        return outcomes
+
+    def fixture(self):
+        expected = {
+            "modelRequests": 1,
+            "syntheticEffects": 1,
+            "submissionAttempts": 1,
+            "forwardAttempts": 1,
+        }
+        deadline = time.monotonic() + 10
+        while True:
+            counts = self.counts()
+            if counts == expected:
+                break
+            if time.monotonic() >= deadline:
+                raise LaneFailure("unexpected-fixture-counts")
+            time.sleep(0.1)
+        time.sleep(0.3)
+        if self.counts() != expected:
+            raise LaneFailure("unexpected-fixture-counts")
+        return expected
 
     def cleanup(self):
         command(
@@ -373,6 +503,24 @@ def build_checkout(report, checkout):
     _, identity = stage(report, "artifacts", lambda: artifact_identity(checkout))
     report.update(identity)
 
+    def driver_build():
+        coordinate = identity["sdk"][0]["coordinate"]
+        version = coordinate.rsplit(":", 1)[1]
+        command(
+            base
+            + [
+                ROOT / "sdk/driver/pom.xml",
+                f"-Dsdk.version={version}",
+                "clean",
+                "package",
+            ],
+            cwd=ROOT,
+            timeout=300,
+        )
+        return {"sha256": digest(find_jar(ROOT / "sdk/driver/target"))}
+
+    report["driver"] = stage(report, "driverBuild", driver_build)
+
 
 def run_smoke(report, checkout, directory):
     runtime = Runtime(directory, checkout, "sdk-" + uuid.uuid4().hex[:16])
@@ -380,8 +528,14 @@ def run_smoke(report, checkout, directory):
         stage(report, "imageBuild", runtime.image_build)
         stage(report, "startup", runtime.start)
         report["readiness"] = stage(report, "readiness", runtime.readiness)
-        report["shutdown"] = stage(report, "shutdown", runtime.shutdown)
+        report["startupFixture"] = stage(
+            report, "startupFixture", runtime.startup_fixture
+        )
+        report["blockingClient"] = stage(
+            report, "blockingClient", runtime.blocking_client
+        )
         report["fixture"] = stage(report, "fixture", runtime.fixture)
+        report["shutdown"] = stage(report, "shutdown", runtime.shutdown)
         report["status"] = "passed"
     finally:
         try:
@@ -417,7 +571,10 @@ def main(argv=None):
         "frameworkVersion": None,
         "sidecarJarSha256": None,
         "sdk": None,
+        "driver": None,
         "readiness": None,
+        "startupFixture": None,
+        "blockingClient": None,
         "shutdown": None,
         "fixture": None,
         "stages": {name: {"status": "not-run"} for name in STAGES},

@@ -1,4 +1,13 @@
 services:
+  driver:
+    image: eclipse-temurin:21-jre
+    profiles: [driver]
+    command: [java, -cp, /driver/classes:/driver/dependency/*, ai.loomspan.sdk.example.BlockingClientDriver, /credentials/execution.jwt]
+    volumes:
+      - ${SDK_DRIVER}:/driver:ro
+      - ${SDK_CREDENTIALS}:/credentials:ro
+    read_only: true
+    networks: [sdk]
   fixtures:
     image: python:3.13-slim
     command: [python, /fixture.py]

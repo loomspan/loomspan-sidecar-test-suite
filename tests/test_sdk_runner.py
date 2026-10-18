@@ -1,6 +1,7 @@
 """Provider-free SDK lane orchestration and failure evidence."""
 
 import hashlib
+import base64
 import json
 import subprocess
 import sys
@@ -12,12 +13,14 @@ import zipfile
 import httpx
 import pytest
 import yaml
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 
 import run_sdk as runner
-from sdk_lane.fixture import FixtureServer
+from sdk_lane.fixture import FixtureServer, LossProxy
 
 
 SENTINELS = ("secret-provider-123", "PRIVATE-KEY-456", "business-payload-789")
@@ -55,7 +58,7 @@ def checkout(tmp_path):
 
 
 @pytest.fixture
-def fake_lane(monkeypatch):
+def fake_lane(monkeypatch, tmp_path):
     calls = []
     monkeypatch.setattr(runner.shutil, "which", lambda tool: tool)
 
@@ -68,6 +71,16 @@ def fake_lane(monkeypatch):
         return ""
 
     monkeypatch.setattr(runner, "command", command)
+    original_find = runner.find_jar
+    driver = tmp_path / "driver.jar"
+    driver.write_bytes(b"plain-java-driver")
+    monkeypatch.setattr(
+        runner,
+        "find_jar",
+        lambda directory: driver
+        if directory == runner.ROOT / "sdk/driver/target"
+        else original_find(directory),
+    )
 
     class Runtime:
         def __init__(self, directory, checkout, project):
@@ -89,7 +102,26 @@ def fake_lane(monkeypatch):
 
         def fixture(self):
             calls.append("fixture")
+            return {
+                "modelRequests": 1,
+                "syntheticEffects": 1,
+                "submissionAttempts": 1,
+                "forwardAttempts": 1,
+            }
+
+        def startup_fixture(self):
+            calls.append("startupFixture")
             return {"modelRequests": 0}
+
+        def blocking_client(self):
+            calls.append("blockingClient")
+            return {
+                "completed": True,
+                "opaqueResultPreserved": True,
+                "failed": True,
+                "primaryFailurePreserved": True,
+                "acceptanceUnknown": True,
+            }
 
         def cleanup(self):
             calls.append("cleanup")
@@ -130,11 +162,12 @@ def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(
         "clean",
         "install",
     ] in commands
-    assert not any(
-        "-D" in arg or "loomspan-framework" in arg for args in commands for arg in args
-    )
+    assert not any("loomspan-framework" in arg for args in commands for arg in args)
     assert (
         fake_lane.index("readiness")
+        < fake_lane.index("startupFixture")
+        < fake_lane.index("blockingClient")
+        < fake_lane.index("fixture")
         < fake_lane.index("shutdown")
         < fake_lane.index("cleanup")
     )
@@ -151,7 +184,10 @@ def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(
     assert all(value["status"] == "passed" for value in report["stages"].values())
     assert report["readiness"] == {"status": "UP"}
     assert report["shutdown"]["graceful"]
-    assert report["fixture"] == {"modelRequests": 0}
+    assert report["startupFixture"] == {"modelRequests": 0}
+    assert report["fixture"]["syntheticEffects"] == 1
+    assert report["driver"]["sha256"]
+    assert any("-Dsdk.version=0.1.0-SNAPSHOT" in args for args in commands)
 
 
 @pytest.mark.parametrize("recipe", ["standard", "hardened"])
@@ -179,7 +215,17 @@ def test_unknown_recipe_is_usage_error():
 
 
 @pytest.mark.parametrize(
-    "phase", ["image_build", "start", "readiness", "shutdown", "fixture", "cleanup"]
+    "phase",
+    [
+        "image_build",
+        "start",
+        "readiness",
+        "startup_fixture",
+        "blocking_client",
+        "shutdown",
+        "fixture",
+        "cleanup",
+    ],
 )
 def test_runtime_failure_cleanup_and_secret_free_report(
     checkout, tmp_path, fake_lane, monkeypatch, capsys, phase
@@ -402,7 +448,25 @@ def test_compose_has_no_provider_or_retained_data_access(tmp_path):
         "application.yaml",
         "jwt-public.pem",
         "smoke.yaml",
+        "sdkFailure.yaml",
+        "sdkEffect.yaml",
+        "routes.yaml",
     }
+    token = (tmp_path / "credentials/execution.jwt").read_bytes()
+    header, claims, signature = token.split(b".")
+
+    def decode(value):
+        return base64.urlsafe_b64decode(value + b"=" * (-len(value) % 4))
+
+    public_key = serialization.load_pem_public_key(public.encode())
+    public_key.verify(
+        decode(signature), header + b"." + claims, padding.PKCS1v15(), hashes.SHA256()
+    )
+    claims = json.loads(decode(claims))
+    assert claims["iss"] == "https://sdk.invalid"
+    assert claims["aud"] == "sdk-smoke" and claims["exp"] > claims["iat"]
+    assert "credentials" not in json.dumps(compose["services"]["sidecar"])
+    assert "credentials" in json.dumps(compose["services"]["driver"])
 
 
 def test_fixture_is_fixed_counts_requests_and_logs_no_input(capsys):
@@ -412,7 +476,12 @@ def test_fixture_is_fixed_counts_requests_and_logs_no_input(capsys):
     try:
         base = f"http://127.0.0.1:{server.server_port}"
         with httpx.Client(trust_env=False, timeout=2) as client:
-            assert client.get(base + "/counts").json() == {"modelRequests": 0}
+            assert client.get(base + "/counts").json() == {
+                "modelRequests": 0,
+                "syntheticEffects": 0,
+                "submissionAttempts": 0,
+                "forwardAttempts": 0,
+            }
             response = client.post(
                 base + "/v1/chat/completions",
                 content=SENTINELS[2],
@@ -421,7 +490,7 @@ def test_fixture_is_fixed_counts_requests_and_logs_no_input(capsys):
             assert (
                 response.json()["choices"][0]["message"]["content"] == "fixture result"
             )
-            assert client.get(base + "/counts").json() == {"modelRequests": 1}
+            assert client.get(base + "/counts").json()["modelRequests"] == 1
             assert (
                 client.post(base + "/unknown", content=SENTINELS[2]).status_code == 404
             )
@@ -430,3 +499,75 @@ def test_fixture_is_fixed_counts_requests_and_logs_no_input(capsys):
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_loss_proxy_forwards_once_drops_response_and_counts_effect_separately(capsys):
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    fixture = FixtureServer(("127.0.0.1", 0))
+    seen = []
+
+    class Backend(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            seen.append(self.path)
+            with httpx.Client(trust_env=False, timeout=2) as client:
+                client.post(f"http://127.0.0.1:{fixture.server_port}/effect", json={})
+            data = b'{"id":"27c186c5-6056-4de8-882d-60def5092909"}'
+            self.send_response(202)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+    backend = ThreadingHTTPServer(("127.0.0.1", 0), Backend)
+    proxy = LossProxy(("127.0.0.1", 0), fixture, ("127.0.0.1", backend.server_port))
+    servers = (fixture, backend, proxy)
+    threads = [
+        threading.Thread(target=server.serve_forever, daemon=True) for server in servers
+    ]
+    for thread in threads:
+        thread.start()
+    try:
+        with httpx.Client(trust_env=False, timeout=2) as client:
+            with pytest.raises(httpx.RemoteProtocolError):
+                client.post(
+                    f"http://127.0.0.1:{proxy.server_port}/v1/skills/sdkEffect/executions",
+                    content=SENTINELS[2],
+                    headers={"Authorization": SENTINELS[0]},
+                )
+            counts = client.get(f"http://127.0.0.1:{fixture.server_port}/counts").json()
+            assert counts == {
+                "modelRequests": 0,
+                "syntheticEffects": 1,
+                "submissionAttempts": 1,
+                "forwardAttempts": 1,
+            }
+            assert (
+                client.post(
+                    f"http://127.0.0.1:{fixture.server_port}/fail", json={}
+                ).status_code
+                == 503
+            )
+            assert seen == ["/v1/skills/sdkEffect/executions"]
+        assert all(value not in str(capsys.readouterr()) for value in SENTINELS)
+    finally:
+        for server in servers:
+            server.shutdown()
+            server.server_close()
+        for thread in threads:
+            thread.join(timeout=2)
+
+
+def test_driver_outcome_validation_and_bounded_effect_counts(monkeypatch):
+    instance = runtime(monkeypatch)
+    monkeypatch.setattr(runner, "command", lambda *args, **kwargs: '{"completed":true}')
+    with pytest.raises(runner.LaneFailure, match="blocking-client-failed"):
+        instance.blocking_client()
+    monkeypatch.setattr(instance, "counts", lambda: {"modelRequests": 2})
+    clock = iter([0, 11])
+    monkeypatch.setattr(runner.time, "monotonic", lambda: next(clock))
+    with pytest.raises(runner.LaneFailure, match="unexpected-fixture-counts"):
+        instance.fixture()

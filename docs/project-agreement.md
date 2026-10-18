@@ -214,7 +214,8 @@ The reconciled Sidecar SDK plans in the neighboring Sidecar repository's
 `ai/thoughts/phases/2026-10-11-java-spring-sdk-roadmap.md` define this new work.
 This SDK effort has its own Phase 1 implementation/integration and Phase 2 completion
 verification; those names do not reopen this suite's completed business phases.
-All SDK integration coverage below is planned, not completed evidence.
+SDK coverage is delivered incrementally by the linked Sidecar tickets; see
+[SDK lane](sdk-lane.md) for the current executable scenarios and evidence limits.
 
 Use the simplest implementation and proportional tests. Replace superseded SDK
 contracts and fixtures directly, without compatibility machinery; apply Sidecar's
