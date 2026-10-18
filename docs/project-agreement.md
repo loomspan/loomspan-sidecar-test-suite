@@ -207,3 +207,75 @@ assessment or incorrect exposed impact in this sample. Routing judgments were ac
 Keep the 0.80 default and preserve the regional miss; multi-site scope is a candidate
 for a separately predeclared question-design experiment. Provider access was restored
 to disabled and all existing accepted references were preserved.
+
+## SDK v1 integration direction (2026-10-18)
+
+The reconciled Sidecar SDK plans in the neighboring Sidecar repository's
+`ai/thoughts/phases/2026-10-11-java-spring-sdk-roadmap.md` define this new work.
+This SDK effort has its own Phase 1 implementation/integration and Phase 2 completion
+verification; those names do not reopen this suite's completed business phases.
+All SDK integration coverage below is planned, not completed evidence.
+
+Use the simplest implementation and proportional tests. Replace superseded SDK
+contracts and fixtures directly, without compatibility machinery; apply Sidecar's
+`ai/thoughts/design-lens.md#simplicity-and-technical-debt`. No data reset is required
+by this agreement update. Preserve existing credentials, operational data, business
+examples, the beta.9 embedded and Python/Sidecar lane, and all maintained reference
+packs including `fixtures/reference`. Do not reconstruct discarded SDK work.
+
+Add a separate SDK lane against the actual Sidecar revision and its pinned Framework
+beta.8 dependency. Establish a small harness foundation early, then provide each
+feature's necessary composed coverage with that feature. Tickets may reuse or extend
+existing scenarios; one scenario can satisfy several tickets. Keep detailed rule
+variants in component tests, adding a composed scenario only for behavior existing
+scenarios cannot demonstrate. This retains the three recipes and meaningful failure
+cases without requiring a new integration scenario per ticket.
+All future ticket artifacts belong in the
+Sidecar repository; no tickets are created by this reconciliation.
+
+Build three real recipes: Local localhost HTTP, Standard direct HTTPS and Hardened
+Caddy-managed mTLS in both directions. Test invocation, callbacks, JWT/user
+permissions and relevant transport rejection. The hardened reference uses app/Caddy
+and Sidecar/Caddy shared network namespaces, loopback backend/outbound listeners,
+fixed proxy destinations and separate browser ingress. Verify no external bypass.
+Other compositions remain permitted and untested, not unsupported or experimental;
+do not build a configuration cross-product or runtime recipe allowlist. Include
+focused no-callback coverage rather than duplicating every security test.
+
+If apps share a Sidecar, they trust each other in every way. A group shares signing
+identity, issuer, callback audience, user directory and exact role vocabulary.
+Use a small second application in one recipe to exercise that arrangement, not
+independent app issuers or an isolation matrix. Spring-issued and trusted custom
+identity feed the same execution issuer. SDK authenticates callbacks; application
+method annotations/business checks authorize them. Test documented callback prefix
+and chain ordering in reference apps, not arbitrary Spring matcher analysis.
+
+Use colocated/provided signing and current-file JWKS trust. Test missing/invalid/
+empty trust stopping acceptance, correction recovering it, same-issuer key rotation,
+colocated restart, queued-token current-trust/expiry checks and callback expiry.
+Provided private signing keys load at application startup only; replacing them
+requires restarting affected applications. Exercise that restart in the existing
+rotation scenario, with public JWKS trust still reloading independently. No
+private-key hot-reload or uninterrupted-rotation tests are required.
+Relevant future tickets explicitly keep JWKS file sourcing in both file/database
+application configuration modes; do not add a database trust store or management API.
+Existing management accounts/tokens remain unchanged.
+
+The SDK client is blocking only. Each request is sent once; bounded wait polls
+successful status responses and stops on a failed read. Lost/unusable submission
+responses mean acceptance unknown, never automatic resubmission. Use simple attempt
+and synthetic-effect counters for response-loss/no-replay coverage. No custom futures,
+retry/backoff or proxy-origin classification system, business ledger, transactional
+deduplication or crash-recovery fixture is required.
+
+DevOps owns TLS certificate lifecycle using standard Spring Boot and Caddy facilities.
+Generate temporary certificates for transport integration positives/negatives; do not
+add certificate renewal/replacement/rollover/revocation-propagation or live-reload
+tests, a CA service, or committed certificate material. JWT signing/trust lifecycle
+remains a separate test responsibility.
+
+Use deterministic model fixtures and form login; no provider calls or separate login
+provider deployment. Keep the runner small, readable and formatted. The canonical
+Sidecar acceptance matrix owns the bounded test inventory. Completion includes builds,
+consumer packaging, integration, documentation and independent security review; no
+release/version/publication decisions, commit or push are authorized by this work.

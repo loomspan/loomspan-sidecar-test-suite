@@ -1,0 +1,28 @@
+services:
+  fixtures:
+    image: python:3.13-slim
+    command: [python, /fixture.py]
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - ${SDK_FIXTURE}:/fixture.py:ro
+    read_only: true
+    networks: [sdk]
+  sidecar:
+    image: ${SDK_IMAGE}
+    environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/application.yaml
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError
+    volumes:
+      - ${SDK_CONFIG}:/config:ro
+    tmpfs:
+      - /sidecar/data:uid=10001,gid=10001,mode=0700
+      # sqlite-jdbc extracts its bundled native library here.
+      - /tmp:exec,mode=1777
+    read_only: true
+    stop_grace_period: 20s
+    depends_on: [fixtures]
+    networks: [sdk]
+networks:
+  sdk:
+    internal: true
