@@ -75,12 +75,18 @@ supplied Caddy with the shipped fixed-upstream/header policy. A separate namespa
 client checks ingress, redirect origin, normalized headers and backend refusal. It
 does not test certificate persistence, issuance, replacement, renewal or reload.
 These are deployment baselines, not full Standard/Hardened SDK recipes. The separate
-Local group exercises SDK Spring callback authentication. Later tickets retain
-bidirectional TLS/mTLS, provided signing and trusted-group rotation obligations.
+Local group exercises SDK Spring callback authentication. The separate remote
+recipes below add bidirectional transport and provided-signing evidence;
+trusted-group rotation remains a separate obligation.
 
-`standard` and `hardened` are recognized but currently have no scenarios. They
-exit nonzero with `no-scenarios-for-recipe` and write explicit failed evidence.
-Future tickets implement those recipe scenarios.
+`standard` runs positive form/SDK invocation and authenticated callback, invocation
+wrong-CA server rejection, callback wrong-host and expired-server rejection, and
+post-effect submission/callback response-loss scenarios. `hardened` runs the
+same positive/no-replay obligations through two Caddy mTLS gateways, wrong-CA
+clients and servers in both directions, and actual outsider no-bypass/fixed-
+destination probes. Each command retains the full mandatory build path above.
+See the neighboring Sidecar `docs/remote-recipes.md` and `examples/remote` for
+the actual supplied Boot/Caddy fragments consumed by these compositions.
 
 Every valid invocation creates `evidence/sdk/<unique-run-id>/report.json`. Use
 `--output NEW_DIRECTORY` to select a different new destination; existing directories
@@ -222,4 +228,79 @@ oracle: beta.8 auto-dispatched the zero-input leaf. A dedicated required-message
 leaf now forces that step-model action; targeted callbacks/expiry and cleanup,
 then the complete final run passed. Both formal runs cleaned their unique projects
 and external key volumes. The earlier ten-scenario report does not establish
-callback behavior. Standard/Hardened recipes and full rotation remain future work.
+callback behavior. This historical Local evidence does not establish remote
+recipe behavior. Full rotation remains separate work.
+
+## Remote recipe evidence and limits
+
+Both compositions use SDK provided RSA signing. Only the reference app receives
+the signing private key; its public JWKS export is checked against the supplied
+signer and delivered read-only to Sidecar's exact file trust path. Certificates
+and keys are newly generated per isolated startup variant under a temporary
+directory and removed after scoped cleanup. No CA service, provider call or
+certificate lifecycle procedure runs.
+
+Standard positive traffic is direct Spring HTTPS in both directions with normal
+chain/hostname verification. Its invalid callback-server variants necessarily
+affect the same Spring browser listener: the isolated Python control driver pins
+the exact supplied bad certificate solely to perform form login. Actual Java
+callers always retain normal verification, and typed independent probes classify
+the expected CA/SAN/expiry error. This driver treatment is absent from the valid
+recipe and operator configuration.
+
+Hardened app and Sidecar each share only their own Caddy namespace. HTTP backend,
+outbound and fixture listeners bind loopback; an outsider checks refusal at each
+namespace address. Browser ingress is server TLS on 8444 and rejects callback
+paths; callback ingress on 8443 requires group client certificates. Caddy verifies
+client CA/EKU membership rather than client DNS SANs. Outbound upstreams/server
+names are literal and zero retry is explicit. Absolute-form/Host probes cannot
+select the local effect fixture.
+
+Loss instruments forward one fixed operation once, consume the accepted response
+after receiver effect, then close the connection. Standard fault variants use
+trusted TLS and verify the actual Spring receiver. Hardened fault variants sit
+on receiver-local HTTP behind the real mTLS ingress. These instruments are test
+fixtures, not operator gateways. Independent attempt/forward/acceptance/effect
+counts must be one after a five-second quiet interval exceeding the three-second
+Java response deadline. Direct loss is acceptance unknown; Caddy's HTTP 502 is
+recorded as an HTTP failure. Callback loss remains a failed execution after its
+one effect. No client/proxy automatically replays the operation.
+
+The first complete Standard attempt,
+[20261019T014109Z-545d2153ac89](../evidence/sdk/20261019T014109Z-545d2153ac89/report.json),
+passed every build but failed app startup because the fixture overlaid provided
+mode onto packaged Local colocated configuration. The app correctly rejected the
+conflicting settings. Remote fixture configuration now replaces that Local
+configuration source. Its failed report and successful scoped cleanup are retained.
+Complete remote reports follow.
+
+The complete [Hardened report 20261019T014927Z-b5ab2b9224e2](../evidence/sdk/20261019T014927Z-b5ab2b9224e2/report.json)
+passed all eight scenarios and their startup/cleanup stages in 927.972s. Root,
+SDK, both real consumers and checkout image builds passed. All eight exact
+project-label container/network/volume listings were empty after cleanup.
+The report records Sidecar source `e2aad75c40f4e6b524853a170c60d3c672a0a11c`,
+suite source `61007447077a6907569876a289aa2601a00afa0e` (both dirty, uncommitted
+ticket work), and Sidecar JAR SHA-256
+`f9b563a60e8f0aec3211f1a28b98957c50e717dfc4342bbbaf23321b8ccbbbbd`.
+SDK and consumer hashes are in that exact report. These are bounded composition
+results, not certificate-lifecycle or arbitrary customer network guarantees.
+
+The complete [Standard report 20261019T015656Z-c2445d463665](../evidence/sdk/20261019T015656Z-c2445d463665/report.json)
+passed all six scenarios and their startup/cleanup stages in 777.899s, including
+both post-effect loss cases. Every mandatory build passed, and all six exact
+project-label container/network/volume listings were empty after cleanup.
+Its Sidecar JAR SHA-256 is
+`d18069e2a8f4ae7f46ff55e9cbe4001d616ee309e1bb9a25eb26db2bc3b9c462`;
+source revisions are the same dirty ticket-working checkouts recorded above.
+SDK/consumer artifact hashes and exact typed scenario observations are preserved
+in each report. Standard's direct lost submission reports acceptance unknown;
+Hardened's lost submission reports actual HTTP 502. Both callbacks remain failed
+after their single observed effect, with no replay during the quiet interval.
+
+Final verification: 103 focused SDK harness tests and 213 broad safe Python
+tests passed; Ruff formatting/lint and both repository diff checks passed.
+The actual final root build reports 61 classes / 261 tests, SDK core 25 and
+starter 30, with zero failures/errors/skips. No production Sidecar/SDK TLS wiring
+change was necessary. No tracked/untracked certificate or key file was added;
+the failed and passing reports contain no PEM, bearer credential or JWT values.
+No provider call, business runtime change, data reset, commit or release occurred.

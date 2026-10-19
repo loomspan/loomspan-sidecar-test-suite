@@ -43,6 +43,17 @@ public class ExecutionController {
         }
         return Map.of("captured", true);
     }
+    @PostMapping("/loss-submit") Map<String, Boolean> lossSubmit() {
+        try {
+            client.submit("localEffect", json.createObjectNode(), issuer.issueCurrent());
+            throw new IllegalStateException("Response was not lost");
+        } catch (AcceptanceUnknownException expected) {
+            return Map.of("acceptanceUnknown", true, "httpFailure", false);
+        } catch (HttpFailureException expected) {
+            if (expected.status() != 502) throw expected;
+            return Map.of("acceptanceUnknown", false, "httpFailure", true);
+        }
+    }
     @PostMapping("/submit/{skill}") Map<String, String> submit(@PathVariable String skill) {
         if (!Set.of("localModel", "localBlocker", "localEffect", "localOwned", "localLiteralOwned", "localCallbackPlanner").contains(skill))
             throw new IllegalArgumentException("Unknown fixture skill");

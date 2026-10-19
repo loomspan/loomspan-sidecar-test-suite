@@ -19,7 +19,7 @@ for the layout, selection and extension contract.
 - [Project agreement](docs/project-agreement.md): settled scope and boundaries.
 - [Foundation](docs/foundation.md): architecture, skill ownership and business rules.
 - [Runtime guide](docs/runtime.md): start, build, verify and package both integrations.
-- [SDK integration lane](docs/sdk-lane.md): form-login Boot consumer, colocated issuance/trust, authenticated callbacks with role/record checks and expiry, blocking client/no-replay and deployment transport/TERM baselines.
+- [SDK integration lane](docs/sdk-lane.md): form-login Boot consumer; Local colocated trust and callback expiry; Standard direct HTTPS and Hardened paired Caddy mTLS with provided signing, file trust, peer rejection and no-replay evidence.
 - [Phase 2 summary](docs/phase2-summary.md): journey, destination and validation limits.
 - [Skill-design lessons](docs/mid-tier-skill-design.md): transferable practices and evidence limits.
 - [Business source pack](docs/equipment-service-source-pack.md): independent fictional records.

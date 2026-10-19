@@ -599,21 +599,8 @@ def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(
 
 
 @pytest.mark.parametrize("recipe", ["standard", "hardened"])
-def test_empty_recipes_fail_before_builds_with_durable_evidence(
-    checkout, tmp_path, monkeypatch, recipe
-):
-    monkeypatch.setattr(
-        runner, "preflight", lambda *args: pytest.fail("empty recipe must not build")
-    )
-    code, report = invoke(checkout, tmp_path, recipe)
-    assert code == 1
-    assert report["recipe"] == recipe
-    assert report["diagnostic"] == "no-scenarios-for-recipe"
-    assert report["scenarios"] == []
-    assert report["stages"]["selection"]["status"] == "failed"
-    assert all(
-        report["stages"][name]["status"] == "not-run" for name in runner.STAGES[1:]
-    )
+def test_remote_recipe_has_scenarios(checkout, tmp_path, monkeypatch, recipe):
+    assert runner.RECIPES[recipe]
 
 
 def test_unknown_recipe_is_usage_error():

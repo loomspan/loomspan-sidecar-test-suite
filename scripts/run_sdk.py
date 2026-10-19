@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import yaml
 
-from sdk_lane import local, transport
+from sdk_lane import local, remote, transport
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,8 +33,8 @@ RECIPES = {
         "deployment-transport-baseline",
         *local.SCENARIOS,
     ],
-    "standard": [],
-    "hardened": [],
+    "standard": remote.scenarios("standard"),
+    "hardened": remote.scenarios("hardened"),
 }
 STAGES = (
     "selection",
@@ -840,6 +840,60 @@ def run_smoke(report, checkout, directory):
             report["status"] = "failed"
 
 
+def run_remote(report, checkout, directory):
+    project = "sdk-" + uuid.uuid4().hex[:16]
+    image = "loomspan-sdk-smoke:" + project
+    stage(
+        report,
+        "imageBuild",
+        lambda: command(["docker", "build", "-t", image, str(checkout)], timeout=300),
+    )
+    report["remoteRecipe"] = {"projects": [], "results": {}}
+    for variant in remote.VARIANTS[report["recipe"]]:
+        scenario = report["recipe"] + "-" + variant
+        runtime = remote.Runtime(
+            directory / variant,
+            checkout,
+            ROOT,
+            project,
+            image,
+            report["recipe"],
+            variant,
+            command,
+            LaneFailure,
+        )
+        report["remoteRecipe"]["projects"].append(
+            {"project": runtime.project, "publicVolume": runtime.volume}
+        )
+        primary = None
+        try:
+            stage(report, scenario + "-startup", runtime.start)
+            result = stage(report, scenario, runtime.run)
+            if json.dumps(result, sort_keys=True) != json.dumps(
+                remote.observations(report["recipe"], variant, "scenario")
+                if variant != "isolation"
+                else {"passed": True},
+                sort_keys=True,
+            ):
+                raise LaneFailure("remote-invalid-result")
+            report["remoteRecipe"]["results"][scenario] = result
+            report["scenarioResults"][scenario] = "passed"
+        except BaseException as failure:
+            primary = failure
+            report["scenarioResults"][scenario] = "failed"
+            raise
+        finally:
+            try:
+                stage(report, scenario + "-cleanup", runtime.cleanup)
+            except Exception:
+                report["scenarioResults"][scenario] = "failed"
+                if primary is None:
+                    raise LaneFailure("remote-cleanup-failed") from None
+    if any(value != "passed" for value in report["scenarioResults"].values()):
+        raise LaneFailure("incomplete-scenario-results")
+    report["status"] = "passed"
+
+
 def main(argv=None):
     started = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -889,7 +943,10 @@ def main(argv=None):
             stage(report, "selection", select)
             checkout = args.sidecar_checkout.resolve()
             build_checkout(report, checkout)
-            run_smoke(report, checkout, Path(temporary))
+            if args.recipe == "local":
+                run_smoke(report, checkout, Path(temporary))
+            else:
+                run_remote(report, checkout, Path(temporary))
     except LaneFailure as failure:
         report["status"] = "failed"
         report["diagnostic"] = str(failure)
@@ -902,9 +959,10 @@ def main(argv=None):
     finally:
         report["elapsedSeconds"] = round(time.monotonic() - started, 3)
         write_report(output, report)
-    print(
-        f"SDK {args.recipe}: {report['status']} ({report['diagnostic'] or 'foundation-smoke'})."
+    summary = report["diagnostic"] or (
+        "foundation-smoke" if args.recipe == "local" else "remote-recipes"
     )
+    print(f"SDK {args.recipe}: {report['status']} ({summary}).")
     return 0 if report["status"] == "passed" else 1
 
 
