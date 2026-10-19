@@ -9,6 +9,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 public class SecurityConfiguration {
     @Bean InMemoryUserDetailsManager users() {
         return new InMemoryUserDetailsManager(
@@ -16,7 +17,8 @@ public class SecurityConfiguration {
                 User.withUsername("bob").password("{noop}fixture").authorities("ROLE_ORDER_EDITOR").build(),
                 User.withUsername("literal").password("{noop}fixture").authorities("ORDER_EDITOR").build());
     }
-    @Bean SecurityFilterChain security(HttpSecurity http) throws Exception {
+    @Bean @org.springframework.core.annotation.Order(0)
+    SecurityFilterChain security(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults()).build();
     }

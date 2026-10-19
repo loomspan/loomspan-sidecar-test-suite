@@ -44,9 +44,15 @@ public class ExecutionController {
         return Map.of("captured", true);
     }
     @PostMapping("/submit/{skill}") Map<String, String> submit(@PathVariable String skill) {
-        if (!Set.of("localModel", "localBlocker", "localEffect").contains(skill))
+        if (!Set.of("localModel", "localBlocker", "localEffect", "localOwned", "localLiteralOwned", "localCallbackPlanner").contains(skill))
             throw new IllegalArgumentException("Unknown fixture skill");
-        var credential = (skill.equals("localEffect") ? shortIssuer : issuer).issueCurrent();
+        var credential = (Set.of("localEffect", "localCallbackPlanner").contains(skill) ? shortIssuer : issuer).issueCurrent();
+        if (Set.of("localOwned", "localLiteralOwned", "localCallbackPlanner").contains(skill)) {
+            try (var capture = SidecarClient.builder().baseUrl(URI.create("http://127.0.0.1:8090/capture"))
+                    .responseTimeout(Duration.ofSeconds(3)).build()) {
+                capture.listSkills(credential);
+            }
+        }
         return Map.of("id", client.submit(skill, json.createObjectNode(), credential).id().toString());
     }
     @GetMapping("/executions/{id}") Map<String, Object> execution(@PathVariable UUID id) {

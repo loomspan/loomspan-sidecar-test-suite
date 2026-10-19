@@ -198,6 +198,8 @@ def test_local_recipe_builds_boot_consumer_and_records_colocated_scenarios(
         "local-restart",
         "local-trust-recovery",
         "local-queue-expiry",
+        "local-callback-authorization",
+        "local-callback-expiry",
     ):
         assert report["scenarioResults"][name] == "passed"
 
@@ -285,6 +287,17 @@ def test_local_capture_and_probe_keep_credentials_in_memory(capsys):
             assert response.json() == {"status": 200}
             responses.append(response.text)
             assert seen == [("/v1/skills", token)]
+            for candidate, equal in (
+                (token, True),
+                ("Bearer wrong", False),
+                ("", False),
+            ):
+                response = client.get(
+                    base + "/compare", headers={"Authorization": candidate}
+                )
+                assert response.json() == {"equal": equal}
+                responses.append(response.text)
+
             for route in (
                 "/headers",
                 "/probe?url=http://example.invalid",
@@ -354,6 +367,7 @@ def test_local_queue_fixture_has_bounded_barrier_and_independent_effect_count(ca
                 "entered": True,
                 "models": 1,
                 "effects": 0,
+                "toolIssued": False,
             }
             client.post(base + "/release", json={})
             assert completed.wait(2)
@@ -365,6 +379,7 @@ def test_local_queue_fixture_has_bounded_barrier_and_independent_effect_count(ca
                 "entered": False,
                 "models": 0,
                 "effects": 0,
+                "toolIssued": False,
             }
         assert not errors
         assert all(value not in str(capsys.readouterr()) for value in SENTINELS)
@@ -377,7 +392,18 @@ def test_local_queue_fixture_has_bounded_barrier_and_independent_effect_count(ca
 
 
 @pytest.mark.parametrize(
-    "phase", ["start", "issuance", "restart", "trust", "queue", "cleanup", "interrupt"]
+    "phase",
+    [
+        "start",
+        "issuance",
+        "restart",
+        "trust",
+        "queue",
+        "callbacks",
+        "callback-expiry",
+        "cleanup",
+        "interrupt",
+    ],
 )
 def test_local_failures_and_interruptions_clean_unique_resources_without_secrets(
     checkout, tmp_path, fake_lane, monkeypatch, capsys, phase
@@ -1180,3 +1206,141 @@ def test_transport_material_passes_strict_tls_and_rejects_invalid_peers(
         thread.join(timeout=3)
         listener.close()
     assert not errors and not thread.is_alive()
+
+
+def test_callback_fixture_requires_admitted_model_barrier_then_emits_fixed_tool(capsys):
+    fixture = LocalServer(("127.0.0.1", 0))
+    thread = threading.Thread(target=fixture.serve_forever, daemon=True)
+    thread.start()
+    results = []
+    errors = []
+    base = f"http://127.0.0.1:{fixture.server_port}"
+
+    def planning():
+        try:
+            with httpx.Client(trust_env=False, timeout=4) as client:
+                results.append(
+                    client.post(
+                        base + "/callback/chat/completions", content=SENTINELS[2]
+                    )
+                )
+        except BaseException as error:
+            errors.append(type(error).__name__)
+
+    worker = threading.Thread(target=planning)
+    try:
+        worker.start()
+        assert fixture.entered.wait(2) and worker.is_alive()
+        with httpx.Client(trust_env=False, timeout=3) as client:
+            assert client.get(base + "/status").json() == {
+                "entered": True,
+                "models": 1,
+                "effects": 0,
+                "toolIssued": False,
+            }
+            client.post(base + "/release", json={})
+            worker.join(timeout=3)
+            assert not worker.is_alive() and not errors
+            plan = json.loads(results[0].json()["choices"][0]["message"]["content"])
+            assert [task["capabilityName"] for task in plan["tasks"]] == [
+                "localExpiryOwned"
+            ]
+            response = client.post(base + "/callback/chat/completions", json={})
+            action = json.loads(response.json()["choices"][0]["message"]["content"])
+            assert action == {
+                "stepAction": "CALL_TOOL",
+                "taskId": "owned",
+                "toolName": "localExpiryOwned",
+                "toolArguments": {"message": "verify"},
+            }
+            assert client.get(base + "/status").json()["toolIssued"] is True
+            # Extra turns cannot fabricate a successful response after child failure.
+            assert (
+                client.post(base + "/callback/chat/completions", json={}).status_code
+                == 500
+            )
+            assert client.get(base + "/status").json()["effects"] == 0
+            client.post(base + "/reset", json={})
+            assert fixture.planner_step == 0 and not fixture.tool_issued
+        assert all(
+            value not in str(results) + str(capsys.readouterr()) for value in SENTINELS
+        )
+    finally:
+        fixture.release.set()
+        worker.join(timeout=2)
+        fixture.shutdown()
+        fixture.server_close()
+        thread.join(timeout=2)
+
+
+def test_callback_fixture_barrier_has_deadline(monkeypatch):
+    fixture = LocalServer(("127.0.0.1", 0))
+    deadlines = []
+    monkeypatch.setattr(
+        fixture.release, "wait", lambda timeout: deadlines.append(timeout) or False
+    )
+    thread = threading.Thread(target=fixture.serve_forever, daemon=True)
+    thread.start()
+    try:
+        with httpx.Client(trust_env=False, timeout=3) as client:
+            response = client.post(
+                f"http://127.0.0.1:{fixture.server_port}/callback/chat/completions",
+                json={},
+            )
+            assert response.status_code == 504 and deadlines == [30]
+        assert not fixture.tool_issued and fixture.effects == 0
+    finally:
+        fixture.shutdown()
+        fixture.server_close()
+        thread.join(timeout=2)
+
+
+@pytest.mark.parametrize("name", ["callbacks", "callback-expiry"])
+@pytest.mark.parametrize("mutation", ["missing", "false", "wrong-type", "unexpected"])
+def test_callback_scenario_rejects_incomplete_or_inexact_evidence(
+    checkout, tmp_path, name, mutation
+):
+    result = dict(runner.local.RESULTS[name])
+    key = next(iter(result))
+    if mutation == "missing":
+        result.pop(key)
+    elif mutation == "false":
+        result[key] = False
+    elif mutation == "wrong-type":
+        result[key] = 1
+    else:
+        result["extra"] = True
+    runtime = runner.local.Runtime(
+        tmp_path / "local",
+        checkout,
+        runner.ROOT,
+        "sdk-test",
+        "image",
+        lambda *args, **kwargs: json.dumps(result),
+        runner.LaneFailure,
+    )
+    with pytest.raises(runner.LaneFailure, match="invalid-result"):
+        runtime.probe(name)
+
+
+def test_callback_configuration_fixes_destination_and_preserves_literal_role_admission(
+    tmp_path,
+):
+    runner.local.configure(tmp_path / "config")
+    routes = yaml.safe_load((tmp_path / "config/routes.yaml").read_bytes())
+    assert routes["targets"]["app"]["base-url"] == "http://127.0.0.1:8081"
+    assert routes["targets"]["app"]["auth"] == {"mode": "caller-passthrough"}
+    for name in ("localOwned", "localLiteralOwned", "localExpiryOwned"):
+        assert routes["routes"][name] == {
+            "target": "app",
+            "method": "POST",
+            "path": "/loomspan/callbacks/owned",
+        }
+    literal = yaml.safe_load((tmp_path / "config/localLiteralOwned.yaml").read_bytes())
+    assert literal["rbac_roles"] == ["ORDER_EDITOR"]
+    planner = yaml.safe_load(
+        (tmp_path / "config/localCallbackPlanner.yaml").read_bytes()
+    )
+    assert planner["planning_mode"] and planner["allowed_skills"] == [
+        {"name": "localExpiryOwned"}
+    ]

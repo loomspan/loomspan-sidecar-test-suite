@@ -271,6 +271,8 @@ class LocalServer(ThreadingHTTPServer):
         self.release = threading.Event()
         self.effects = 0
         self.models = 0
+        self.planner_step = 0
+        self.tool_issued = False
 
     def server_close(self):
         self.release.set()
@@ -292,6 +294,13 @@ class LocalHandler(Handler):
             with self.server.lock:
                 self.server.credential = credential
             self.respond(200, [])
+        elif self.path == "/compare":
+            with self.server.lock:
+                equal = (
+                    self.server.credential is not None
+                    and self.headers.get("Authorization") == self.server.credential
+                )
+            self.respond(200, {"equal": equal})
         elif self.path == "/probe":
             with self.server.lock:
                 credential = self.server.credential
@@ -318,6 +327,7 @@ class LocalHandler(Handler):
                     "entered": self.server.entered.is_set(),
                     "effects": self.server.effects,
                     "models": self.server.models,
+                    "toolIssued": self.server.tool_issued,
                 }
             self.respond(200, value)
         else:
@@ -327,6 +337,7 @@ class LocalHandler(Handler):
         routes = (
             "/model/chat/completions",
             "/block/chat/completions",
+            "/callback/chat/completions",
             "/effect",
             "/release",
             "/reset",
@@ -352,6 +363,8 @@ class LocalHandler(Handler):
             self.server.release.clear()
             with self.server.lock:
                 self.server.effects = self.server.models = 0
+                self.server.planner_step = 0
+                self.server.tool_issued = False
                 self.server.credential = None
             self.respond(200, {})
             return
@@ -359,6 +372,71 @@ class LocalHandler(Handler):
             with self.server.lock:
                 self.server.effects += 1
             self.respond(200, {"effect": "recorded"})
+            return
+        if self.path == "/callback/chat/completions":
+            with self.server.lock:
+                index = self.server.planner_step
+                self.server.planner_step += 1
+                self.server.models += 1
+            if index == 0:
+                self.server.entered.set()
+                if not self.server.release.wait(30):
+                    self.respond(504, {})
+                    return
+                content = {
+                    "capabilityName": "localCallbackPlanner",
+                    "createdAt": "2026-10-18T00:00:00Z",
+                    "status": "VALID",
+                    "tasks": [
+                        {
+                            "taskId": "owned",
+                            "title": "owned",
+                            "status": "PENDING",
+                            "capabilityName": "localExpiryOwned",
+                            "intent": "owned",
+                            "dependsOn": [],
+                            "expectedOutputs": ["identity"],
+                            "parallelGroup": None,
+                            "note": "",
+                        }
+                    ],
+                }
+            elif index == 1:
+                with self.server.lock:
+                    self.server.tool_issued = True
+                content = {
+                    "stepAction": "CALL_TOOL",
+                    "taskId": "owned",
+                    "toolName": "localExpiryOwned",
+                    "toolArguments": {"message": "verify"},
+                }
+            else:
+                self.respond(500, {})
+                return
+            self.respond(
+                200,
+                {
+                    "id": "local-callback-fixture",
+                    "object": "chat.completion",
+                    "created": 0,
+                    "model": "fixture",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "message": {
+                                "role": "assistant",
+                                "content": json.dumps(content),
+                            },
+                            "finish_reason": "stop",
+                        }
+                    ],
+                    "usage": {
+                        "prompt_tokens": 1,
+                        "completion_tokens": 1,
+                        "total_tokens": 2,
+                    },
+                },
+            )
             return
         with self.server.lock:
             self.server.models += 1

@@ -59,6 +59,8 @@ STAGES = (
     "localRestart",
     "localTrust",
     "localQueue",
+    "localCallbacks",
+    "localCallbackExpiry",
     "localCleanup",
     "cleanup",
 )
@@ -125,6 +127,8 @@ def stage(report, name, action):
         "localRestart": "local-restart",
         "localTrust": "local-trust-recovery",
         "localQueue": "local-queue-expiry",
+        "localCallbacks": "local-callback-authorization",
+        "localCallbackExpiry": "local-callback-expiry",
     }.get(name)
     started = time.monotonic()
     report["stages"][name] = {"status": "running"}
@@ -805,6 +809,14 @@ def run_smoke(report, checkout, directory):
             )
             report["localRecipe"]["queue"] = stage(
                 report, "localQueue", lambda: local_runtime.probe("queue")
+            )
+            report["localRecipe"]["callbacks"] = stage(
+                report, "localCallbacks", lambda: local_runtime.probe("callbacks")
+            )
+            report["localRecipe"]["callbackExpiry"] = stage(
+                report,
+                "localCallbackExpiry",
+                lambda: local_runtime.probe("callback-expiry"),
             )
         except BaseException as failure:
             local_failure = failure

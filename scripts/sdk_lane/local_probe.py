@@ -181,6 +181,91 @@ def queue():
     }
 
 
+def callbacks():
+    alice = login()
+    baseline = app(alice, "/callback-counts")
+    execution = app(alice, "/submit/localOwned", True)["id"]
+    success = terminal(alice, execution)
+    assert success["status"] == "COMPLETED"
+    assert json.loads(success["result"]) == {
+        "issuer": "loomspan-app",
+        "subject": "alice",
+        "roles": ["ROLE_ORDER_EDITOR"],
+        "credentialEqual": True,
+    }
+    assert app(alice, "/callback-counts") == {
+        key: value + 1 for key, value in baseline.items()
+    }
+    denied = terminal(
+        (literal := login("literal")),
+        app(literal, "/submit/localLiteralOwned", True)["id"],
+    )
+    assert denied["status"] == "FAILED" and "403" in denied["failure"]
+    assert app(alice, "/callback-counts") == {
+        "arrivals": baseline["arrivals"] + 2,
+        "bodies": baseline["bodies"] + 1,
+        "effects": baseline["effects"] + 1,
+    }
+    denied = terminal((bob := login("bob")), app(bob, "/submit/localOwned", True)["id"])
+    assert denied["status"] == "FAILED" and "403" in denied["failure"]
+    assert app(alice, "/callback-counts") == {
+        "arrivals": baseline["arrivals"] + 3,
+        "bodies": baseline["bodies"] + 2,
+        "effects": baseline["effects"] + 1,
+    }
+    # The same form chain still enforces CSRF after callback requests.
+    assert request(alice[0], "http://127.0.0.1:8081/submit/localModel", {})[0] == 403
+    assert (
+        terminal(alice, app(alice, "/submit/localModel", True)["id"])["status"]
+        == "COMPLETED"
+    )
+    return {
+        "forwardedIdentity": True,
+        "credentialEqual": True,
+        "methodDenied": True,
+        "ownershipDenied": True,
+        "formAndCsrfPreserved": True,
+    }
+
+
+def callback_expiry():
+    session = login()
+    fixed("/reset", True)
+    baseline = app(session, "/callback-counts")
+    try:
+        execution = app(session, "/submit/localCallbackPlanner", True)["id"]
+        until(lambda: fixed("/status"), lambda value: value["entered"])
+        assert app(session, "/executions/" + execution)["status"] == "RUNNING"
+        entered = time.monotonic()
+        # Fresh authenticated polling cannot renew the originally captured JWT.
+        while time.monotonic() - entered < 2.5:
+            assert app(session, "/executions/" + execution)["status"] == "RUNNING"
+            assert app(session, "/callback-counts") == baseline
+            time.sleep(0.1)
+        fixed("/release", True)
+        done = terminal(session, execution)
+        assert (
+            done["status"] == "FAILED"
+            and done["failure"] == "execution credential expired"
+        )
+        assert fixed("/status")["toolIssued"] is True
+        deadline = time.monotonic() + 1
+        while time.monotonic() < deadline:
+            assert app(session, "/callback-counts") == baseline
+            time.sleep(0.1)
+    finally:
+        fixed("/release", True)
+    return {
+        "runningObserved": True,
+        "plannerEntered": True,
+        "exactChildFailure": True,
+        "callbackArrivals": 0,
+        "callbackBodies": 0,
+        "callbackEffects": 0,
+        "freshPolling": True,
+    }
+
+
 if __name__ == "__main__":
     try:
         result = {
@@ -188,6 +273,8 @@ if __name__ == "__main__":
             "restart": restart,
             "trust": trust,
             "queue": queue,
+            "callbacks": callbacks,
+            "callback-expiry": callback_expiry,
         }[sys.argv[1]]()
         print(json.dumps(result))
     except Exception:

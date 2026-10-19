@@ -14,8 +14,26 @@ SCENARIOS = (
     "local-restart",
     "local-trust-recovery",
     "local-queue-expiry",
+    "local-callback-authorization",
+    "local-callback-expiry",
 )
 RESULTS = {
+    "callbacks": {
+        "forwardedIdentity": True,
+        "credentialEqual": True,
+        "methodDenied": True,
+        "ownershipDenied": True,
+        "formAndCsrfPreserved": True,
+    },
+    "callback-expiry": {
+        "runningObserved": True,
+        "plannerEntered": True,
+        "exactChildFailure": True,
+        "callbackArrivals": 0,
+        "callbackBodies": 0,
+        "callbackEffects": 0,
+        "freshPolling": True,
+    },
     "issuance": {
         "formLogin": True,
         "csrf": True,
@@ -105,6 +123,10 @@ def configure(directory):
         ("localModel", "normal"),
         ("localBlocker", "block"),
         ("localEffect", None),
+        ("localOwned", None),
+        ("localLiteralOwned", None),
+        ("localExpiryOwned", None),
+        ("localCallbackPlanner", "callback"),
     ):
         data = {
             "name": skill,
@@ -112,6 +134,22 @@ def configure(directory):
             "rbac_roles": ["ROLE_ORDER_EDITOR"],
             "input_schema": {"type": "object"},
         }
+        if skill == "localExpiryOwned":
+            data["input_schema"] = {
+                "type": "object",
+                "properties": {"message": {"type": "string"}},
+                "required": ["message"],
+                "additionalProperties": False,
+            }
+        if skill == "localLiteralOwned":
+            data["rbac_roles"] = ["ORDER_EDITOR"]
+        if skill == "localCallbackPlanner":
+            data.update(
+                planning_mode=True,
+                concurrency=False,
+                max_steps=3,
+                allowed_skills=[{"name": "localExpiryOwned"}],
+            )
         if model:
             data.update(model=model, prompt="Return fixture result")
         else:
@@ -123,20 +161,39 @@ def configure(directory):
         yaml.safe_dump(
             {
                 "targets": {
+                    "app": {
+                        "base-url": "http://127.0.0.1:8081",
+                        "auth": {"mode": "caller-passthrough"},
+                        "connect-timeout": "2s",
+                        "read-timeout": "3s",
+                        "max-response-size": "4KB",
+                    },
                     "fixture": {
                         "base-url": "http://127.0.0.1:8090",
                         "auth": {"mode": "none"},
                         "connect-timeout": "2s",
                         "read-timeout": "3s",
                         "max-response-size": "1KB",
-                    }
+                    },
                 },
                 "routes": {
+                    **{
+                        name: {
+                            "target": "app",
+                            "method": "POST",
+                            "path": "/loomspan/callbacks/owned",
+                        }
+                        for name in (
+                            "localOwned",
+                            "localLiteralOwned",
+                            "localExpiryOwned",
+                        )
+                    },
                     "localEffect": {
                         "target": "fixture",
                         "method": "POST",
                         "path": "/effect",
-                    }
+                    },
                 },
             }
         ),
@@ -155,17 +212,25 @@ def configure(directory):
             "skills": {
                 "locations": [
                     "file:/config/" + name + ".yaml"
-                    for name in ("localModel", "localBlocker", "localEffect")
+                    for name in (
+                        "localModel",
+                        "localBlocker",
+                        "localEffect",
+                        "localOwned",
+                        "localLiteralOwned",
+                        "localExpiryOwned",
+                        "localCallbackPlanner",
+                    )
                 ]
             },
             "observability": {"enabled": False},
         },
     }
-    for model in ("normal", "block"):
+    for model in ("normal", "block", "callback"):
         config["loomspan"]["connections"][model] = {
             "driver": "openai",
             "base-url": "http://127.0.0.1:8090/"
-            + ("model" if model == "normal" else "block"),
+            + ("model" if model == "normal" else model),
             "api-key": "fixture-nonsecret",
             "provider-retry": {"max-attempts": 1},
             "request-timeout": "30s",

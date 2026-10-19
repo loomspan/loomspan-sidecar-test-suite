@@ -21,7 +21,8 @@ From this suite checkout:
 
 `local` selects `foundation-smoke`, `blocking-client`, `shutdown-completion`,
 `shutdown-cutoff`, `deployment-transport-baseline`, `local-issuance-roles`,
-`local-ownership`, `local-restart`, `local-trust-recovery` and `local-queue-expiry`.
+`local-ownership`, `local-restart`, `local-trust-recovery`, `local-queue-expiry`,
+`local-callback-authorization` and `local-callback-expiry`.
 It runs root `clean verify`
 (including tests), SDK `clean install`, packages the plain Java driver with its
 runtime dependencies, packages `sdk/reference-app` against the locally installed
@@ -73,8 +74,8 @@ servers, verified positive readiness, wrong-CA/hostname/expired rejections, and
 supplied Caddy with the shipped fixed-upstream/header policy. A separate namespace
 client checks ingress, redirect origin, normalized headers and backend refusal. It
 does not test certificate persistence, issuance, replacement, renewal or reload.
-These are deployment baselines, not full Standard/Hardened SDK recipes or SDK Spring
-callback authentication. Later tickets retain callback authorization,
+These are deployment baselines, not full Standard/Hardened SDK recipes. The separate
+Local group exercises SDK Spring callback authentication. Later tickets retain
 bidirectional TLS/mTLS, provided signing and trusted-group rotation obligations.
 
 `standard` and `hardened` are recognized but currently have no scenarios. They
@@ -154,10 +155,10 @@ is observed QUEUED; fresh authenticated polls do not extend it. After release, t
 `execution credential expired before start` failure and a separate zero effect counter
 prove non-dispatch, including a quiet observation after recovery. All waits are bounded.
 Cleanup attempts project teardown and explicit removal of its external key volume.
-No callback authorization or TLS recipe completion is claimed by this Local group.
+No TLS recipe completion is claimed by this Local group.
 
 
-Current complete Local evidence: [report 20261018T222714Z-48aad3a2b736](../evidence/sdk/20261018T222714Z-48aad3a2b736/report.json)
+Previous Local evidence (before callback scenarios): [report 20261018T222714Z-48aad3a2b736](../evidence/sdk/20261018T222714Z-48aad3a2b736/report.json)
 passes all ten scenarios, builds and cleanup in 518.105s. Root components:
 61 classes / 261 tests, zero failures/errors/skips; focused harness: 66 passed;
 full safe Python suite: 176 passed. Ruff/diff checks and independent exact-label
@@ -167,3 +168,58 @@ The initial [failed report](../evidence/sdk/20261018T221808Z-eef7285741cc/report
 retains its Local readiness failure and not-run outcomes; the initial fixture's
 unsupported connection key was replaced with beta.8 `request-timeout` before the
 fresh complete run. No operational/reference data reset or provider call occurred.
+
+
+## Callback authentication and application authorization
+
+The reference app enables Spring method security and implements the fixed
+`POST /loomspan/callbacks/owned` route within the SDK's default callback prefix.
+The SDK authenticates execution JWTs independently of browser sessions; the app
+uses `hasRole('ORDER_EDITOR')` and an Alice-owned record check to authorize the
+operation. Its ordinary form-login chain and CSRF remain independent. Counters
+are exposed only through authenticated `/callback-counts`, outside the callback
+prefix; the arrival filter runs before security, while body and effect counters
+separate method denial from record denial.
+
+`local-callback-authorization` submits an admitted REST leaf with Sidecar
+`caller-passthrough` to this fixed loopback route. Alice's verified issuer,
+subject and exact `ROLE_ORDER_EDITOR` authority return with the callback result.
+A scoped SDK capture client sends the same opaque submission credential to the
+in-memory fixture first. The callback compares its verified JWT against that
+captured credential through a fixed fixture endpoint; only the equality boolean
+leaves the fixture. The literal `ORDER_EDITOR` user is deliberately admitted by a
+separate skill but fails the callback's method role check. Bob has the role and
+reaches the body, then fails ownership. Both failures retain HTTP 403 and produce
+no effect. A subsequent form submission verifies ordinary CSRF and login behavior.
+
+`local-callback-expiry` uses a distinct two-second credential and a deterministic
+planning model barrier. The probe observes barrier entry and RUNNING before
+holding past expiry, using fresh credentials for status reads. Release emits the
+real planning protocol's fixed `CALL_TOOL` action for `localExpiryOwned`. The leaf requires a message input, so Framework cannot bypass the step-model action
+using its zero-input dispatch optimization. The required
+child failure propagates to the parent as exact `execution credential expired`;
+the terminal failure plus all three unchanged counters and a bounded quiet interval
+prove the sender made no callback request. This differs from queue expiry, whose
+exact failure remains `execution credential expired before start`. No canned final
+model response can turn the callback-expiry scenario into a success.
+
+Both new scenarios have strict boolean/counter result schemas and independent
+report stages; missing, false, wrongly typed or extra observations fail the run.
+The focused harness verifies fixed routing, credential comparison, planner barrier
+release/deadline, cleanup on scenario failure and report redaction. Detailed invalid
+JWT/header permutations and trust reload belong to the starter component tests.
+This implementation adds no provider calls, business-runtime changes or data reset.
+The [current complete report 20261018T232143Z-36a99814fb53](../evidence/sdk/20261018T232143Z-36a99814fb53/report.json)
+passes all 12 scenarios and every build/runtime/cleanup stage in 538.779s.
+Root components: 61 classes / 261 tests; SDK: 25 core and 30 starter tests, all
+zero failures/errors/skips. Both real consumers packaged. Final focused harness:
+79 passed; full safe Python suite: 189 passed. Ruff/diff checks and independent
+resource-absence checks passed. The report records actual artifact/sample hashes.
+
+The [first callback attempt](../evidence/sdk/20261018T230730Z-15907b2c1449/report.json)
+passed all builds and callback authorization but failed expiry's extra CALL_TOOL
+oracle: beta.8 auto-dispatched the zero-input leaf. A dedicated required-message
+leaf now forces that step-model action; targeted callbacks/expiry and cleanup,
+then the complete final run passed. Both formal runs cleaned their unique projects
+and external key volumes. The earlier ten-scenario report does not establish
+callback behavior. Standard/Hardened recipes and full rotation remain future work.
