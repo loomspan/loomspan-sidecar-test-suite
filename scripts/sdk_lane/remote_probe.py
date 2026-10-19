@@ -107,9 +107,14 @@ def setup(recipe, variant):
 
 
 def ready(recipe, variant, peer):
-    if peer == "app":
+    if peer in ("app", "app-b"):
         # Login readiness is distinct from all credential/negative oracles.
-        status, _ = browser.request(browser.fresh(), "http://127.0.0.1:8081/login")
+        status, _ = browser.request(
+            browser.fresh(),
+            "https://app:8445/login"
+            if peer == "app-b"
+            else "http://127.0.0.1:8081/login",
+        )
         assert status == 200
         return
     host = "sidecar" if recipe == "standard" else "sidecar-proxy"
@@ -287,7 +292,7 @@ def main(recipe, variant, action):
             assert conn.getresponse().status == 200
             conn.close()
         else:
-            ready(recipe, variant, action.split("-")[0])
+            ready(recipe, variant, action.removesuffix("-ready"))
     elif action == "scenario":
         scenario(recipe, variant)
     elif action == "isolation":

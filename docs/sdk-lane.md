@@ -304,3 +304,111 @@ starter 30, with zero failures/errors/skips. No production Sidecar/SDK TLS wirin
 change was necessary. No tracked/untracked certificate or key file was added;
 the failed and passing reports contain no PEM, bearer credential or JWT values.
 No provider call, business runtime change, data reset, commit or release occurred.
+
+
+## Trusted group, rotation and outbound-only scenarios
+
+Standard adds one `standard-trusted-group-rotation` composition, without a group
+matrix. Two independent reference-app JVMs share provided signing, issuer,
+callback audience and directory/role semantics. App B issues and submits over
+verified HTTPS to the shared Sidecar; app A receives the authenticated callback.
+Literal-role method denial, Bob record denial and different-owner result 404
+remain enforced. This is full mutual app trust, not app isolation.
+
+The fixture keeps old/candidate/current bearer values only in fixed memory slots.
+A disposable Java helper uses public SDK APIs within the app signing boundary to
+prepare the replacement candidate before normal signer restart. Public SDK exports,
+Sidecar's operator JWKS and callback overlap files are distinct. Actual receiver
+HTTP probes establish independent add and remove adoption within five seconds
+of each atomic publication; one-second loader polling is the documented interval,
+not an exact HTTP cutoff. Unknown-kid probes may accelerate adoption. Both signing
+apps restart on replacement private material before old-key retirement, including
+the callback receiver whose own startup signer is otherwise retained in trust.
+
+An old-key model blocker reaches the real model and Sidecar RUNNING before
+retirement, then completes with the exact result after both old-key removals.
+Fixed nonsecret marker files bridge only the barrier across the two fixture
+namespaces, without a new external fixture listener. No database or management
+trust path is used; component tests own both ConfigurationModes.
+
+Each recipe adds one `*-outbound-only` case. The same jar runs non-web, has only a
+model skill and empty REST targets/routes, waits while actual application ports
+are checked absent, then discovers, submits exactly once, polls exact completion
+and exits cleanly. Local retains colocated loopback trust; Standard retains the
+verified SDK HTTPS bundle; Hardened retains app-side outbound mTLS invocation and
+Sidecar ingress while omitting callback ingress/egress and browser listeners.
+Independent Sidecar-fixture model counts are used for remote compositions.
+
+A sleep-only namespace owner keeps the two JVMs and memory fixture in a stable
+app namespace while signing apps restart. No additional fixture listener is added.
+
+These scenarios are provider-free and use only temporary isolated SDK resources.
+No business runtime, maintained reference pack, operational credential/data,
+Framework internal type, private-key hot reload, or TLS certificate lifecycle is
+part of this work. No development-data reset is required. The fresh formal reports below own these new scenarios; historical reports above
+do not prove them.
+
+## Trusted group, independent JWT rotation and outbound-only evidence
+
+PR 8.1.8 completes its composed implementation evidence with these fresh full
+commands. Each rebuilt root Sidecar, SDK, both consumers and image before running
+all selected cases; every required build/startup/scenario/cleanup stage passed.
+
+| Recipe / report | Passed scenarios | Total seconds |
+| --- | ---: | ---: |
+| [Local 20261019T032901Z-8d4833bcc6c8](../evidence/sdk/20261019T032901Z-8d4833bcc6c8/report.json) | 13 | 611.772 |
+| [Standard 20261019T031355Z-aa841eadf316](../evidence/sdk/20261019T031355Z-aa841eadf316/report.json) | 8 | 884.328 |
+| [Hardened 20261019T033931Z-5bb5875da104](../evidence/sdk/20261019T033931Z-5bb5875da104/report.json) | 9 | 851.853 |
+
+Standard's single trusted group uses two independent app JVMs with the same
+provided signing material, issuer, callback audience and user/role semantics.
+B's SDK submission invokes A's callback with exact issuer, subject, roles and
+captured bearer equality. Literal-role method denial, Bob record denial and
+Bob result-owner 404 remain enforced. The ordered scenario proves candidate
+rejection before addition, independent receiver addition, actual restart of both
+signers, old-key overlap, independent old-key removal within five seconds of
+each publication before expiry, continued replacement acceptance, and exact
+completion of already RUNNING old-key model work after retirement. Verification
+trust changes only through the distinct current JWKS/overlap files. One-second
+polling is the public interval; five seconds is a test observation allowance,
+not an exact HTTP cutoff or proof of the scheduler's phase.
+
+Each recipe's outbound-only case uses the actual non-web SDK application,
+model-only skill, empty REST targets/routes, live listener-absence checks,
+exactly one model submission and clean process exit. Hardened also proves absent
+callback/browser ingress and callback egress while invocation mTLS still works.
+No per-ConfigurationMode or trusted-group deployment matrix was added.
+
+Final root components passed 61 classes / 261 tests; SDK core 25 and starter 30,
+zero failures/errors/skips, including both-mode filesystem trust authority and
+public Framework API-boundary checks. Focused SDK harness: 136 passed; full safe
+Python suite: 246 passed. Ruff formatting/lint and both diff checks passed.
+Every report retains source revisions/dirty flags and actual Sidecar/SDK/driver/
+reference-app artifact hashes. All three use Sidecar source
+`f0ea254e0c41e09ab900f58c1773e407575df986`, suite source
+`6e65846ee833ee91f308e07ecb8662fe56839a16` (both dirty) and Framework
+`1.0.0-beta.8`; HEAD alone does not identify the uncommitted build inputs.
+
+Independent exact-label and explicit-volume checks found no remaining containers,
+networks, project volumes or helper containers for all final projects. The durable
+cleanup audit also covers the failed attempt and seven scoped diagnostics:
+34 projects, 169 read-only checks, all absent. Secret-pattern scans found no JWT
+values or private PEM material in changed sources or new reports. No provider,
+Framework source build, business-runtime/reference-pack change, operational-data
+reset, commit, push or release occurred. Durations above include the complete
+build/runtime commands and are not production performance claims.
+
+The [initial Standard attempt](../evidence/sdk/20261019T025810Z-daadbfb4e9bf/report.json)
+is retained failed (`rotation-add-failed`, 847.813s): all mandatory builds and six
+existing cases passed, while group failed and outbound-only stayed not-run.
+That process loaded pre-fix fixture mounts. Scoped diagnostics corrected the
+import-name mount and used a stable namespace owner to preserve credential memory
+across signer restarts; fixed nonsecret marker files bridge only the bounded model
+barrier between fixture namespaces. Diagnostics are not final acceptance: the
+fresh complete Standard run above proves the corrected composition.
+
+Limits: one fully trusted Standard group and three focused outbound-only recipes.
+Apps sharing a Sidecar trust each other in every way; use separate Sidecars for
+isolation. No private-key hot reload, uninterrupted rollover, replica coordination,
+TLS certificate lifecycle or arbitrary customer-network guarantee is claimed.
+Independent Step 5 review remains the pipeline's final completion gate.

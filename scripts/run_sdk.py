@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 import yaml
 
-from sdk_lane import local, remote, transport
+from sdk_lane import local, remote, transport, outbound
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +32,7 @@ RECIPES = {
         "shutdown-cutoff",
         "deployment-transport-baseline",
         *local.SCENARIOS,
+        "local-outbound-only",
     ],
     "standard": remote.scenarios("standard"),
     "hardened": remote.scenarios("hardened"),
@@ -827,6 +828,35 @@ def run_smoke(report, checkout, directory):
             except Exception:
                 if local_failure is None:
                     raise LaneFailure("local-cleanup-failed") from None
+        only = local.Runtime(
+            directory / "outbound",
+            checkout,
+            ROOT,
+            runtime.project,
+            runtime.image,
+            command,
+            LaneFailure,
+            outbound_only=True,
+        )
+        report["outboundOnly"] = {"project": only.project, "keyVolume": only.volume}
+        primary = None
+        try:
+            stage(report, "localOutboundStartup", only.start)
+            report["outboundOnly"]["observations"] = stage(
+                report, "localOutbound", lambda: outbound.run(only, "local")
+            )
+            report["scenarioResults"]["local-outbound-only"] = "passed"
+        except BaseException as failure:
+            primary = failure
+            report["scenarioResults"]["local-outbound-only"] = "failed"
+            raise
+        finally:
+            try:
+                stage(report, "localOutboundCleanup", only.cleanup)
+            except Exception:
+                report["scenarioResults"]["local-outbound-only"] = "failed"
+                if primary is None:
+                    raise LaneFailure("outbound-cleanup-failed") from None
         if any(value != "passed" for value in report["scenarioResults"].values()):
             raise LaneFailure("incomplete-scenario-results")
         report["status"] = "passed"

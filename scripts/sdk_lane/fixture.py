@@ -1,4 +1,4 @@
-"""Fixed local OpenAI fixture. No forwarding, request capture or access logging."""
+"""Fixed model/effect fixtures and bounded credential probes; no access logging."""
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.client import HTTPConnection
@@ -6,6 +6,8 @@ import json
 import os
 import socket
 import threading
+import time
+from pathlib import Path
 
 
 class FixtureServer(ThreadingHTTPServer):
@@ -266,6 +268,8 @@ class LocalServer(ThreadingHTTPServer):
         super().__init__(address, LocalHandler)
         self.destination = destination
         self.credential = None
+        self.credentials = {}
+        self.outbound = {"ready": False, "go": False, "completed": False}
         self.lock = threading.Lock()
         self.entered = threading.Event()
         self.release = threading.Event()
@@ -277,6 +281,7 @@ class LocalServer(ThreadingHTTPServer):
     def server_close(self):
         self.release.set()
         self.credential = None
+        self.credentials.clear()
         super().server_close()
 
 
@@ -286,6 +291,12 @@ class LocalHandler(Handler):
         self.connection.settimeout(3)
 
     def do_GET(self):
+        if self.path == "/outbound/status":
+            self.respond(200, self.server.outbound)
+            return
+        if self.path.startswith("/rotation/"):
+            self.rotation()
+            return
         if self.path == "/capture/v1/skills":
             credential = self.headers.get("Authorization", "")
             if not credential.startswith("Bearer ") or not 8 < len(credential) <= 16384:
@@ -333,7 +344,106 @@ class LocalHandler(Handler):
         else:
             self.respond(404, {})
 
+    def rotation(self):
+        # Fixed slots and destinations only. Opaque values never cross the fixture boundary.
+        parts = self.path.strip("/").split("/")
+        slots = ("old", "candidate", "current")
+        if (
+            len(parts) == 5
+            and parts[:2] == ["rotation", "capture"]
+            and parts[2] in slots
+            and parts[3:] == ["v1", "skills"]
+        ):
+            credential = self.headers.get("Authorization", "")
+            if not credential.startswith("Bearer ") or not 8 < len(credential) <= 16384:
+                self.respond(400, {})
+                return
+            with self.server.lock:
+                self.server.credentials[parts[2]] = credential
+            self.respond(200, [])
+            return
+        if self.path == "/rotation/save-old":
+            with self.server.lock:
+                if self.server.credential is None:
+                    self.respond(409, {})
+                    return
+                self.server.credentials["old"] = self.server.credential
+            self.respond(200, {})
+            return
+        if (
+            len(parts) != 4
+            or parts[:2] != ["rotation", "probe"]
+            or parts[2] not in slots
+            or parts[3] not in ("sidecar", "callback", "blocker", "metadata")
+        ):
+            self.respond(404, {})
+            return
+        with self.server.lock:
+            credential = self.server.credentials.get(parts[2])
+            if parts[3] == "callback":
+                self.server.credential = credential
+        if credential is None:
+            self.respond(409, {})
+            return
+        if parts[3] == "metadata":
+            try:
+                import base64
+
+                token = credential.removeprefix("Bearer ").split(".")
+
+                def decode(value):
+                    return json.loads(
+                        base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
+                    )
+
+                self.respond(
+                    200,
+                    {
+                        "kid": decode(token[0])["kid"],
+                        "unexpired": decode(token[1])["exp"] > time.time() + 10,
+                    },
+                )
+            except Exception:
+                self.respond(400, {})
+            return
+        import ssl
+        from http.client import HTTPSConnection
+
+        context = ssl.create_default_context(cafile="/tls/group-ca.pem")
+        callback = parts[3] == "callback"
+        blocker = parts[3] == "blocker"
+        conn = HTTPSConnection(
+            "app" if callback else "sidecar", 8443, context=context, timeout=2
+        )
+        try:
+            conn.request(
+                "POST" if callback or blocker else "GET",
+                "/loomspan/callbacks/owned"
+                if callback
+                else "/v1/skills/localBlocker/executions"
+                if blocker
+                else "/v1/skills",
+                b"{}" if callback or blocker else None,
+                {"Authorization": credential, "Content-Type": "application/json"},
+            )
+            response = conn.getresponse()
+            body = response.read(1024 * 1024)
+            result = {"status": response.status}
+            if blocker and response.status == 202:
+                result["id"] = json.loads(body)["id"]
+            if callback and response.status == 200:
+                result["identity"] = json.loads(body)
+            self.respond(200, result)
+        except (OSError, ValueError):
+            self.respond(502, {})
+        finally:
+            conn.close()
+
     def do_POST(self):
+        if self.path in ("/outbound/ready", "/outbound/go", "/outbound/completed"):
+            self.server.outbound[self.path.rsplit("/", 1)[1]] = True
+            self.respond(200, {})
+            return
         routes = (
             "/model/chat/completions",
             "/block/chat/completions",
@@ -442,7 +552,18 @@ class LocalHandler(Handler):
             self.server.models += 1
         if self.path == "/block/chat/completions":
             self.server.entered.set()
-            if not self.server.release.wait(30):
+            if Path("/barrier").is_dir():
+                Path("/barrier/entered").touch()
+                deadline = time.monotonic() + 30
+                while (
+                    not Path("/barrier/release").exists()
+                    and time.monotonic() < deadline
+                ):
+                    time.sleep(0.05)
+                released = Path("/barrier/release").exists()
+            else:
+                released = self.server.release.wait(30)
+            if not released:
                 self.respond(504, {})
                 return
         self.respond(

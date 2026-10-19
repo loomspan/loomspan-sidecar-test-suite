@@ -1,6 +1,9 @@
 """Offline, disposable TLS peers and independent provided RSA signer."""
 
 from datetime import datetime, timedelta, timezone
+import base64
+import hashlib
+import json
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -116,7 +119,11 @@ def generate(directory):
                 .sign(ca_key, hashes.SHA256())
             )
             save(peer + "-" + kind, private, certificate)
-    private = key()
+    for label in ("signing", "replacement"):
+        signing_material(directory / label, key(), now)
+
+
+def signing_material(signing, private, now):
     name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "provided signer")])
     certificate = (
         x509.CertificateBuilder()
@@ -128,7 +135,6 @@ def generate(directory):
         .not_valid_after(now + timedelta(days=1))
         .sign(private, hashes.SHA256())
     )
-    signing = directory / "signing"
     signing.mkdir()
     (signing / "signer.pem").write_bytes(
         certificate.public_bytes(serialization.Encoding.PEM)
@@ -140,3 +146,28 @@ def generate(directory):
             serialization.NoEncryption(),
         )
     )
+
+
+def public_jwk(certificate):
+    numbers = (
+        x509.load_pem_x509_certificate(certificate.read_bytes())
+        .public_key()
+        .public_numbers()
+    )
+
+    def encoded(n):
+        return (
+            base64.urlsafe_b64encode(n.to_bytes((n.bit_length() + 7) // 8, "big"))
+            .rstrip(b"=")
+            .decode()
+        )
+
+    fields = {"e": encoded(numbers.e), "kty": "RSA", "n": encoded(numbers.n)}
+    thumbprint = hashlib.sha256(
+        json.dumps(fields, sort_keys=True, separators=(",", ":")).encode()
+    ).digest()
+    return fields | {
+        "kid": base64.urlsafe_b64encode(thumbprint).rstrip(b"=").decode(),
+        "use": "sig",
+        "alg": "RS256",
+    }

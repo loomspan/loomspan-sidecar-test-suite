@@ -6,6 +6,7 @@ import json
 import time
 
 import yaml
+from sdk_lane import outbound
 
 
 SCENARIOS = (
@@ -245,21 +246,36 @@ def configure(directory):
 
 
 class Runtime:
-    def __init__(self, directory, checkout, root, project, image, call, failure):
+    def __init__(
+        self,
+        directory,
+        checkout,
+        root,
+        project,
+        image,
+        call,
+        failure,
+        outbound_only=False,
+    ):
         self.call, self.failure = call, failure
-        self.project = project + "-local"
+        self.outbound_only = outbound_only
+        self.project = project + ("-local-outbound" if outbound_only else "-local")
         self.volume = self.project + "-keys"
         self.image = image
         self.root = root
         directory.mkdir()
         config = directory / "config"
         configure(config)
+        if outbound_only:
+            outbound.configure(config)
         try:
             document, self.sample_hash = composition(
                 checkout, root, config, image, self.volume
             )
         except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError):
             raise failure("local-sample-invalid") from None
+        if outbound_only:
+            outbound.adapt(document, root, "host")
         compose = directory / "compose.yaml"
         compose.write_text(yaml.safe_dump(document), encoding="utf-8")
         self.compose = ["docker", "compose", "-p", self.project, "-f", str(compose)]
@@ -297,8 +313,10 @@ class Runtime:
             timeout=30,
         )
         self.call(self.compose + ["up", "-d"], timeout=180)
+        if self.outbound_only:
+            outbound.ready(self, "local", "fixtures")
         deadline = time.monotonic() + 120
-        while True:
+        while not self.outbound_only:
             try:
                 self.call(
                     self.compose

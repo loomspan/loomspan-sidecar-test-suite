@@ -437,3 +437,276 @@ def test_public_export_must_match_provided_signer_before_sidecar_start(
     with pytest.raises(runner.LaneFailure, match="public-export-invalid"):
         runtime.start()
     assert not any(args[-2:] == ["sidecar", "sidecar-fixture"] for args in calls)
+
+
+def test_standard_group_rotation_has_two_apps_and_independent_trust_files(tmp_path):
+    assert "trusted-group-rotation" in remote.VARIANTS["standard"]
+    assert "trusted-group-rotation" not in remote.VARIANTS["hardened"]
+    remote_material.generate(tmp_path / "material")
+    remote.configure(
+        tmp_path / "config", CHECKOUT, "standard", "trusted-group-rotation"
+    )
+    document = remote.composition(tmp_path, ROOT, "image", "public-volume", "standard")
+    services = document["services"]
+    assert services["app-b"]["network_mode"] == "service:app-network"
+    assert (
+        services["app"]["network_mode"]
+        == services["app-fixture"]["network_mode"]
+        == "service:app-network"
+    )
+    assert services["app-network"]["networks"] == {"remote": {"aliases": ["app"]}}
+    mounts = services["app-fixture"]["volumes"]
+    for module in ("rotation_probe", "remote_probe", "local_probe"):
+        assert any(mount.endswith(":/" + module + ".py:ro") for mount in mounts)
+    for name in ("app-fixture", "sidecar-fixture"):
+        assert any(mount.endswith(":/barrier") for mount in services[name]["volumes"])
+    assert not any("ports" in service for service in services.values())
+    a = yaml.safe_load((tmp_path / "config/app.yaml").read_text())
+    b = yaml.safe_load((tmp_path / "config/app-b.yaml").read_text())
+    assert b["server"]["port"] == 8445
+    assert a["loomspan-sdk"]["issuance"] == b["loomspan-sdk"]["issuance"]
+    assert (
+        a["loomspan-sdk"]["signing"]["provided"]["key-location"]
+        == b["loomspan-sdk"]["signing"]["provided"]["key-location"]
+    )
+    assert (
+        a["loomspan-sdk"]["signing"]["provided"]["jwks-export"]
+        != b["loomspan-sdk"]["signing"]["provided"]["jwks-export"]
+    )
+    assert a["loomspan-sdk"]["callbacks"]["overlap-jwks"] == "/trust/callback.json"
+    sidecar = yaml.safe_load((tmp_path / "config/sidecar/application.yaml").read_text())
+    assert sidecar["loomspan-sidecar"]["trust"]["file"]["jwks"] == "/trust/sidecar.json"
+    assert any(":/trust:ro" in mount for mount in services["sidecar"]["volumes"])
+    assert not any("/signing" in mount for mount in services["sidecar"]["volumes"])
+
+
+@pytest.mark.parametrize("recipe", ["standard", "hardened"])
+def test_outbound_only_omits_callbacks_and_preserves_recipe_invocation(
+    tmp_path, recipe
+):
+    remote.Runtime(
+        tmp_path / "runtime",
+        CHECKOUT,
+        ROOT,
+        "unique",
+        "image",
+        recipe,
+        "outbound-only",
+        lambda *a, **k: "",
+        runner.LaneFailure,
+    )
+    directory = tmp_path / "runtime"
+    document = yaml.safe_load((directory / "compose.yaml").read_text())
+    app = yaml.safe_load((directory / "config/app.yaml").read_text())
+    config = yaml.safe_load((directory / "config/sidecar/application.yaml").read_text())
+    routes = yaml.safe_load((directory / "config/sidecar/routes.yaml").read_text())
+    assert routes == {"targets": {}, "routes": {}}
+    assert config["loomspan"]["skills"]["locations"] == ["file:/config/localModel.yaml"]
+    assert set(p.name for p in (directory / "config/sidecar").glob("local*.yaml")) == {
+        "localModel.yaml"
+    }
+    assert (
+        "--spring.main.web-application-type=none"
+        in document["services"]["app"]["command"]
+    )
+    assert app["loomspan-sdk"]["signing"]["mode"] == "provided"
+    if recipe == "standard":
+        assert app["loomspan-sdk"]["base-url"] == "https://sidecar:8443"
+        assert app["loomspan-sdk"]["ssl-bundle"] == "sidecar"
+    else:
+        a = (directory / "config/Caddyfile.app").read_text()
+        s = (directory / "config/Caddyfile.sidecar").read_text()
+        assert (
+            "https://:8443" not in a and ":8444" not in a and "127.0.0.1:8081" not in a
+        )
+        assert "http://:9080" in a and "tls_client_auth /tls/app-client.pem" in a
+        assert "http://:9080" not in s and "app-proxy" not in s
+        assert "https://:8443" in s and "require_and_verify" in s
+        assert "tls_insecure_skip_verify" not in a + s
+
+
+@pytest.mark.parametrize("variant", ["trusted-group-rotation", "outbound-only"])
+@pytest.mark.parametrize("mutation", ["missing", "false", "integer", "extra"])
+def test_new_scenarios_require_every_exact_typed_observation(
+    tmp_path, variant, mutation
+):
+    expected = remote.observations("standard", variant, "scenario")
+    runtime = remote.Runtime(
+        tmp_path / "runtime",
+        CHECKOUT,
+        ROOT,
+        "unique",
+        "image",
+        "standard",
+        variant,
+        lambda *a, **k: "",
+        runner.LaneFailure,
+    )
+    for field in expected:
+        value = dict(expected)
+        if mutation == "missing":
+            del value[field]
+        elif mutation == "extra":
+            value["extra"] = True
+        elif mutation == "integer":
+            value[field] = 1 if isinstance(value[field], bool) else True
+        else:
+            value[field] = False
+        runtime.call = lambda *a, **k: json.dumps(value)
+        with pytest.raises(runner.LaneFailure, match="invalid-result"):
+            runtime.probe("scenario")
+
+
+@pytest.mark.parametrize("failure", [None, "add", "restart", "retire"])
+def test_group_rotation_orders_probes_both_restarts_and_always_releases(
+    tmp_path, failure
+):
+    runtime = remote.Runtime(
+        tmp_path / "runtime",
+        CHECKOUT,
+        ROOT,
+        "unique",
+        "image",
+        "standard",
+        "trusted-group-rotation",
+        lambda *a, **k: "",
+        runner.LaneFailure,
+    )
+    calls = []
+
+    def call(args, **kwargs):
+        if "/rotation_probe.py" in args:
+            calls.append(args[-1])
+            if args[-1] == failure:
+                raise runner.LaneFailure("fixture-probe-failed")
+            return '{"passed":true}'
+        if "restart" in args:
+            calls.append("restart-" + args[-1])
+            config = yaml.safe_load(
+                (runtime.directory / "config" / (args[-1] + ".yaml")).read_text()
+            )
+            assert (
+                config["loomspan-sdk"]["signing"]["provided"]["key-location"]
+                == "/replacement/signer-key.pem"
+            )
+            if failure == "restart":
+                raise runner.LaneFailure("fixture-restart-failed")
+        else:
+            calls.append("candidate")
+        return ""
+
+    runtime.call = call
+    runtime.wait = lambda name: calls.append(name)
+    if failure:
+        with pytest.raises(runner.LaneFailure):
+            runtime.rotation()
+    else:
+        assert runtime.rotation() == remote.observations(
+            "standard", "trusted-group-rotation", "scenario"
+        )
+        assert calls == [
+            "candidate",
+            "add",
+            "restart-app",
+            "app-ready",
+            "restart-app-b",
+            "app-b-ready",
+            "retire",
+            "release",
+        ]
+    assert calls[-1] == "release"
+    if failure in ("add", "restart"):
+        assert "retire" not in calls
+
+
+def test_rotation_publication_has_five_second_bound_and_separate_files(
+    tmp_path, monkeypatch
+):
+    sys.path.insert(0, str(ROOT / "scripts/sdk_lane"))
+    import rotation_probe
+
+    (tmp_path / "sidecar.json").write_text('{"keys":["old"]}')
+    (tmp_path / "callback.json").write_text('{"keys":["old"]}')
+    (tmp_path / "overlap.json").write_text('{"keys":["old","new"]}')
+    monkeypatch.setattr(rotation_probe, "Path", lambda path: tmp_path / Path(path).name)
+    monkeypatch.setattr(rotation_probe, "slot", lambda *a: {"status": 401})
+    times = iter((0, 1, 6))
+    monkeypatch.setattr(rotation_probe.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(rotation_probe.time, "sleep", lambda *a: None)
+    with pytest.raises(AssertionError):
+        rotation_probe.publish("sidecar", "overlap", "candidate", 200)
+    assert json.loads((tmp_path / "sidecar.json").read_text()) == {
+        "keys": ["old", "new"]
+    }
+    assert json.loads((tmp_path / "callback.json").read_text()) == {"keys": ["old"]}
+
+
+@pytest.mark.parametrize("variant", ["trusted-group-rotation", "outbound-only"])
+@pytest.mark.parametrize("phase", ["start", "run", "cleanup"])
+def test_new_scenario_failure_always_cleans_owned_resources(
+    tmp_path, monkeypatch, variant, phase
+):
+    cleaned = []
+
+    class Broken:
+        project, volume = "sdk-owned-new", "sdk-owned-new-public"
+
+        def __init__(self, *args):
+            pass
+
+        def start(self):
+            if phase == "start":
+                raise runner.LaneFailure("fixture-second-app-or-outbound-start-failed")
+
+        def run(self):
+            if phase == "run":
+                raise runner.LaneFailure("fixture-publication-or-invocation-failed")
+            return remote.observations("standard", variant, "scenario")
+
+        def cleanup(self):
+            cleaned.append(self.project)
+            if phase == "cleanup":
+                raise runner.LaneFailure("fixture-cleanup-failed")
+
+    monkeypatch.setitem(remote.VARIANTS, "standard", (variant,))
+    monkeypatch.setattr(remote, "Runtime", Broken)
+    monkeypatch.setattr(runner, "command", lambda *a, **k: "")
+    report = {
+        "recipe": "standard",
+        "stages": {},
+        "scenarioResults": {"standard-" + variant: "not-run"},
+    }
+    with pytest.raises(runner.LaneFailure):
+        runner.run_remote(report, CHECKOUT, tmp_path)
+    assert cleaned == ["sdk-owned-new"]
+    assert report["scenarioResults"]["standard-" + variant] == "failed"
+    assert report.get("status") != "passed"
+
+
+def test_group_second_app_start_failure_is_not_silently_skipped(tmp_path):
+    calls = []
+    runtime = remote.Runtime(
+        tmp_path / "runtime",
+        CHECKOUT,
+        ROOT,
+        "owned",
+        "image",
+        "standard",
+        "trusted-group-rotation",
+        lambda *a, **k: "",
+        runner.LaneFailure,
+    )
+
+    def call(args, **kwargs):
+        calls.append(args)
+        if args[-3:] == ["up", "-d", "app-b"]:
+            raise runner.LaneFailure("fixture-second-app-failed")
+        return ""
+
+    runtime.call = call
+    runtime.wait = lambda *a: None
+    with pytest.raises(runner.LaneFailure, match="second-app"):
+        runtime.start()
+    runtime.cleanup()
+    assert calls[-1] == ["docker", "volume", "rm", runtime.volume]
+    assert any("down" in args for args in calls)

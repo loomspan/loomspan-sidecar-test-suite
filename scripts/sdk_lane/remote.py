@@ -8,7 +8,7 @@ import time
 import yaml
 from cryptography import x509
 
-from sdk_lane import local, remote_material
+from sdk_lane import local, remote_material, outbound
 from sdk_lane.remote_contract import observations
 
 
@@ -20,6 +20,8 @@ VARIANTS = {
         "callback-expired",
         "submission-loss",
         "callback-loss",
+        "trusted-group-rotation",
+        "outbound-only",
     ),
     "hardened": (
         "positive",
@@ -30,6 +32,7 @@ VARIANTS = {
         "isolation",
         "submission-loss",
         "callback-loss",
+        "outbound-only",
     ),
 }
 
@@ -81,9 +84,21 @@ def configure(directory, checkout, recipe, variant):
         app["loomspan-sdk"]["base-url"] = "https://sidecar:9443"
     if variant == "callback-loss" and recipe == "standard":
         routes["targets"]["app"]["base-url"] = "https://app:9443"
+    if variant == "trusted-group-rotation":
+        app["loomspan-sdk"]["callbacks"] = {"overlap-jwks": "/trust/callback.json"}
+        app["loomspan-sdk"]["signing"]["provided"]["jwks-export"] = "/public/app-a.json"
+        fixture["loomspan-sidecar"]["trust"]["file"]["jwks"] = "/trust/sidecar.json"
+        second = copy.deepcopy(app)
+        second["server"]["port"] = 8445
+        second["loomspan-sdk"]["signing"]["provided"]["jwks-export"] = (
+            "/public/app-b.json"
+        )
+        dump(directory / "app-b.yaml", second)
     dump(directory / "app.yaml", app)
     dump(directory / "sidecar/application.yaml", fixture)
     dump(directory / "sidecar/routes.yaml", routes)
+    if variant == "outbound-only":
+        outbound.configure(directory / "sidecar")
     if recipe == "hardened":
         for peer in ("app", "sidecar"):
             text = (base / ("Caddyfile." + peer)).read_text()
@@ -111,6 +126,14 @@ def configure(directory, checkout, recipe, variant):
                     "127.0.0.1:9081",
                     1,
                 )
+            if variant == "outbound-only":
+                if peer == "app":
+                    text = (
+                        text[: text.index("https://:8443")]
+                        + text[text.index("http://:9080") :]
+                    )
+                else:
+                    text = text[: text.index("http://:9080")]
             (directory / ("Caddyfile." + peer)).write_text(text, encoding="utf-8")
 
 
@@ -198,6 +221,50 @@ def composition(directory, root, image, volume, recipe):
             f"{(root / 'scripts/sdk_lane/local_probe.py').as_posix()}:/local_probe.py:ro",
         ],
     }
+    if (directory / "config/app-b.yaml").exists():
+        trust = f"{(directory / 'trust').as_posix()}:/trust"
+        for name in ("app", "sidecar"):
+            services[name]["volumes"].append(trust + ":ro")
+        second = copy.deepcopy(services["app"])
+        second.pop("networks")
+        second["network_mode"] = "service:app-network"
+        services["app"].pop("networks")
+        services["app"]["network_mode"] = "service:app-network"
+        services["app-fixture"]["network_mode"] = "service:app-network"
+        services["app-network"] = {
+            "image": "python:3.13-slim",
+            "read_only": True,
+            "command": ["sleep", "infinity"],
+            "networks": {"remote": {"aliases": ["app"]}},
+        }
+        second["volumes"] = [
+            mount.replace("/config/app.yaml:ro", "/config/app-b.yaml:ro")
+            for mount in second["volumes"]
+        ]
+        # Mount the complete config directory so both provided-key selections can be replaced for restart.
+        for service in (services["app"], second):
+            service["volumes"] = [
+                mount for mount in service["volumes"] if ":/config/" not in mount
+            ]
+            service["volumes"].append(f"{(directory / 'config').as_posix()}:/config:ro")
+        second["environment"]["SPRING_CONFIG_LOCATION"] = "file:/config/app-b.yaml"
+        services["app-b"] = second
+        services["app"]["volumes"].append(
+            f"{(material / 'replacement').as_posix()}:/replacement:ro"
+        )
+        services["app-b"]["volumes"].append(
+            f"{(material / 'replacement').as_posix()}:/replacement:ro"
+        )
+        for name in ("app-fixture", "sidecar-fixture"):
+            services[name]["volumes"].append(
+                f"{(directory / 'barrier').as_posix()}:/barrier"
+            )
+        services["app-fixture"]["volumes"] += [
+            trust,
+            "public:/public:ro",
+            f"{(root / 'scripts/sdk_lane/rotation_probe.py').as_posix()}:/rotation_probe.py:ro",
+            f"{(root / 'scripts/sdk_lane/remote_probe.py').as_posix()}:/remote_probe.py:ro",
+        ]
     return {
         "services": services,
         "networks": {"remote": {"internal": True}},
@@ -209,6 +276,7 @@ class Runtime:
     def __init__(
         self, directory, checkout, root, project, image, recipe, variant, call, failure
     ):
+        self.directory = directory
         self.call, self.failure = call, failure
         self.recipe, self.variant = recipe, variant
         self.project = project + "-" + variant
@@ -224,7 +292,26 @@ class Runtime:
             .public_numbers()
         )
         configure(directory / "config", checkout, recipe, variant)
+        if variant == "trusted-group-rotation":
+            trust = directory / "trust"
+            trust.mkdir()
+            (directory / "barrier").mkdir()
+            old = remote_material.public_jwk(directory / "material/signing/signer.pem")
+            new = remote_material.public_jwk(
+                directory / "material/replacement/signer.pem"
+            )
+            for name, keys in (
+                ("sidecar", [old]),
+                ("callback", [old]),
+                ("overlap", [old, new]),
+                ("replacement", [new]),
+            ):
+                (trust / (name + ".json")).write_text(
+                    json.dumps({"keys": keys}), encoding="utf-8"
+                )
         document = composition(directory, root, image, self.volume, recipe)
+        if variant == "outbound-only":
+            outbound.adapt(document, root, "app")
         dump(directory / "compose.yaml", document)
         self.compose = [
             "docker",
@@ -318,9 +405,26 @@ class Runtime:
         self.call(
             self.compose + ["up", "-d", "app", "app-fixture", "outsider"], timeout=90
         )
-        self.wait("app-ready")
+        if self.variant == "outbound-only":
+            outbound.ready(self, self.recipe, "app-fixture")
+        else:
+            self.wait("app-ready")
+        if self.variant == "trusted-group-rotation":
+            self.call(self.compose + ["up", "-d", "app-b"], timeout=90)
+            self.wait("app-b-ready")
         public = json.loads(
-            self.call(self.compose + ["exec", "-T", "app", "cat", "/public/jwks.json"])
+            self.call(
+                self.compose
+                + [
+                    "exec",
+                    "-T",
+                    "app",
+                    "cat",
+                    "/public/app-a.json"
+                    if self.variant == "trusted-group-rotation"
+                    else "/public/jwks.json",
+                ]
+            )
         )
         if set(public) != {"keys"} or len(public["keys"]) != 1:
             raise self.failure("remote-public-export-invalid")
@@ -385,7 +489,68 @@ class Runtime:
                     raise self.failure("remote-" + name + "-timeout") from None
                 time.sleep(0.3)
 
+    def rotation(self):
+        def probe(action):
+            try:
+                value = json.loads(
+                    self.call(
+                        self.compose
+                        + [
+                            "exec",
+                            "-T",
+                            "app-fixture",
+                            "python",
+                            "/rotation_probe.py",
+                            action,
+                        ],
+                        timeout=80,
+                    )
+                )
+            except Exception:
+                raise self.failure("rotation-" + action + "-failed") from None
+            if json.dumps(value, sort_keys=True) != json.dumps(
+                {"passed": True}, sort_keys=True
+            ):
+                raise self.failure("rotation-" + action + "-invalid-result")
+
+        try:
+            self.call(
+                self.compose
+                + [
+                    "exec",
+                    "-T",
+                    "app",
+                    "java",
+                    "-Dloader.main=ai.loomspan.sdk.example.RotationProbe",
+                    "-cp",
+                    "/app/reference.jar",
+                    "org.springframework.boot.loader.launch.PropertiesLauncher",
+                ],
+                timeout=20,
+            )
+            probe("add")
+            for name in ("app", "app-b"):
+                path = self.directory / "config" / (name + ".yaml")
+                config = yaml.safe_load(path.read_text())
+                supplied = config["loomspan-sdk"]["signing"]["provided"]
+                supplied["key-location"] = "/replacement/signer-key.pem"
+                supplied["certificate-location"] = "/replacement/signer.pem"
+                dump(path, config)
+                self.call(self.compose + ["restart", name], timeout=90)
+                self.wait(name + "-ready")
+            probe("retire")
+            return observations("standard", self.variant, "scenario")
+        finally:
+            try:
+                probe("release")
+            except self.failure:
+                pass
+
     def run(self):
+        if self.variant == "outbound-only":
+            return outbound.run(self, self.recipe)
+        if self.variant == "trusted-group-rotation":
+            return self.rotation()
         if self.variant == "isolation":
             self.probe("isolation", "outsider")
             self.probe("fixed-app")

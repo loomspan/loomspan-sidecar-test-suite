@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+@org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(type = org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
 public class SecurityConfiguration {
     @Bean InMemoryUserDetailsManager users() {
         return new InMemoryUserDetailsManager(

@@ -150,7 +150,17 @@ def fake_lane(monkeypatch, tmp_path):
     monkeypatch.setattr(runner, "Runtime", Runtime)
 
     class LocalRuntime:
-        def __init__(self, directory, checkout, root, project, image, call, failure):
+        def __init__(
+            self,
+            directory,
+            checkout,
+            root,
+            project,
+            image,
+            call,
+            failure,
+            outbound_only=False,
+        ):
             self.project = project + "-local"
             self.volume = self.project + "-keys"
             self.sample_hash = "b" * 64
@@ -169,6 +179,9 @@ def fake_lane(monkeypatch, tmp_path):
             calls.append("localCleanup")
 
     monkeypatch.setattr(runner.local, "Runtime", LocalRuntime)
+    monkeypatch.setattr(
+        runner.outbound, "run", lambda *args: dict(runner.outbound.RESULT)
+    )
     return calls
 
 
@@ -1331,3 +1344,145 @@ def test_callback_configuration_fixes_destination_and_preserves_literal_role_adm
     assert planner["planning_mode"] and planner["allowed_skills"] == [
         {"name": "localExpiryOwned"}
     ]
+
+
+def test_local_outbound_only_has_no_routes_and_retains_colocated_transport(
+    checkout, tmp_path
+):
+    runner.local.Runtime(
+        tmp_path / "outbound",
+        checkout,
+        runner.ROOT,
+        "sdk-unique",
+        "image",
+        lambda *a, **k: "",
+        runner.LaneFailure,
+        outbound_only=True,
+    )
+    config = tmp_path / "outbound/config"
+    assert yaml.safe_load((config / "routes.yaml").read_text()) == {
+        "targets": {},
+        "routes": {},
+    }
+    app = yaml.safe_load((config / "application.yaml").read_text())
+    assert app["loomspan"]["skills"]["locations"] == ["file:/config/localModel.yaml"]
+    doc = yaml.safe_load((tmp_path / "outbound/compose.yaml").read_text())
+    assert doc["services"]["host"]["network_mode"] == "service:sidecar"
+    assert (
+        "--spring.main.web-application-type=none" in doc["services"]["host"]["command"]
+    )
+    assert (
+        doc["services"]["sidecar"]["environment"]["LOOMSPAN_SIDECAR_TRUST_MODE"]
+        == "colocated"
+    )
+
+
+def test_rotation_credentials_stay_in_fixed_memory_slots():
+    fixture = LocalServer(("127.0.0.1", 0))
+    worker = threading.Thread(target=fixture.serve_forever)
+    worker.start()
+    try:
+        base = f"http://127.0.0.1:{fixture.server_port}"
+        with httpx.Client(trust_env=False) as client:
+            for slot in ("old", "candidate", "current"):
+                response = client.get(
+                    base + "/rotation/capture/" + slot + "/v1/skills",
+                    headers={"Authorization": "Bearer sentinel-" + slot},
+                )
+                assert response.status_code == 200 and response.json() == []
+            client.get(
+                base + "/rotation/capture/current/v1/skills",
+                headers={"Authorization": "Bearer replacement-sentinel"},
+            )
+            client.post(base + "/reset")
+            assert fixture.credentials == {
+                "old": "Bearer sentinel-old",
+                "candidate": "Bearer sentinel-candidate",
+                "current": "Bearer replacement-sentinel",
+            }
+            for path in (
+                "/rotation/probe/unknown/metadata",
+                "/rotation/probe/old/http://other",
+                "/rotation/capture/arbitrary/v1/skills",
+            ):
+                response = client.get(base + path)
+                assert response.status_code == 404
+                assert "sentinel" not in response.text
+            assert (
+                client.get(
+                    base + "/rotation/capture/current/v1/skills",
+                    headers={"Authorization": "bad"},
+                ).status_code
+                == 400
+            )
+    finally:
+        fixture.shutdown()
+        fixture.server_close()
+        worker.join(3)
+    assert fixture.credentials == {}
+
+
+@pytest.mark.parametrize("failure", ["process", "probe", "exit"])
+def test_outbound_failure_cannot_report_success(monkeypatch, failure):
+    from types import SimpleNamespace
+
+    states = iter(
+        (
+            {"Running": failure != "process"},
+            {"Running": False},
+            {"Running": False, "ExitCode": 1 if failure == "exit" else 0},
+        )
+    )
+
+    def call(args, **kwargs):
+        return json.dumps(next(states)) if "inspect" in args else "container"
+
+    runtime = SimpleNamespace(
+        compose=["docker", "compose"], call=call, failure=runner.LaneFailure
+    )
+
+    def probe(*args):
+        if failure == "probe":
+            raise runner.LaneFailure("outbound-scenario-failed")
+        return dict(runner.outbound.RESULT)
+
+    monkeypatch.setattr(runner.outbound, "probe", probe)
+    with pytest.raises(runner.LaneFailure):
+        runner.outbound.run(runtime, "local")
+
+
+@pytest.mark.parametrize("mutation", ["missing", "integer", "false", "extra"])
+def test_local_outbound_observations_require_every_exact_typed_field(mutation):
+    from types import SimpleNamespace
+
+    for field in runner.outbound.RESULT:
+        value = dict(runner.outbound.RESULT)
+        if mutation == "missing":
+            del value[field]
+        elif mutation == "integer":
+            value[field] = 1 if isinstance(value[field], bool) else True
+        elif mutation == "false":
+            value[field] = False
+        else:
+            value["extra"] = True
+        runtime = SimpleNamespace(
+            compose=["docker", "compose"],
+            call=lambda *a, **k: json.dumps(value),
+            failure=runner.LaneFailure,
+        )
+        with pytest.raises(runner.LaneFailure, match="invalid-result"):
+            runner.outbound.probe(runtime, "local", "scenario", "fixtures")
+
+
+def test_outbound_listener_oracle_rejects_an_actual_live_listener():
+    from sdk_lane import outbound_probe
+    import socket
+
+    listener = socket.socket()
+    listener.bind(("127.0.0.1", 0))
+    listener.listen()
+    try:
+        with pytest.raises(AssertionError, match="callback listener"):
+            outbound_probe.refused("127.0.0.1", (listener.getsockname()[1],))
+    finally:
+        listener.close()

@@ -4,6 +4,42 @@
 def observations(recipe, variant, action):
     if action != "scenario":
         return {"passed": True}
+    if variant == "outbound-only":
+        return {
+            "discoveryAccepted": True,
+            "singleSubmissionCompleted": True,
+            "exactModelResult": True,
+            "noCallbackListeners": True,
+            "noCallbackRoutes": True,
+            "processExitedCleanly": True,
+            "modelRequests": 1,
+        }
+    if variant == "trusted-group-rotation":
+        return {
+            name: True
+            for name in (
+                "twoAppSharedSigner",
+                "crossAppCallbackIdentity",
+                "exactRoles",
+                "credentialEqual",
+                "methodDenied",
+                "recordDenied",
+                "differentOwner404",
+                "candidateRejectedBeforeAdd",
+                "sidecarIndependentAdd",
+                "callbackIndependentAdd",
+                "bothSignersRestarted",
+                "freshReplacementKid",
+                "oldOverlapAccepted",
+                "oldWorkRunning",
+                "sidecarIndependentRemoval",
+                "callbackIndependentRemoval",
+                "oldRejectedBeforeExpiry",
+                "replacementStillAccepted",
+                "admittedWorkCompleted",
+                "fileOnlyTrustChanges",
+            )
+        } | {"reloadIntervalSeconds": 1, "observationLimitSeconds": 5}
     if variant == "positive":
         return {
             "formLoginCsrf": True,

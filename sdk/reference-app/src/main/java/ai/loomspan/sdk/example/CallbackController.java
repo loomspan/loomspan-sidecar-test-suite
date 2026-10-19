@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Application-owned role and record checks, independent of SDK authentication. */
 @RestController
+@org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(type = org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
 public class CallbackController {
     private final AtomicInteger arrivals = new AtomicInteger();
     private final AtomicInteger bodies = new AtomicInteger();

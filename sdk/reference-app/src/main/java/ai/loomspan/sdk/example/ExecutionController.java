@@ -15,6 +15,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /** Fixed fixture operations; identity and authorities always come from Spring Security. */
 @RestController
+@org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(type = org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
 public class ExecutionController {
     private final SidecarClient client;
     private final SpringExecutionTokenIssuer issuer;
@@ -38,6 +39,13 @@ public class ExecutionController {
     @PostMapping("/capture") Map<String, Boolean> capture() {
         // Scoped SDK transport to one fixed capture route; opaque credentials stay opaque.
         try (var capture = SidecarClient.builder().baseUrl(URI.create("http://127.0.0.1:8090/capture"))
+                .responseTimeout(Duration.ofSeconds(3)).build()) {
+            capture.listSkills(issuer.issueCurrent());
+        }
+        return Map.of("captured", true);
+    }
+    @PostMapping("/rotation-capture") Map<String, Boolean> rotationCapture() {
+        try (var capture = SidecarClient.builder().baseUrl(URI.create("http://127.0.0.1:8090/rotation/capture/current"))
                 .responseTimeout(Duration.ofSeconds(3)).build()) {
             capture.listSkills(issuer.issueCurrent());
         }
