@@ -35,15 +35,20 @@ def records(host):
 
 
 def wait(client, api, ident, headers):
+    result = wait_outcome(client, api, ident, headers)
+    if result['status'] != 'COMPLETED':
+        raise RuntimeError('Deterministic execution failed')
+    return json.loads(result['result'])
+
+
+def wait_outcome(client, api, ident, headers):
     deadline = time.monotonic() + 60
     while time.monotonic() < deadline:
         response = client.get(api + '/v1/executions/' + ident, headers=headers)
         response.raise_for_status()
         result = response.json()
         if result['status'] in ['COMPLETED', 'FAILED']:
-            if result['status'] != 'COMPLETED':
-                raise RuntimeError('Deterministic quote execution failed')
-            return json.loads(result['result'])
+            return result
         time.sleep(.25)
     raise TimeoutError('Deterministic quote execution did not finish')
 
@@ -56,6 +61,7 @@ def main():
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
     token = login('maya')
     headers = {'Authorization': 'Bearer ' + token}
+    approver = {'Authorization': 'Bearer ' + login('luis')}
     control = {'X-Control-Key': secrets['control']}
     result = {'readyServices': 5, 'providerDisabled': True, 'paidCalls': 0,
               'runtimeIdentity': identity['runtimeIdentity'], 'modelConfiguration': profile,
@@ -75,6 +81,12 @@ def main():
                             json={'caseId': case, 'assetId': 'NB-P240-017'}, headers=headers)
             r.raise_for_status()
             output = wait(client, api, r.json()['id'], headers)
+            for lookup in ['assetContext', 'serviceHistory', 'referenceEvidence', 'serviceTerms',
+                           'entitlements', 'serviceResources', 'continuityOptions']:
+                response = client.post(api + '/v1/skills/' + lookup + '/executions',
+                    json={'caseId': case, 'assetId': 'NB-P240-017'}, headers=headers)
+                response.raise_for_status()
+                assert wait(client, api, response.json()['id'], headers)
             quotes = {q['option']: q for q in output['quotes']}
             assert len(output['quotes']) == 2
             assert quotes['expedited']['maxExposure'] == 78000
@@ -111,6 +123,15 @@ def main():
             r = client.post(api + '/v1/skills/createServiceRequest/executions',
                             json={'approval': approval}, headers=headers)
             assert r.status_code == 403, 'Maya must not have request creation permission'
+            r = client.post(api + '/v1/skills/createServiceRequest/executions',
+                            json={'approval': approval}, headers=approver)
+            r.raise_for_status()
+            rejected = wait_outcome(client, api, r.json()['id'], approver)
+            assert rejected['status'] == 'FAILED'
+            if name == 'sidecar':
+                assert 'assessment not found' in rejected['failure']['message'].lower()
+            else:
+                assert rejected['error'] == {'kind': 'SKILL_FAILURE', 'type': 'SkillException'}
             r = client.get(environment.url(18090, '/control/journal'), headers=control)
             r.raise_for_status()
             assert not any(e.get('caseId') == case and e['event'] == 'model-request' for e in r.json())
@@ -120,6 +141,7 @@ def main():
             assert len(after['assessments']) == len(before['assessments'])
             assert len(after['requests']) == len(before['requests'])
             result['paths'][name] = {'deterministicQuotes': 'PASS', 'completeOffers': 'PASS', 'unauthenticatedDenied': True,
+                'flatLookupOperations': 8, 'nestedApprovalBusinessRejection': True,
                 'mayaCreationDenied': True, 'priorRecordsPreserved': True, 'newQuoteRows': 2,
                 'modelCalls': 0, 'caseId': case}
     require_offline_provider()

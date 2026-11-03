@@ -35,7 +35,9 @@ for the layout, selection and extension contract.
 .venv/Scripts/python.exe scripts/run_suite.py mock --suite all
 ```
 
-The smoke check uses both real integrations without model calls. It verifies pricing,
+The smoke check uses both real integrations without model calls. It invokes all eight
+lookup operations and verifies nested approval parsing/business rejection without a
+service commitment. It verifies pricing,
 complete offers, mounted model assignments and basic permission boundaries; it adds
 isolated quote rows. These checks are not full release acceptance.
 
@@ -50,7 +52,7 @@ been retired after an external verified recovery snapshot. Ordinary operation do
 not depend on them. Phase 3 and additional mid-level examples require separate scope.
 
 The final accepted Sol/Luna responses are retained separately as maintained
-[deterministic fixtures](fixtures/reference/README.md). `mock` runs all four cases on
+[deterministic fixtures](fixtures/reference-namespaced/README.md). `mock` runs all four cases on
 both real integrations, with zero paid calls, and checks the published results against
 the frozen reference. This verifies runtime regression behavior, not new model judgment.
 

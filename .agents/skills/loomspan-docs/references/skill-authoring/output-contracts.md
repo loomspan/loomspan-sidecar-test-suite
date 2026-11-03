@@ -7,6 +7,8 @@ coverage: source-verified
 
 # Output Contracts
 
+Authored child references and binding producers MAY be local to the containing skill's namespace or explicitly qualified; local `search` in `sales` compiles to `sales-search`. Mixed spellings compare canonically and never search other namespaces. Runtime/model names remain qualified. See [canonical namespace identity](mental-model.md#canonical-namespace-identity) for grammar, limits and boundary rules. Declarations keep local `name` components.
+
 ## Applicability
 
 [TypeSafe leaves](typesafe-skills.md) have a generated descriptive output schema
@@ -14,7 +16,7 @@ and return the complete provider answers without answer validation or repair.
 The authored `output_schema` rules below apply to ordinary chat skills. A parent
 can bind from or forward a TypeSafe child's result under the existing rules.
 
-Use this topic to choose final synthesis, declared output assembly with `output_bindings`, or exact designated-child completion with `output_from` for a model-backed YAML skill. An output contract gives the model provider-neutral instructions, validates the returned JSON exactly, and can drive semantic retries. Java skills have no YAML `output_schema`; their returned-value behavior is Jackson serialization of the Java result.
+Use this topic to choose final synthesis, declared output assembly with `output_bindings`, or exact designated-child completion with `output_from` for a model-backed YAML skill. An output contract gives the model provider-neutral instructions, validates the returned JSON exactly, and can drive semantic retries. Java skills have no YAML `output_schema`; their null/void results become empty text, Strings remain exact, and other results become JSON. See [Java results](../java-api/java-skills.md#inputs-results-and-lifecycle).
 
 The root schema MUST have `type: object`. Supported node types are `object`, `array`, `string`, `integer`, `number`, and `boolean`.
 
@@ -25,7 +27,7 @@ The root schema MUST have `type: object`. Supported node types are `object`, `ar
 | Generate the whole output | Omit `output_from` and `output_bindings`; author a parent `output_schema` when structured output is required | The parent synthesizes and owns its final-output validation. |
 | Preserve selected input/child values in every output field | Declare `output_bindings` covering a closed output object | Framework assembles and validates it with no final model request. |
 | Preserve evidence while generating reasoning | Bind preserved fields and leave reasoning fields unbound | The model contributes only unbound fields; Framework validates the complete assembly. |
-| Orchestrate work while one direct child already supplies the complete intended answer | `output_from: {skill: finish}` | Runtime returns that accepted task's existing Framework String unchanged after all accepted work succeeds. |
+| Orchestrate work while one direct child already supplies the complete intended answer | `output_from: {skill: default-finish}` | Runtime returns that accepted task's existing Framework String unchanged after all accepted work succeeds. |
 
 Forwarding retains model planning, input preparation, explicit unbound child arguments, [author-declared input bindings](input-bindings.md), dependencies, and genuine orchestration duties. Authors SHOULD reconsider a wrapper with no additional responsibility. Do not instruct a forwarding parent to copy, quote, or reconstruct the child's answer.
 
@@ -39,7 +41,7 @@ A forwarding parent MUST NOT declare `output_schema`, `output_schema_max_retries
 
 The plan MUST contain exactly one task bound to the designated child. Required-child visibility, plan validation and its single combined correction remain applicable. Runtime retains that accepted task ID and executes every accepted task, including optional work and work ordered after the selected task. Full joins, authorization, limits, failure and cancellation remain enforced. Missing, ambiguous, failed, stale, or mismatched selection fails without fallback synthesis.
 
-Successful completion returns the complete retained String without parsing, serialization, field extraction, citation changes, or transport unwrapping. Empty and whitespace text, Java JSON string quoting, long values, and array order remain intact. Forwarding creates no parent final model request, final-output validation, correction or synthetic completion step. N accepted tasks need N `max_steps` slots; ordinary synthesis needs N+1. Planning and physical-provider budgets remain separate. See [planning task constraints](planning-task-constraints.md), [concurrency](planning-concurrency.md), and [forwarding diagnostics](traces-and-debugging.md#designated-child-completion).
+Successful completion returns the complete retained String without parsing, serialization, field extraction, citation changes, or transport unwrapping. Empty and whitespace text, exact Java Strings, JSON from non-string Java values, long values, and array order remain intact. Forwarding creates no parent final model request, final-output validation, correction or synthetic completion step. N accepted tasks need N `max_steps` slots; ordinary synthesis needs N+1. Planning and physical-provider budgets remain separate. See [planning task constraints](planning-task-constraints.md), [concurrency](planning-concurrency.md), and [forwarding diagnostics](traces-and-debugging.md#designated-child-completion).
 
 ## Minimal forwarding examples
 
@@ -55,8 +57,8 @@ planning_mode: true
 max_steps: 1
 prompt: Determine the report scope and supply explicit arguments to finishReport.
 allowed_skills:
-  - {name: finishReport, required: true, max_tasks: 1}
-output_from: {skill: finishReport}
+  - {name: default-finishReport, required: true, max_tasks: 1}
+output_from: {skill: default-finishReport}
 ```
 
 ```yaml
@@ -87,21 +89,11 @@ planning_mode: true
 max_steps: 1
 prompt: Determine the report request and invoke finishReport.
 allowed_skills:
-  - {name: finishReport, required: true, max_tasks: 1}
-output_from: {skill: finishReport}
+  - {name: default-finishReport, required: true, max_tasks: 1}
+output_from: {skill: default-finishReport}
 ```
 
-The returned Framework text is `"Report complete"`, including JSON quotes from the existing Jackson Java result boundary. No output schema is inferred from the Java return type.
-
-REST producer using the same parent declaration:
-
-```yaml
-name: finishReport
-description: Produce the complete report through the application handler.
-rest: true
-```
-
-The application's sole `RestSkillHandler` returns non-null text. That text is forwarded unchanged, including any application envelope; null remains a failure. The leaf has unspecified output schema and no new Framework output validation. See [REST leaves](rest-skills.md).
+The returned Framework text is `Report complete`, without JSON quotes. No output schema is inferred from the Java return type.
 
 A chain `prepareReport -> coordinateReport -> finishReport` works when each forwarding parent independently declares its selected direct child as required and unique. Every level completes its entire accepted plan and forwards its own selected task result; no level may select a grandchild directly.
 
@@ -109,7 +101,7 @@ A chain `prepareReport -> coordinateReport -> finishReport` works when each forw
 
 Top-level `output_bindings` uses the same destination-keyed map and descriptors as [input bindings](input-bindings.md). Its destination is this skill's output. `from: input` selects this invocation's validated input; `from: child_result` selects exactly one successful accepted direct-child task, with `skill` naming the producer. `path: ""` selects the whole source. A nonempty source path selects an object subtree. Object JSON Pointers support `~0` and `~1`; array traversal, transforms and interpolation are unsupported. Entire selected arrays retain their order.
 
-A model-backed skill MUST declare an object `output_schema`. `output_from` and `output_bindings` MUST NOT coexist, including explicit null declarations. Destination paths MUST be nonempty and nonoverlapping. Duplicate YAML keys and unknown descriptor fields are rejected. Known source/destination paths and compatible types are checked against the captured complete generation. Open or unspecified source schemas require runtime checks; Java return types and REST response text never invent producer contracts.
+A model-backed skill MUST declare an object `output_schema`. `output_from` and `output_bindings` MUST NOT coexist, including explicit null declarations. Destination paths MUST be nonempty and nonoverlapping. Duplicate YAML keys and unknown descriptor fields are rejected. Known source/destination paths and compatible types are checked against the captured complete generation. Open or unspecified source schemas require runtime checks; Java return types and executor result text never invent producer contracts.
 
 This full assembly combines two direct-child objects with the current input identifier. `assistant` must be a configured model alias; declare each producer separately with its own input contract. The selected child results must be objects compatible with these destination schemas.
 
@@ -126,8 +118,8 @@ input_schema:
   required: [caseId]
   additionalProperties: false
 allowed_skills:
-  - {name: assessEquipment, required: true, max_tasks: 1}
-  - {name: planResolution, required: true, max_tasks: 1}
+  - {name: default-assessEquipment, required: true, max_tasks: 1}
+  - {name: default-planResolution, required: true, max_tasks: 1}
 output_schema:
   type: object
   properties:
@@ -138,8 +130,8 @@ output_schema:
   additionalProperties: false
 output_bindings:
   /caseId: {from: input, path: /caseId}
-  /equipmentAssessment: {from: child_result, skill: assessEquipment, path: ""}
-  /recommendation: {from: child_result, skill: planResolution, path: ""}
+  /equipmentAssessment: {from: child_result, skill: default-assessEquipment, path: ""}
+  /recommendation: {from: child_result, skill: default-planResolution, path: ""}
 ```
 
 Every bound child producer must occur exactly once in the accepted plan, even when its allowed entry is optional. Impossible declared counts fail configuration validation. These output requirements add no dependency or false ordering; independent producers may run in parallel. All accepted work must succeed before assembly, including work unrelated to these bindings. Planning, access, invocation limits and cancellation still apply.
@@ -175,7 +167,7 @@ Missing paths differ from explicit null. Unavailable, ambiguous, failed, cross-i
 
 `RESULT_ASSEMBLED` identifies ownership and whether a model contribution was required. Its payload is the validated assembled output, while original model and child records retain their evidence. See [assembly diagnostics](traces-and-debugging.md#declared-output-assembly).
 
-Implementation evidence: `OutputBindingProjection`, `OutputBindingComposition`, `ChildInputBindingAssembler`, `PlanOutputBindingProducerValidator`, and the ordinary and step mission engines. `OutputBindingCompositionTest` protects projection, ownership conflicts and exact insertion; `OutputBindingIsolationTest` protects concurrent/nested invocation and generation snapshots. `DeclaredOutputBindingsOrdinaryIntegrationTest` and `DeclaredOutputBindingsPlanningIntegrationTest` exercise facade completion and correction, including model/Java/REST sources. `ConsoleTraceFixtureCorpusTest` exports current Java assembly authority for Console readers.
+Implementation evidence: `OutputBindingProjection`, `OutputBindingComposition`, `ChildInputBindingAssembler`, `PlanOutputBindingProducerValidator`, and the ordinary and step mission engines. `OutputBindingCompositionTest` protects projection, ownership conflicts and exact insertion; `OutputBindingIsolationTest` protects concurrent/nested invocation and generation snapshots. `DeclaredOutputBindingsOrdinaryIntegrationTest` and `DeclaredOutputBindingsPlanningIntegrationTest` exercise facade completion and correction, including model/Java/executor sources. `ConsoleTraceFixtureCorpusTest` exports current Java assembly authority for Console readers.
 
 ## Effective output metadata
 
@@ -194,7 +186,27 @@ fully bound success and failure require no final synthesis or repair request.
 
 Public `SkillDescriptor.outputSchema()`, planner tool descriptions, and Console skill detail expose nullable normalized JSON-object schema text from the captured complete generation. Ordinary model skills expose their authored output shape; forwarding parents derive it through their selected-child chain. Shape, constraints, descriptions and provider-neutral `nullable` semantics are retained, while child-local `evidence` annotations are omitted. This text describes Loomspan's supported schema vocabulary; it is not a provider-native JSON Schema response format.
 
-Java, REST, and model producers without a schema leave this metadata null, never a fabricated `{}`. Derived metadata is immutable and does not become a parent's authored validator, evidence requirement, linter, or retry policy. The actual model producer retains its own validation and correction; Java/REST do not gain output-validation guarantees. Metadata and structured validation do not establish factual correctness.
+Java and model producers without a schema leave this metadata null, never a fabricated `{}`. Derived metadata is immutable and does not become a parent's authored validator, evidence requirement, linter, or retry policy. The actual model producer retains its own validation and correction; Java/executor do not gain output-validation guarantees. Metadata and structured validation do not establish factual correctness.
+
+### Prepared contracts and fresh admission
+
+Catalogs describe immutable prepared contracts even when current dependencies make an
+entry inadmissible. Admission and root validation recompute reachable effective outputs
+and existing binding/forwarding constraints against captured targets without changing
+catalog metadata. They compare schema structures: formatting and object-key order alone
+do not change the contract. There is no dependency-revision or historical-child-schema pin.
+
+A fully forwarded output change, including an added field or a change through multiple
+forwarding hops, requires republication of each affected caller. Ordinary child schema
+changes can pass, and an unrelated added bound-child output field can pass, when declared
+constraints and caller-derived contracts still hold. Input/output bindings retain their
+existing partial static checks and runtime obligations; this is no general compatibility
+engine. Caller publication checks its own target base only: deleting a dependency, making
+it Private, or changing its contract after caller preparation does not make publication
+stale, but can reject subsequent admission. Prior admitted work retains its old graph.
+
+Evidence: `SkillDependencyValidator#checkAdmission`, `SkillAdmissionContractsTest`, and
+`SkillReachableAdmissionTest`. Captured child dispatch is implemented; canonical observation consumers are covered by `NamespaceObservationIntegrationTest` and `ConsoleTraceFixtureCorpusTest`.
 
 ## Presence and nullability
 
@@ -269,7 +281,7 @@ Loomspan then parses and validates the returned JSON. It does not silently coerc
 - `YamlSkillCatalogTests` protects strict `output_from` declarations and conflicts; `SkillGenerationManagerTest` protects complete-set chains, cycles and unspecified schemas.
 - `DefaultSkillCatalogTest`, `PlanningServiceTest` and `LoomspanPublicSurfaceArchitectureTest` protect generation-bound metadata and the five-component supported descriptor.
 - `StepLoopMissionExecutionEngineTest` protects exact accepted-task selection, N-slot admission, all-work completion and failure/cutoff behavior.
-- `DesignatedChildResultIntegrationTest#forwardsModelJavaAndRestResultsThroughSkillTemplate` and `#forwardingChainRetainsProducerValidationAndExactResult` exercise model, Java, REST, unspecified schema and chained result boundaries through `SkillTemplate`, with producer-owned validation and no parent final model request. `#parallelRootsForwardOnlyTheirOwnTaskResults` and `#runningForwardingTreeKeepsCapturedSchemaAndTargetAfterReload` protect invocation and generation isolation; `#ordinarySynthesisRemainsAvailable` protects the ordinary completion path.
+- `DesignatedChildResultIntegrationTest#forwardsModelJavaAndExecutorResultsThroughSkillTemplate` and `#forwardingChainRetainsProducerValidationAndExactResult` exercise model, Java, executor YAML, unspecified schema and chained result boundaries through `SkillTemplate`, with producer-owned validation and no parent final model request. `#parallelRootsForwardOnlyTheirOwnTaskResults` and `#runningForwardingTreeKeepsCapturedSchemaAndTargetAfterReload` protect invocation and generation isolation; `#ordinarySynthesisRemainsAvailable` protects the ordinary completion path.
 
 ## Implementation and test anchors
 
@@ -277,3 +289,16 @@ Loomspan then parses and validates the returned JSON. It does not silently coerc
 - `OutputSchemaValidator` defines exact recursive validation. `OutputSchemaValidatorTest#treatsPresenceAndNullabilityAsIndependentConstraints`, `#respectsAdditionalPropertiesForNestedObjects`, `#validatesArrayItemsRecursivelyWithIndexedPaths`, `#escapesPathSignificantPropertyNamesWithoutCollisions`, and `#doesNotEnforceFormatOrDescription` protect the central rules and unambiguous diagnostics.
 - `OutputSchemaPromptAugmentor#renderContract` defines the shared effective-contract text. `OutputSchemaPromptAugmentorTest#augmentsPromptWithCompleteRecursiveEffectiveContractInDeclaredOrder` protects complete deterministic rendering, JSON-quoted enums, canonical escaped paths, and metadata isolation.
 - `OutputSchemaCallAdvisor` owns ordinary schema retries, while `StepPromptBuilder` and `StepLoopMissionExecutionEngine#validateOutputSchema` integrate the same contract with planning final responses. Their focused tests protect both prompt paths and retry behavior.
+
+## Namespace publication boundary
+
+Complete publications require namespace, supplied documents and ExecutionConfiguration.
+Startup namespaces are Private; foreign outgoing references require a Public target.
+Fixed Java methods remain assigned to their original namespace across replacement
+and explicit recreation; withdrawal preserves beans and retained work. There is no
+activation API or configuration inheritance. See [publication](../java-api/skill-reload.md)
+for complete signatures, sequencing and retirement. Namespace updates support preparation
+and installation, retained reachable admission and captured cross-namespace execution.
+Captured canonical observation identities and existing Console consumers are covered by `NamespaceObservationIntegrationTest` and `ConsoleTraceFixtureCorpusTest`.
+
+Evidence: `SkillReloaderTest`, `SkillDependencyValidatorTest`, `NamespaceStartupIntegrationTest`.

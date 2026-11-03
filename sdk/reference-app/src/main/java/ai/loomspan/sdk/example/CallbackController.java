@@ -1,6 +1,7 @@
 package ai.loomspan.sdk.example;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,7 +42,9 @@ public class CallbackController {
 
     @PostMapping("/loomspan/callbacks/owned")
     @PreAuthorize("hasRole('ORDER_EDITOR')")
-    ResponseEntity<Map<String, Object>> owned(JwtAuthenticationToken identity) throws Exception {
+    ResponseEntity<Map<String, Object>> owned(JwtAuthenticationToken identity, HttpServletRequest request) throws Exception {
+        if (request.getInputStream().read() != -1)
+            throw new IllegalStateException("Owned callback must be bodyless");
         bodies.incrementAndGet();
         if (!"loomspan-app".equals(identity.getToken().getClaimAsString("iss"))
                 || !"alice".equals(identity.getToken().getSubject()))

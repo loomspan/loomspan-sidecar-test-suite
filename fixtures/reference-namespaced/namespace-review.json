@@ -1,0 +1,1606 @@
+{
+  "date": "2026-11-02",
+  "authorization": "Authorize namespace-only contract update",
+  "namespace": "default",
+  "sourceManifestLfSha256": "adc448c928c4260d5fcea785be391597fcc14feb26f29254eba3ddb0c083a22b",
+  "identityPositions": [
+    "requestContract.skill",
+    "requestContract.completedEvidence[*].skillName",
+    "requestContract.assignedTask: Exact capability/tool line",
+    "response.choices[0].message.content: plan capabilityName/tasks[*].capabilityName or CALL_TOOL.toolName"
+  ],
+  "sourceFiles": {
+    "baseline.json": "c336de6bcd3b4d30cedaa66e9f5e5775cf19179233d4a447b71a087f85074eee",
+    "priority.json": "2f9c309fd57f4dcc885159066b28e9b8d312e7bc7aa9ab6c345e0d2c01acf27f",
+    "capacity_shortfall.json": "f3044d0962881335a025c577653ba9530194c2a3b319a7f7dcbbcd8adfd25fef",
+    "later_start.json": "0b97f06ac3935b15a472df878673eae8ae1cf230ecc9989b429de34668735e7b"
+  },
+  "currentFiles": {
+    "baseline.json": "254d25a9936c0ca36f01179f6ad552bfc0bb2a61ae5683f9c97122fe35648d7f",
+    "priority.json": "63aca4c3f5a528953c430689745e388503e94559660d0b308dd82c5ef92ebe83",
+    "capacity_shortfall.json": "97daf425997e0f3689ca0db4c04d7376baff75ea7c8e72b9a335b3c1a3dd6b0e",
+    "later_start.json": "3f342125263e24c329001f1d542d39f3317bf92c9250dab77ea2883b514d1ba5"
+  },
+  "changes": [
+    {
+      "path": "baseline.json/steps/0/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/capabilityName",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "baseline.json/steps/0/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/completedEvidence/0/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/completedEvidence/1/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/completedEvidence/2/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/completedEvidence/3/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "baseline.json/steps/1/requestContract/assignedTask",
+      "before": "ID: equipment-assessment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology and history against reference evidence; distinguish supported observations, hypotheses, and missing evidence.\nExpected outputs: Technical assessment with chronology, sourced hypotheses, uncertainty, and questions\nExact capability/tool: assessEquipment",
+      "after": "ID: equipment-assessment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology and history against reference evidence; distinguish supported observations, hypotheses, and missing evidence.\nExpected outputs: Technical assessment with chronology, sourced hypotheses, uncertainty, and questions\nExact capability/tool: default-assessEquipment"
+    },
+    {
+      "path": "baseline.json/steps/1/response/choices/0/message/content/$json/toolName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "baseline.json/steps/2/requestContract/skill",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/completedEvidence/0/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/completedEvidence/1/skillName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/completedEvidence/2/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/completedEvidence/3/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/completedEvidence/4/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "baseline.json/steps/3/requestContract/assignedTask",
+      "before": "ID: resolution-plan\nTitle: Compare resolution options\nIntent: Compare service and continuity options against operating needs, technical findings, and service terms; publish conditions and a recommendation without approving, booking, or creating a request.\nExpected outputs: Option assessments, sourced commercial terms, recommendation, conditions, and next decision\nExact capability/tool: planResolution",
+      "after": "ID: resolution-plan\nTitle: Compare resolution options\nIntent: Compare service and continuity options against operating needs, technical findings, and service terms; publish conditions and a recommendation without approving, booking, or creating a request.\nExpected outputs: Option assessments, sourced commercial terms, recommendation, conditions, and next decision\nExact capability/tool: default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/3/response/choices/0/message/content/$json/toolName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/4/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/6/capabilityName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/7/capabilityName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/4/response/choices/0/message/content/$json/tasks/8/capabilityName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/5/requestContract/assignedTask",
+      "before": "ID: assess-expedited\nTitle: Assess expedited feasibility\nIntent: Assess expedited attendance timing, capacity, site access, service approval conditions, charges, and offer expiry.\nExpected outputs: Expedited feasibility findings and unresolved conditions\nExact capability/tool: assessExpeditedFeasibility",
+      "after": "ID: assess-expedited\nTitle: Assess expedited feasibility\nIntent: Assess expedited attendance timing, capacity, site access, service approval conditions, charges, and offer expiry.\nExpected outputs: Expedited feasibility findings and unresolved conditions\nExact capability/tool: default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/5/response/choices/0/message/content/$json/toolName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/6/requestContract/assignedTask",
+      "before": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access and setup conditions, procurement approval routing, and offer expiry.\nExpected outputs: Loaner feasibility findings and unresolved conditions\nExact capability/tool: assessLoanerFeasibility",
+      "after": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access and setup conditions, procurement approval routing, and offer expiry.\nExpected outputs: Loaner feasibility findings and unresolved conditions\nExact capability/tool: default-assessLoanerFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/6/response/choices/0/message/content/$json/toolName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/7/requestContract/assignedTask",
+      "before": "ID: assess-standard\nTitle: Assess standard feasibility\nIntent: Assess standard attendance timing, capacity, site access, service approval conditions, charges, and offer expiry.\nExpected outputs: Standard feasibility findings and unresolved conditions\nExact capability/tool: assessStandardFeasibility",
+      "after": "ID: assess-standard\nTitle: Assess standard feasibility\nIntent: Assess standard attendance timing, capacity, site access, service approval conditions, charges, and offer expiry.\nExpected outputs: Standard feasibility findings and unresolved conditions\nExact capability/tool: default-assessStandardFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/7/response/choices/0/message/content/$json/toolName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/8/requestContract/assignedTask",
+      "before": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access and setup conditions, procurement approval routing, and offer expiry.\nExpected outputs: Replacement feasibility findings and unresolved conditions\nExact capability/tool: assessReplacementFeasibility",
+      "after": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access and setup conditions, procurement approval routing, and offer expiry.\nExpected outputs: Replacement feasibility findings and unresolved conditions\nExact capability/tool: default-assessReplacementFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/8/response/choices/0/message/content/$json/toolName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/9/requestContract/skill",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/10/requestContract/skill",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/11/requestContract/skill",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/12/requestContract/skill",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/0/skillName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/1/skillName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/2/skillName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/3/skillName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/4/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/5/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/6/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/completedEvidence/7/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "baseline.json/steps/13/requestContract/assignedTask",
+      "before": "ID: compare-options\nTitle: Compare and recommend portfolio\nIntent: Compare all checked offers, authoritative quotes, accepted feasibility findings, operating needs, approval boundaries, and expiry conditions; produce the cited recommendation and decision required.\nExpected outputs: Accepted comparison result with selected option, pursued options, cited rationale, limits, and next decision\nExact capability/tool: compareOptions",
+      "after": "ID: compare-options\nTitle: Compare and recommend portfolio\nIntent: Compare all checked offers, authoritative quotes, accepted feasibility findings, operating needs, approval boundaries, and expiry conditions; produce the cited recommendation and decision required.\nExpected outputs: Accepted comparison result with selected option, pursued options, cited rationale, limits, and next decision\nExact capability/tool: default-compareOptions"
+    },
+    {
+      "path": "baseline.json/steps/13/response/choices/0/message/content/$json/toolName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "baseline.json/steps/14/requestContract/skill",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "priority.json/steps/0/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/capabilityName",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "priority.json/steps/0/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/completedEvidence/0/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/completedEvidence/1/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/completedEvidence/2/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/completedEvidence/3/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "priority.json/steps/1/requestContract/assignedTask",
+      "before": "ID: assess-equipment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology and service history against technical references; distinguish observations, hypotheses, and unknowns, and cite supplied source-record IDs. Generate no bound inputs; use empty toolArguments.\nExpected outputs: Technical chronology, plausible causes with supporting and contrary evidence, uncertainties, questions, and citations\nExact capability/tool: assessEquipment",
+      "after": "ID: assess-equipment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology and service history against technical references; distinguish observations, hypotheses, and unknowns, and cite supplied source-record IDs. Generate no bound inputs; use empty toolArguments.\nExpected outputs: Technical chronology, plausible causes with supporting and contrary evidence, uncertainties, questions, and citations\nExact capability/tool: default-assessEquipment"
+    },
+    {
+      "path": "priority.json/steps/1/response/choices/0/message/content/$json/toolName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "priority.json/steps/2/requestContract/skill",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/completedEvidence/0/skillName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/completedEvidence/1/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/completedEvidence/2/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/completedEvidence/3/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/completedEvidence/4/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "priority.json/steps/3/requestContract/assignedTask",
+      "before": "ID: plan-resolution\nTitle: Compare resolution options\nIntent: Develop and compare service and continuity options against the operating need using asset context, service history, technical references, the equipment assessment, and service terms. Publish option conditions and a recommendation without approving, booking, or creating a service request. Generate no bound inputs; use empty toolArguments.\nExpected outputs: Technical assessment and service/continuity findings with conditions, commercial terms, recommendation, alternatives, decision prerequisites, and citations\nExact capability/tool: planResolution",
+      "after": "ID: plan-resolution\nTitle: Compare resolution options\nIntent: Develop and compare service and continuity options against the operating need using asset context, service history, technical references, the equipment assessment, and service terms. Publish option conditions and a recommendation without approving, booking, or creating a service request. Generate no bound inputs; use empty toolArguments.\nExpected outputs: Technical assessment and service/continuity findings with conditions, commercial terms, recommendation, alternatives, decision prerequisites, and citations\nExact capability/tool: default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/3/response/choices/0/message/content/$json/toolName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/4/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/6/capabilityName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/7/capabilityName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "priority.json/steps/4/response/choices/0/message/content/$json/tasks/8/capabilityName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/5/requestContract/assignedTask",
+      "before": "ID: assess-expedited\nTitle: Assess expedited service feasibility\nIntent: Assess expedited attendance timing, capacity, access, charges, expiry, and service commitment conditions.\nExpected outputs: Expedited option feasibility and unresolved conditions\nExact capability/tool: assessExpeditedFeasibility",
+      "after": "ID: assess-expedited\nTitle: Assess expedited service feasibility\nIntent: Assess expedited attendance timing, capacity, access, charges, expiry, and service commitment conditions.\nExpected outputs: Expedited option feasibility and unresolved conditions\nExact capability/tool: default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "priority.json/steps/5/response/choices/0/message/content/$json/toolName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/6/requestContract/assignedTask",
+      "before": "ID: assess-standard\nTitle: Assess standard service feasibility\nIntent: Assess standard attendance timing, capacity, access, charges, expiry, and service commitment conditions.\nExpected outputs: Standard option feasibility and unresolved conditions\nExact capability/tool: assessStandardFeasibility",
+      "after": "ID: assess-standard\nTitle: Assess standard service feasibility\nIntent: Assess standard attendance timing, capacity, access, charges, expiry, and service commitment conditions.\nExpected outputs: Standard option feasibility and unresolved conditions\nExact capability/tool: default-assessStandardFeasibility"
+    },
+    {
+      "path": "priority.json/steps/6/response/choices/0/message/content/$json/toolName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/7/requestContract/assignedTask",
+      "before": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access, procurement exposure, expiry, and approval conditions.\nExpected outputs: Replacement option feasibility and unresolved conditions\nExact capability/tool: assessReplacementFeasibility",
+      "after": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access, procurement exposure, expiry, and approval conditions.\nExpected outputs: Replacement option feasibility and unresolved conditions\nExact capability/tool: default-assessReplacementFeasibility"
+    },
+    {
+      "path": "priority.json/steps/7/response/choices/0/message/content/$json/toolName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/8/requestContract/assignedTask",
+      "before": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access, procurement exposure, expiry, and approval conditions.\nExpected outputs: Loaner option feasibility and unresolved conditions\nExact capability/tool: assessLoanerFeasibility",
+      "after": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access, procurement exposure, expiry, and approval conditions.\nExpected outputs: Loaner option feasibility and unresolved conditions\nExact capability/tool: default-assessLoanerFeasibility"
+    },
+    {
+      "path": "priority.json/steps/8/response/choices/0/message/content/$json/toolName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "priority.json/steps/9/requestContract/skill",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "priority.json/steps/10/requestContract/skill",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "priority.json/steps/11/requestContract/skill",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "priority.json/steps/12/requestContract/skill",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/0/skillName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/1/skillName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/2/skillName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/3/skillName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/4/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/5/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/6/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/completedEvidence/7/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "priority.json/steps/13/requestContract/assignedTask",
+      "before": "ID: compare-options\nTitle: Compare options and recommend a plan\nIntent: Compare all checked options and assessed feasibility, recommend a practical service and continuity plan with limits, and identify the decision needed before any offer expires. Keep service approval distinct from external procurement.\nExpected outputs: Accepted cited comparison result and final recommendation\nExact capability/tool: compareOptions",
+      "after": "ID: compare-options\nTitle: Compare options and recommend a plan\nIntent: Compare all checked options and assessed feasibility, recommend a practical service and continuity plan with limits, and identify the decision needed before any offer expires. Keep service approval distinct from external procurement.\nExpected outputs: Accepted cited comparison result and final recommendation\nExact capability/tool: default-compareOptions"
+    },
+    {
+      "path": "priority.json/steps/13/response/choices/0/message/content/$json/toolName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "priority.json/steps/14/requestContract/skill",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/capabilityName",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/0/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/completedEvidence/0/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/completedEvidence/1/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/completedEvidence/2/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/completedEvidence/3/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/requestContract/assignedTask",
+      "before": "ID: assess-equipment\nTitle: Assess incident and plausible causes\nIntent: Interpret the incident chronology alongside service history and manufacturer guidance. Distinguish observations, hypotheses, and unknowns, cite source-record IDs, and provide technical findings without authorizing service.\nExpected outputs: Technical chronology, sourced hypotheses, uncertainty, questions, and citations\nExact capability/tool: assessEquipment",
+      "after": "ID: assess-equipment\nTitle: Assess incident and plausible causes\nIntent: Interpret the incident chronology alongside service history and manufacturer guidance. Distinguish observations, hypotheses, and unknowns, cite source-record IDs, and provide technical findings without authorizing service.\nExpected outputs: Technical chronology, sourced hypotheses, uncertainty, questions, and citations\nExact capability/tool: default-assessEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/1/response/choices/0/message/content/$json/toolName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/2/requestContract/skill",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/completedEvidence/0/skillName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/completedEvidence/1/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/completedEvidence/2/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/completedEvidence/3/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/completedEvidence/4/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/requestContract/assignedTask",
+      "before": "ID: plan-resolution\nTitle: Compare service and continuity options\nIntent: Develop and compare service and continuity candidates against the operating need using asset context, history, manufacturer guidance, technical assessment, and service terms. Publish option conditions and findings together; distinguish estimates, unknowns, and authorization prerequisites. Recommend a disposition without approving, booking, or creating a service request.\nExpected outputs: Sourced technical assessment, option assessments, comparison, recommendation, residual risks, and next decision\nExact capability/tool: planResolution",
+      "after": "ID: plan-resolution\nTitle: Compare service and continuity options\nIntent: Develop and compare service and continuity candidates against the operating need using asset context, history, manufacturer guidance, technical assessment, and service terms. Publish option conditions and findings together; distinguish estimates, unknowns, and authorization prerequisites. Recommend a disposition without approving, booking, or creating a service request.\nExpected outputs: Sourced technical assessment, option assessments, comparison, recommendation, residual risks, and next decision\nExact capability/tool: default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/3/response/choices/0/message/content/$json/toolName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/6/capabilityName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/7/capabilityName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/4/response/choices/0/message/content/$json/tasks/8/capabilityName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/requestContract/assignedTask",
+      "before": "ID: assess-standard\nTitle: Assess standard service\nIntent: Assess standard timing, capacity, access, charges, and commitment conditions.\nExpected outputs: Standard service feasibility and conditions\nExact capability/tool: assessStandardFeasibility",
+      "after": "ID: assess-standard\nTitle: Assess standard service\nIntent: Assess standard timing, capacity, access, charges, and commitment conditions.\nExpected outputs: Standard service feasibility and conditions\nExact capability/tool: default-assessStandardFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/5/response/choices/0/message/content/$json/toolName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/requestContract/assignedTask",
+      "before": "ID: assess-expedited\nTitle: Assess expedited service\nIntent: Assess expedited timing, capacity, access, charges, and commitment conditions.\nExpected outputs: Expedited service feasibility and conditions\nExact capability/tool: assessExpeditedFeasibility",
+      "after": "ID: assess-expedited\nTitle: Assess expedited service\nIntent: Assess expedited timing, capacity, access, charges, and commitment conditions.\nExpected outputs: Expedited service feasibility and conditions\nExact capability/tool: default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/6/response/choices/0/message/content/$json/toolName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/requestContract/assignedTask",
+      "before": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access, procurement exposure, and commitment conditions.\nExpected outputs: Replacement feasibility and procurement conditions\nExact capability/tool: assessReplacementFeasibility",
+      "after": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, access, procurement exposure, and commitment conditions.\nExpected outputs: Replacement feasibility and procurement conditions\nExact capability/tool: default-assessReplacementFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/7/response/choices/0/message/content/$json/toolName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/requestContract/assignedTask",
+      "before": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access, procurement exposure, and commitment conditions.\nExpected outputs: Loaner feasibility and procurement conditions\nExact capability/tool: assessLoanerFeasibility",
+      "after": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, access, procurement exposure, and commitment conditions.\nExpected outputs: Loaner feasibility and procurement conditions\nExact capability/tool: default-assessLoanerFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/8/response/choices/0/message/content/$json/toolName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/9/requestContract/skill",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/10/requestContract/skill",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/11/requestContract/skill",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/12/requestContract/skill",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/0/skillName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/1/skillName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/2/skillName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/3/skillName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/4/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/5/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/6/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/completedEvidence/7/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/requestContract/assignedTask",
+      "before": "ID: compare-options\nTitle: Compare and recommend portfolio\nIntent: Compare service and continuity offers, assess justified combinations, and make a cited practical recommendation with limits and the decision required before expiry. Keep service approval distinct from external procurement.\nExpected outputs: Accepted cited comparison and recommendation as the workflow output\nExact capability/tool: compareOptions",
+      "after": "ID: compare-options\nTitle: Compare and recommend portfolio\nIntent: Compare service and continuity offers, assess justified combinations, and make a cited practical recommendation with limits and the decision required before expiry. Keep service approval distinct from external procurement.\nExpected outputs: Accepted cited comparison and recommendation as the workflow output\nExact capability/tool: default-compareOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/13/response/choices/0/message/content/$json/toolName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "capacity_shortfall.json/steps/14/requestContract/skill",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "later_start.json/steps/0/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/capabilityName",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "later_start.json/steps/0/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/completedEvidence/0/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/completedEvidence/1/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/completedEvidence/2/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/completedEvidence/3/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "later_start.json/steps/1/requestContract/assignedTask",
+      "before": "ID: assess-equipment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology alongside service history and manufacturer guidance; distinguish observations, hypotheses, and unknowns.\nExpected outputs: Technical chronology, sourced possible causes, uncertainty, and questions\nExact capability/tool: assessEquipment",
+      "after": "ID: assess-equipment\nTitle: Assess equipment incident\nIntent: Interpret the incident chronology alongside service history and manufacturer guidance; distinguish observations, hypotheses, and unknowns.\nExpected outputs: Technical chronology, sourced possible causes, uncertainty, and questions\nExact capability/tool: default-assessEquipment"
+    },
+    {
+      "path": "later_start.json/steps/1/response/choices/0/message/content/$json/toolName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "later_start.json/steps/2/requestContract/skill",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/skill",
+      "before": "resolveEquipment",
+      "after": "default-resolveEquipment"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/completedEvidence/0/skillName",
+      "before": "assessEquipment",
+      "after": "default-assessEquipment"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/completedEvidence/1/skillName",
+      "before": "assetContext",
+      "after": "default-assetContext"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/completedEvidence/2/skillName",
+      "before": "referenceEvidence",
+      "after": "default-referenceEvidence"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/completedEvidence/3/skillName",
+      "before": "serviceHistory",
+      "after": "default-serviceHistory"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/completedEvidence/4/skillName",
+      "before": "serviceTerms",
+      "after": "default-serviceTerms"
+    },
+    {
+      "path": "later_start.json/steps/3/requestContract/assignedTask",
+      "before": "ID: plan-resolution\nTitle: Compare resolution options\nIntent: Compare available service and continuity options against the operating need and technical assessment, publishing conditions and a recommendation without approving or creating a request.\nExpected outputs: Option assessments, sourced commercial terms, pursued-option recommendation, decision conditions, and unresolved risks\nExact capability/tool: planResolution",
+      "after": "ID: plan-resolution\nTitle: Compare resolution options\nIntent: Compare available service and continuity options against the operating need and technical assessment, publishing conditions and a recommendation without approving or creating a request.\nExpected outputs: Option assessments, sourced commercial terms, pursued-option recommendation, decision conditions, and unresolved risks\nExact capability/tool: default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/3/response/choices/0/message/content/$json/toolName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/4/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/capabilityName",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/0/capabilityName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/1/capabilityName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/2/capabilityName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/3/capabilityName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/4/capabilityName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/5/capabilityName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/6/capabilityName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/7/capabilityName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/4/response/choices/0/message/content/$json/tasks/8/capabilityName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/5/requestContract/assignedTask",
+      "before": "ID: assess-expedited\nTitle: Assess expedited service feasibility\nIntent: Assess expedited timing, capacity, site access, charge and approval conditions, and limits.\nExpected outputs: Expedited option feasibility findings and unresolved prerequisites\nExact capability/tool: assessExpeditedFeasibility",
+      "after": "ID: assess-expedited\nTitle: Assess expedited service feasibility\nIntent: Assess expedited timing, capacity, site access, charge and approval conditions, and limits.\nExpected outputs: Expedited option feasibility findings and unresolved prerequisites\nExact capability/tool: default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/5/response/choices/0/message/content/$json/toolName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/6/requestContract/assignedTask",
+      "before": "ID: assess-standard\nTitle: Assess standard service feasibility\nIntent: Assess standard timing, capacity, site access, charge and approval conditions, and limits.\nExpected outputs: Standard option feasibility findings and unresolved prerequisites\nExact capability/tool: assessStandardFeasibility",
+      "after": "ID: assess-standard\nTitle: Assess standard service feasibility\nIntent: Assess standard timing, capacity, site access, charge and approval conditions, and limits.\nExpected outputs: Standard option feasibility findings and unresolved prerequisites\nExact capability/tool: default-assessStandardFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/6/response/choices/0/message/content/$json/toolName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/7/requestContract/assignedTask",
+      "before": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, site access, procurement conditions, and limits.\nExpected outputs: Loaner option feasibility findings and unresolved prerequisites\nExact capability/tool: assessLoanerFeasibility",
+      "after": "ID: assess-loaner\nTitle: Assess loaner feasibility\nIntent: Assess loaner timing, capacity, site access, procurement conditions, and limits.\nExpected outputs: Loaner option feasibility findings and unresolved prerequisites\nExact capability/tool: default-assessLoanerFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/7/response/choices/0/message/content/$json/toolName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/completedEvidence/0/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/completedEvidence/1/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/completedEvidence/2/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/completedEvidence/3/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/8/requestContract/assignedTask",
+      "before": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, site access, procurement conditions, and limits.\nExpected outputs: Replacement option feasibility findings and unresolved prerequisites\nExact capability/tool: assessReplacementFeasibility",
+      "after": "ID: assess-replacement\nTitle: Assess replacement feasibility\nIntent: Assess replacement timing, capacity, site access, procurement conditions, and limits.\nExpected outputs: Replacement option feasibility findings and unresolved prerequisites\nExact capability/tool: default-assessReplacementFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/8/response/choices/0/message/content/$json/toolName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/9/requestContract/skill",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/10/requestContract/skill",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/11/requestContract/skill",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/12/requestContract/skill",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/skill",
+      "before": "planResolution",
+      "after": "default-planResolution"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/0/skillName",
+      "before": "assessExpeditedFeasibility",
+      "after": "default-assessExpeditedFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/1/skillName",
+      "before": "assessLoanerFeasibility",
+      "after": "default-assessLoanerFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/2/skillName",
+      "before": "assessReplacementFeasibility",
+      "after": "default-assessReplacementFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/3/skillName",
+      "before": "assessStandardFeasibility",
+      "after": "default-assessStandardFeasibility"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/4/skillName",
+      "before": "quoteOptions",
+      "after": "default-quoteOptions"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/5/skillName",
+      "before": "continuityOptions",
+      "after": "default-continuityOptions"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/6/skillName",
+      "before": "entitlements",
+      "after": "default-entitlements"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/completedEvidence/7/skillName",
+      "before": "serviceResources",
+      "after": "default-serviceResources"
+    },
+    {
+      "path": "later_start.json/steps/13/requestContract/assignedTask",
+      "before": "ID: compare-options\nTitle: Compare options and recommend a plan\nIntent: Compare checked service and continuity options, assess any justified combination, and produce a cited recommendation with limits and the decision required before offers expire.\nExpected outputs: Accepted comparison result with disposition, selected and pursued options, quotes, option assessments, risks, uncertainties, and next decision\nExact capability/tool: compareOptions",
+      "after": "ID: compare-options\nTitle: Compare options and recommend a plan\nIntent: Compare checked service and continuity options, assess any justified combination, and produce a cited recommendation with limits and the decision required before offers expire.\nExpected outputs: Accepted comparison result with disposition, selected and pursued options, quotes, option assessments, risks, uncertainties, and next decision\nExact capability/tool: default-compareOptions"
+    },
+    {
+      "path": "later_start.json/steps/13/response/choices/0/message/content/$json/toolName",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    },
+    {
+      "path": "later_start.json/steps/14/requestContract/skill",
+      "before": "compareOptions",
+      "after": "default-compareOptions"
+    }
+  ]
+}

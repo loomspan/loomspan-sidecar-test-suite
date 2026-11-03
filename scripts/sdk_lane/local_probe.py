@@ -246,7 +246,7 @@ def callback_expiry():
         done = terminal(session, execution)
         assert (
             done["status"] == "FAILED"
-            and done["failure"] == "execution credential expired"
+            and done["failure"] == "HTTP caller credential missing or expired"
         )
         assert fixed("/status")["toolIssued"] is True
         deadline = time.monotonic() + 1

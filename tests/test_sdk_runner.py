@@ -32,7 +32,7 @@ def checkout(tmp_path):
     root.mkdir()
     (root / "pom.xml").write_text(
         '<project xmlns="http://maven.apache.org/POM/4.0.0"><properties>'
-        "<loomspan.version>1.0.0-beta.8</loomspan.version></properties></project>"
+        "<loomspan.version>1.0.0-beta.9-SNAPSHOT</loomspan.version></properties></project>"
     )
     (root / "Dockerfile").touch()
     (root / "sdks/java").mkdir(parents=True)
@@ -48,7 +48,7 @@ def checkout(tmp_path):
     target.mkdir()
     with zipfile.ZipFile(target / "sidecar.jar", "w") as archive:
         archive.writestr(
-            "BOOT-INF/lib/loomspan-spring-boot-starter-1.0.0-beta.8.jar", b"fixture"
+            "BOOT-INF/lib/loomspan-spring-boot-starter-1.0.0-beta.9-SNAPSHOT.jar", b"fixture"
         )
     for module, artifact in (
         ("core", "loomspan-sdk-core"),
@@ -593,7 +593,7 @@ def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(
         < fake_lane.index("cleanup")
     )
     assert report["source"] == {"revision": "a" * 40, "dirty": True}
-    assert report["frameworkVersion"] == "1.0.0-beta.8"
+    assert report["frameworkVersion"] == "1.0.0-beta.9-SNAPSHOT"
     assert (
         report["sidecarJarSha256"]
         == hashlib.sha256((checkout / "target/sidecar.jar").read_bytes()).hexdigest()
@@ -708,7 +708,7 @@ def test_missing_checkout_and_tools_are_reported(tmp_path, checkout, monkeypatch
 
 
 @pytest.mark.parametrize(
-    "versions", [[], ["1.0.0-beta.9"], ["1.0.0-beta.8", "1.0.0-beta.9"]]
+    "versions", [[], ["1.0.0-beta.9"], ["1.0.0-beta.9-SNAPSHOT", "1.0.0-beta.9"]]
 )
 def test_packaged_framework_identity_is_validated(checkout, versions):
     with zipfile.ZipFile(checkout / "target/sidecar.jar", "w") as archive:
@@ -859,7 +859,6 @@ def test_compose_has_no_provider_or_retained_data_access(tmp_path):
         "smoke.yaml",
         "sdkFailure.yaml",
         "sdkEffect.yaml",
-        "routes.yaml",
     }
     token = (tmp_path / "credentials/execution.jwt").read_bytes()
     header, claims, signature = token.split(b".")
@@ -1142,12 +1141,16 @@ def test_shutdown_fixture_supplies_required_rest_target_contract(tmp_path, monke
     monkeypatch.setattr(instance, "fixture_request", stop_before_network)
     with pytest.raises(runner.LaneFailure, match="fixture-prepared"):
         instance.shutdown_scenario(False)
-    routes = yaml.safe_load((tmp_path / "config/routes.yaml").read_bytes())
-    target = routes["targets"]["fixture"]
+    settings = yaml.safe_load((tmp_path / "config/application.yaml").read_bytes())
+    targets = settings["loomspan"]["executor-config"]["default"]["http"]["targets"]
+    target = targets["fixture"]
     assert target["connect-timeout"] == "2s"
     assert target["read-timeout"] == "20s"
     assert target["max-response-size"] == "16KB"
-    assert {route["target"] for route in routes["routes"].values()} == {"fixture"}
+    for name in ("identity", "detail"):
+        leaf = yaml.safe_load((tmp_path / f"config/{name}.yaml").read_bytes())
+        assert leaf['executor'] == 'http'
+        assert leaf['config'] == dict(target='fixture', method='POST', path='/callbacks/'+name)
 
 
 @pytest.mark.parametrize(
@@ -1243,14 +1246,14 @@ def test_callback_fixture_requires_admitted_model_barrier_then_emits_fixed_tool(
             assert not worker.is_alive() and not errors
             plan = json.loads(results[0].json()["choices"][0]["message"]["content"])
             assert [task["capabilityName"] for task in plan["tasks"]] == [
-                "localExpiryOwned"
+                "default-localExpiryOwned"
             ]
             response = client.post(base + "/callback/chat/completions", json={})
             action = json.loads(response.json()["choices"][0]["message"]["content"])
             assert action == {
                 "stepAction": "CALL_TOOL",
                 "taskId": "owned",
-                "toolName": "localExpiryOwned",
+                "toolName": "default-localExpiryOwned",
                 "toolArguments": {"message": "verify"},
             }
             assert client.get(base + "/status").json()["toolIssued"] is True
@@ -1327,11 +1330,12 @@ def test_callback_configuration_fixes_destination_and_preserves_literal_role_adm
     tmp_path,
 ):
     runner.local.configure(tmp_path / "config")
-    routes = yaml.safe_load((tmp_path / "config/routes.yaml").read_bytes())
-    assert routes["targets"]["app"]["base-url"] == "http://127.0.0.1:8081"
-    assert routes["targets"]["app"]["auth"] == {"mode": "caller-passthrough"}
+    settings = yaml.safe_load((tmp_path / "config/application.yaml").read_bytes())
+    targets = settings["loomspan"]["executor-config"]["default"]["http"]["targets"]
+    assert targets["app"]["base-url"] == "http://127.0.0.1:8081"
+    assert targets["app"]["auth"] == {"mode": "caller-passthrough"}
     for name in ("localOwned", "localLiteralOwned", "localExpiryOwned"):
-        assert routes["routes"][name] == {
+        assert yaml.safe_load((tmp_path / f"config/{name}.yaml").read_bytes())["config"] == {
             "target": "app",
             "method": "POST",
             "path": "/loomspan/callbacks/owned",
@@ -1360,12 +1364,10 @@ def test_local_outbound_only_has_no_routes_and_retains_colocated_transport(
         outbound_only=True,
     )
     config = tmp_path / "outbound/config"
-    assert yaml.safe_load((config / "routes.yaml").read_text()) == {
-        "targets": {},
-        "routes": {},
-    }
+    assert not (config / "routes.yaml").exists()
     app = yaml.safe_load((config / "application.yaml").read_text())
     assert app["loomspan"]["skills"]["locations"] == ["file:/config/localModel.yaml"]
+    assert app["loomspan"]["executor-config"] == {"default": {"http": {}}}
     doc = yaml.safe_load((tmp_path / "outbound/compose.yaml").read_text())
     assert doc["services"]["host"]["network_mode"] == "service:sidecar"
     assert (
@@ -1375,6 +1377,43 @@ def test_local_outbound_only_has_no_routes_and_retains_colocated_transport(
         doc["services"]["sidecar"]["environment"]["LOOMSPAN_SIDECAR_TRUST_MODE"]
         == "colocated"
     )
+
+
+def test_rotation_callback_probe_is_bodyless_and_preserves_original_token(monkeypatch):
+    import http.client
+    import ssl
+    calls = []
+
+    class Connection:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def request(self, method, path, body, headers):
+            calls.append((method, path, body, headers))
+
+        def getresponse(self):
+            return SimpleNamespace(status=200, read=lambda limit: b'{"verified":true}')
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(http.client, 'HTTPSConnection', Connection)
+    monkeypatch.setattr(ssl, 'create_default_context', lambda **kwargs: object())
+    fixture = LocalServer(('127.0.0.1', 0))
+    fixture.credentials['old'] = 'Bearer fixed-original-credential'
+    thread = threading.Thread(target=fixture.serve_forever, daemon=True)
+    thread.start()
+    try:
+        with httpx.Client(trust_env=False, timeout=2) as client:
+            response = client.get(f'http://127.0.0.1:{fixture.server_port}/rotation/probe/old/callback')
+            assert response.json() == {'status': 200, 'identity': {'verified': True}}
+        assert len(calls) == 1
+        assert calls[0][:3] == ('POST', '/loomspan/callbacks/owned', None)
+        assert calls[0][3]['Authorization'] == 'Bearer fixed-original-credential'
+    finally:
+        fixture.shutdown()
+        fixture.server_close()
+        thread.join(2)
 
 
 def test_rotation_credentials_stay_in_fixed_memory_slots():

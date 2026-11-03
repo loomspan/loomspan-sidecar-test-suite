@@ -1,7 +1,7 @@
 import environment as target_env
 import time, httpx
 def ready(timeout=120):
-    pending={'java':target_env.url(18081, '/health', '127.0.0.1'),'python':target_env.url(18082, '/health', '127.0.0.1'),'fixtures':target_env.url(18090, '/health', '127.0.0.1'),'keycloak':target_env.url(18080, '/realms/equipment/.well-known/openid-configuration', '127.0.0.1'),'sidecar':target_env.url(19091, '/actuator/health/readiness', '127.0.0.1')}
+    pending={'java':target_env.url(18081, '/health', '127.0.0.1'),'python':target_env.url(18082, '/health', '127.0.0.1'),'fixtures':target_env.url(18090, '/health', '127.0.0.1'),'keycloak':target_env.url(18080, '/realms/equipment/.well-known/openid-configuration', '127.0.0.1'),'sidecar':target_env.url(18083, '/actuator/health/readiness', '127.0.0.1')}
     deadline=time.monotonic()+timeout
     with httpx.Client(timeout=2,trust_env=False) as c:
         while pending and time.monotonic()<deadline:

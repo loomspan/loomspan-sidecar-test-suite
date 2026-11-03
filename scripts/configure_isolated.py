@@ -24,14 +24,12 @@ def main():
     for name, original, target in [('keycloak', 18080, 8080), ('fixtures', 18090, 8080),
                                    ('python', 18082, 8080), ('java', 18081, 8080), ('sidecar', 18083, 8080)]:
         lines += [f'  {name}:', '    ports: !override', f'      - "127.0.0.1:{environment.port(original)}:{target}"']
-        if name == 'sidecar':
-            lines += [f'      - "127.0.0.1:{environment.port(19091)}:9091"']
         if name == 'keycloak':
             lines += [f'    command: [start-dev, --import-realm, "--hostname=http://localhost:{environment.port(18080)}"]']
-        else:
+        elif name != 'sidecar':
             key = {'java': 'EQUIPMENT_ISSUER', 'python': 'ISSUER',
-                   'sidecar': 'SPRING_APPLICATION_JSON', 'fixtures': 'OPENROUTER_API_KEY'}[name]
-            setting = json.dumps({'loomspan-sidecar': {'auth': {'jwt': {'issuer-uri': value}}}}) if name == 'sidecar' else value if name != 'fixtures' else ''
+                   'fixtures': 'OPENROUTER_API_KEY'}[name]
+            setting = value if name != 'fixtures' else ''
             lines += ['    environment:', f'      {key}: {json.dumps(setting)}']
     (runtime / 'compose.isolated.yaml').write_text('\n'.join(lines) + '\n')
     print('Configured isolated project and ports; no containers or credentials created.')

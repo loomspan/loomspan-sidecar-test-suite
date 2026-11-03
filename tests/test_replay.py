@@ -2,6 +2,8 @@
 import copy
 import asyncio
 import json
+import hashlib
+import re
 from pathlib import Path
 import shutil
 import sys
@@ -65,7 +67,7 @@ def test_frozen_reference_integrity_unique_requests_and_identity_rebinding():
         assert all(s['response']['usage']['total_tokens'] == 0 for s in bound['steps'])
 
 
-@pytest.mark.parametrize('file', ['fixtures/reference/baseline.json', 'fixtures/business.json', 'config/skills/equipment-service/compareOptions.yaml'])
+@pytest.mark.parametrize('file', ['fixtures/reference-namespaced/baseline.json', 'fixtures/business.json', 'config/skills/equipment-service/compareOptions.yaml'])
 def test_stale_or_modified_reference_rejected(tmp_path, file):
     shutil.copytree(ROOT / 'fixtures', tmp_path / 'fixtures', ignore=shutil.ignore_patterns('__pycache__'))
     shutil.copytree(ROOT / 'config', tmp_path / 'config')
@@ -80,6 +82,61 @@ def test_stale_or_modified_reference_rejected(tmp_path, file):
         target.write_bytes(target.read_bytes() + b' ')
     with pytest.raises(ValueError, match='changed|checksum'):
         load_reference(tmp_path)
+
+
+def test_namespace_contract_changes_only_reviewed_framework_identity_positions():
+    source, current = ROOT/'fixtures/reference', ROOT/'fixtures/reference-namespaced'
+    review = json.loads((current/'namespace-review.json').read_bytes())
+    digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+    # The preserved worktree may predate its eol=lf attribute. Pin the Git
+    # representation without rewriting that original reference manifest.
+    manifest_lf = (source/'manifest.json').read_bytes().replace(b'\r\n', b'\n')
+    assert hashlib.sha256(manifest_lf).hexdigest() == review['sourceManifestLfSha256']
+    observed = []
+
+    def compare(before, after, path):
+        if before == after:
+            return
+        if isinstance(before, dict):
+            assert isinstance(after, dict) and before.keys() == after.keys(), path
+            for key in before:
+                compare(before[key], after[key], path+'/'+key)
+        elif isinstance(before, list):
+            assert isinstance(after, list) and len(before) == len(after), path
+            for i, (left, right) in enumerate(zip(before, after)):
+                compare(left, right, path+'/'+str(i))
+        elif re.fullmatch(r'.+/steps/\d+/response/choices/0/message/content', path):
+            original, qualified = json.loads(before), json.loads(after)
+            assert ('tasks' in original and 'capabilityName' in original) or original.get('stepAction') == 'CALL_TOOL', path
+            # Qualification inserts only these exact structural prefixes; all
+            # whitespace and prose bytes inside the recorded reply stay intact.
+            assert re.sub(r'("(?:capabilityName|toolName)"\s*:\s*")default-', r'\1', after) == before
+            compare(original, qualified, path+'/$json')
+        else:
+            if path.endswith('/requestContract/assignedTask'):
+                expected, count = re.subn(r'(?m)^(Exact capability/tool: )([A-Za-z][A-Za-z0-9_]*)$', r'\1default-\2', before)
+                assert count == 1 and after == expected, path
+            else:
+                assert re.fullmatch(r'.+/steps/\d+/(requestContract/(skill|completedEvidence/\d+/skillName)|response/choices/0/message/content/\$json/(capabilityName|toolName|tasks/\d+/capabilityName))', path), path
+                assert after == 'default-'+before, path
+            observed.append({'path': path, 'before': before, 'after': after})
+
+    for name, original_hash in review['sourceFiles'].items():
+        assert digest(source/name) == original_hash
+        assert digest(current/name) == review['currentFiles'][name]
+        compare(json.loads((source/name).read_bytes()), json.loads((current/name).read_bytes()), name)
+    sort = lambda values: sorted(values, key=lambda change: change['path'])
+    assert sort(observed) == sort(review['changes'])
+    assert len(observed) == 316
+
+
+def test_namespace_review_accepts_source_manifest_from_a_clean_lf_checkout(tmp_path, monkeypatch):
+    for name in ('reference', 'reference-namespaced'):
+        shutil.copytree(ROOT/'fixtures'/name, tmp_path/'fixtures'/name)
+    manifest = tmp_path/'fixtures/reference/manifest.json'
+    manifest.write_bytes(manifest.read_bytes().replace(b'\r\n', b'\n'))
+    monkeypatch.setitem(test_namespace_contract_changes_only_reviewed_framework_identity_positions.__globals__, 'ROOT', tmp_path)
+    test_namespace_contract_changes_only_reviewed_framework_identity_positions()
 
 
 def test_fixture_consumes_once_and_never_falls_back_to_provider(tmp_path, monkeypatch):

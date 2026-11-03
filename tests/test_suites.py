@@ -68,20 +68,33 @@ def test_trial_does_not_change_other_suite_models_or_skills(tmp_path, monkeypatc
     assert effective['loomspan']['models'][first['model']]['provider-model'] == 'trial/model'
 
 
-def test_routes_combine_and_skill_collisions_fail(tmp_path):
-    for suite in ('one', 'two'):
-        skill = tmp_path / f'config/rest-skills/{suite}/{suite}.yaml'
+def test_skill_collisions_fail_across_model_and_executor_trees(tmp_path):
+    for kind, name in [('skills', 'one'), ('executor-skills', 'two')]:
+        skill = tmp_path / f'config/{kind}/equipment/{name}.yaml'
         skill.parent.mkdir(parents=True)
-        skill.write_text(f'name: {suite}\nrest: true\n')
-        route = tmp_path / f'config/routes/{suite}.yaml'
-        route.parent.mkdir(parents=True, exist_ok=True)
-        route.write_text(yaml.safe_dump({'targets': {suite: {'base-url': 'http://python'}},
-                                        'routes': {suite: {'target': suite, 'path': '/'+suite}}}))
+        skill.write_text(f'name: {name}\n')
     prepare(tmp_path)
-    assert set(yaml.safe_load((tmp_path / '.runtime/suite-routes.yaml').read_bytes())['routes']) == {'one', 'two'}
-    (tmp_path / 'config/rest-skills/two/two.yaml').write_text('name: one\nrest: true\n')
+    assert not (tmp_path / '.runtime').exists()
+    (tmp_path / 'config/executor-skills/equipment/two.yaml').write_text('name: one\n')
     with pytest.raises(ValueError, match='Duplicate runtime skill'):
         prepare(tmp_path)
+
+
+def test_equipment_generator_emits_executor_operations_without_changing_models(tmp_path, monkeypatch):
+    from suites.equipment_service import author_workflow as author
+    monkeypatch.setattr(author, 'ROOT', tmp_path)
+    author.main()
+    leaves = list((tmp_path / 'config/executor-skills/equipment-service').glob('*.yaml'))
+    assert len(leaves) == 9
+    for path in leaves:
+        doc = yaml.safe_load(path.read_bytes())
+        original = yaml.safe_load((ROOT / path.relative_to(tmp_path)).read_bytes())
+        assert doc == original
+        assert doc['executor'] == 'http' and 'rest' not in doc
+        assert doc['config'] == dict(target='equipment', method='POST', path='/skills/'+doc['name'], body={'source': 'input'})
+    for path in (tmp_path / 'config/skills/equipment-service').glob('*.yaml'):
+        assert path.read_bytes() == (ROOT / path.relative_to(tmp_path)).read_bytes()
+    assert not (tmp_path / 'config/routes').exists()
 
 
 def test_python_completion_dispatch_uses_one_poll(monkeypatch):

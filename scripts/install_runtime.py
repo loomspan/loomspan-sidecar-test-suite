@@ -7,6 +7,7 @@ import zipfile
 import configure_isolated
 import environment
 import prepare
+from record_build import framework_identity
 
 
 def verify_inputs(root):
@@ -23,9 +24,7 @@ def verify_inputs(root):
         file = root / 'runtime-artifacts' / (name + '.jar')
         if hashlib.sha256(file.read_bytes()).hexdigest() != build['artifacts'][name]['sha256']:
             raise ValueError('Supplied package identity mismatch: ' + name)
-        with zipfile.ZipFile(file) as archive:
-            framework = archive.read('BOOT-INF/lib/loomspan-spring-boot-starter-1.0.0-beta.8.jar')
-        if hashlib.sha256(framework).hexdigest() != build['installedFrameworkSha256']:
+        if framework_identity(file, build['framework']) != build['artifacts'][name]['frameworkSha256']:
             raise ValueError('Embedded Framework identity mismatch: ' + name)
     return manifest
 

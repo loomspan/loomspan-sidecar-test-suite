@@ -63,7 +63,7 @@ def review(terminal, mission, rows, trace):
             isinstance(value.get(k), list) for k in ['pursuedOptions', 'reviewConcerns'])
     checks['pursued options consistent with primary selection'] = portfolio_valid(value)
     for skill, expected in [('assessEquipment', value.get('equipmentAssessment')), ('compareOptions', value)]:
-        calls = [r for r in trace if r['recordType'] == 'TOOL_CALL_COMPLETED' and r.get('route') == skill]
+        calls = [r for r in trace if r['recordType'] == 'TOOL_CALL_COMPLETED' and r.get('route') == 'default-' + skill]
         checks[skill + ' accepted result preserved exactly'] = (
             len(calls) == 1 and decoded(payload(calls[0], trace)['details']['result']) == expected)
     checks.update(publication_checks(value, trace))
@@ -84,7 +84,7 @@ def portfolio_valid(value):
 def publication_checks(value, trace):
     """Transport checks only: an exact published finding may still be incorrect."""
     def single(kind, skill, field):
-        calls = [r for r in trace if r['recordType'] == kind and r.get('route') == skill]
+        calls = [r for r in trace if r['recordType'] == kind and r.get('route') == 'default-' + skill]
         return decoded(payload(calls[0], trace)['details'][field]) if len(calls) == 1 else {}
     checks = {}
     incident = single('TOOL_CALL_STARTED', 'assessEquipment', 'arguments').get('context', {}).get('incident')

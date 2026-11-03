@@ -8,6 +8,7 @@ import json
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.x509.oid import ExtendedKeyUsageOID, NameOID
 
 
@@ -63,6 +64,12 @@ def generate(directory):
         (directory / (label + "-ca.pem")).write_bytes(
             certificate.public_bytes(serialization.Encoding.PEM)
         )
+    (directory / "jvm-truststore.p12").write_bytes(
+        pkcs12.serialize_java_truststore(
+            [pkcs12.PKCS12Certificate(authorities["group"][1], b"fixture-group")],
+            serialization.BestAvailableEncryption(b"fixture-public-trust"),
+        )
+    )
     for peer in ("app", "sidecar"):
         for kind in (
             "server",

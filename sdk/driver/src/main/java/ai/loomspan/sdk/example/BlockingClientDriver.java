@@ -25,8 +25,8 @@ public final class BlockingClientDriver {
         var input = mapper.createObjectNode();
         var options = new WaitOptions(Duration.ofSeconds(30), Duration.ofMillis(100));
         try (var client = SidecarClient.builder().baseUrl(URI.create("http://sidecar:8080")).build()) {
-            require(client.listSkills(credential).stream().anyMatch(skill -> skill.name().equals("sdkSmoke")));
-            require(client.getSkill("sdkSmoke", credential).name().equals("sdkSmoke"));
+            require(client.listSkills(credential).stream().anyMatch(skill -> skill.name().equals("default-sdkSmoke")));
+            require(client.getSkill("sdkSmoke", credential).name().equals("default-sdkSmoke"));
             var accepted = client.submit("sdkSmoke", input, credential);
             var complete = client.await(accepted.id(), credential, options);
             require(complete.status() == ExecutionStatus.COMPLETED);
@@ -36,7 +36,7 @@ public final class BlockingClientDriver {
             var failed = client.await(failedId, credential, options);
             require(failed.status() == ExecutionStatus.FAILED);
             require(failed.failure() != null && "SKILL_FAILURE".equals(failed.failure().kind()));
-            require("REST target 'fixture' failed: HTTP status 503; content-type=application/json".equals(failed.failure().message()));
+            require("HTTP 503\n{\"error\": \"fixed SDK fixture failure\"}".equals(failed.failure().message()));
         }
         boolean unknown = false;
         try (var proxy = SidecarClient.builder().baseUrl(URI.create("http://fixtures:8081")).build()) {

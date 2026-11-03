@@ -154,60 +154,25 @@ def configure(directory):
         if model:
             data.update(model=model, prompt="Return fixture result")
         else:
-            data["rest"] = True
+            data["executor"] = "http"
+            data["config"] = {"target": "fixture" if skill == "localEffect" else "app",
+                "method": "POST", "path": "/effect" if skill == "localEffect" else "/loomspan/callbacks/owned"}
         (directory / (skill + ".yaml")).write_text(
             yaml.safe_dump(data), encoding="utf-8"
         )
-    (directory / "routes.yaml").write_text(
-        yaml.safe_dump(
-            {
-                "targets": {
-                    "app": {
-                        "base-url": "http://127.0.0.1:8081",
-                        "auth": {"mode": "caller-passthrough"},
-                        "connect-timeout": "2s",
-                        "read-timeout": "3s",
-                        "max-response-size": "4KB",
-                    },
-                    "fixture": {
-                        "base-url": "http://127.0.0.1:8090",
-                        "auth": {"mode": "none"},
-                        "connect-timeout": "2s",
-                        "read-timeout": "3s",
-                        "max-response-size": "1KB",
-                    },
-                },
-                "routes": {
-                    **{
-                        name: {
-                            "target": "app",
-                            "method": "POST",
-                            "path": "/loomspan/callbacks/owned",
-                        }
-                        for name in (
-                            "localOwned",
-                            "localLiteralOwned",
-                            "localExpiryOwned",
-                        )
-                    },
-                    "localEffect": {
-                        "target": "fixture",
-                        "method": "POST",
-                        "path": "/effect",
-                    },
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
     config = {
         "loomspan-sidecar": {
             "configuration": {"mode": "file"},
-            "rest-routes": {"location": "file:/config/routes.yaml"},
             "auth": {"jwt": {"audience": "loomspan-sidecar"}},
             "executions": {"max-concurrent": 1, "max-queued": 4},
         },
         "loomspan": {
+            "executor-config": {"default": {"http": {"targets": {
+                "app": {"base-url": "http://127.0.0.1:8081", "auth": {"mode": "caller-passthrough"},
+                    "connect-timeout": "2s", "read-timeout": "3s", "max-response-size": "4KB"},
+                "fixture": {"base-url": "http://127.0.0.1:8090", "auth": {"mode": "none"},
+                    "connect-timeout": "2s", "read-timeout": "3s", "max-response-size": "1KB"}
+            }}}},
             "connections": {},
             "models": {},
             "skills": {

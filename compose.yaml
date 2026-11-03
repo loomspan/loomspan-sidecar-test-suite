@@ -22,8 +22,13 @@ services:
       ISSUER: http://localhost:18080/realms/equipment
       JWKS: http://keycloak:8080/realms/equipment/protocol/openid-connect/certs
       SIDECAR: http://sidecar:8080
+      EXECUTION_KEY: /execution/key.pem
+      EXECUTION_JWKS: /execution/jwks.json
       FIXTURES: http://fixtures:8080
-    volumes: [./.runtime/python:/data]
+    volumes:
+      - ./.runtime/python:/data
+      - ./.runtime/execution-key.pem:/execution/key.pem:ro
+      - ./.runtime/execution-jwks.json:/execution/jwks.json:ro
     ports: [127.0.0.1:18082:8080]
   java:
     build: apps/java
@@ -37,16 +42,16 @@ services:
       - ./.runtime/java:/data
     ports: [127.0.0.1:18081:8080]
   sidecar:
-    build: .build/sidecar-1.0.0-beta.3
+    build: {context: ., dockerfile: deploy/sidecar.Dockerfile}
     environment:
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/runtime.yaml
       OBSERVER_KEY: ${OBSERVER}
     volumes:
       - ./config/sidecar.yaml:/config/runtime.yaml:ro
       - ./config/skills:/config/skills:ro
-      - ./config/rest-skills:/config/rest-skills:ro
-      - ./.runtime/suite-routes.yaml:/config/routes.yaml:ro
+      - ./config/executor-skills:/config/executor-skills:ro
+      - ./.runtime/execution-jwks.json:/trust/execution-jwks.json:ro
       - sidecar-data:/sidecar/data
-    ports: [127.0.0.1:18083:8080, 127.0.0.1:19091:9091]
+    ports: [127.0.0.1:18083:8080]
 volumes:
   sidecar-data:

@@ -1,34 +1,34 @@
-"""Prepare isolated release sources and local-only credentials; never print secrets."""
+"""Prepare local-only credentials without replacing existing secrets or keys."""
 import environment as target_env
-import argparse, json, os, pathlib, secrets, subprocess, tarfile
+import argparse, json, pathlib, secrets
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 def write(path, value):
     p = ROOT / path
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(value, encoding="utf-8")
-def export_sources():
-    # Export the pinned Sidecar release without modifying the neighboring checkout.
-    import io
-    repo = ROOT.parent / 'loomspan-sidecar'
-    ref = 'v1.0.0-beta.3'
-    expected = '3eff6befd95f73b7d4091ed0da32498e0f64c488'
-    sha = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref + '^{commit}'], text=True).strip()
-    if sha != expected:
-        raise RuntimeError('Sidecar source tag mismatch')
-    dest = ROOT / '.build/sidecar-1.0.0-beta.3'
-    if dest.exists():
+def prepare_execution_keys(runtime):
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.primitives import serialization
+    import jwt
+    keyfile, jwksfile = runtime/'execution-key.pem', runtime/'execution-jwks.json'
+    if keyfile.exists() != jwksfile.exists():
+        raise ValueError('Incomplete execution signing material; refusing to replace keys')
+    if keyfile.exists():
         return
-    raw = subprocess.check_output(['git', '-c', 'core.autocrlf=false', '-C', str(repo),
-                                   'archive', '--format=tar', ref])
-    dest.mkdir(parents=True)
-    with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
-        archive.extractall(dest, filter='data')
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    keyfile.write_bytes(key.private_bytes(serialization.Encoding.PEM,
+        serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
+    jwk = json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(key.public_key()))
+    jwk.update(kid='equipment-app', alg='RS256', use='sig')
+    jwksfile.write_text(json.dumps({'keys': [jwk]}))
+
 
 def prepare_runtime():
     runtime=ROOT/'.runtime'; runtime.mkdir(exist_ok=True)
     secretfile=runtime/'secrets.json'
     if not secretfile.exists():
         write('.runtime/secrets.json',json.dumps({k:secrets.token_urlsafe(36) for k in ['observer','control','keycloak_admin','maya','luis']},indent=2))
+    prepare_execution_keys(runtime)
     s=json.loads(secretfile.read_text())
     # User passwords are generated development credentials, never source-controlled.
     realm={'realm':'equipment','enabled':True,'sslRequired':'none','accessTokenLifespan':1800,
@@ -50,8 +50,6 @@ def prepare_runtime():
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--runtime-only',action='store_true',help='Generate local runtime credentials without Git, Maven or neighboring checkouts')
-    args=parser.parse_args()
-    if not args.runtime_only: export_sources()
+    parser.parse_args()
     prepare_runtime()
 if __name__=='__main__': main()

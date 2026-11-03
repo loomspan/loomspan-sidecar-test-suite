@@ -1,7 +1,12 @@
-name: entitlements
-description: Evaluate date eligibility and documented findings; model hypotheses are
-  not findings.
-rest: true
+name: referenceEvidence
+description: Retrieve applicable manufacturer manual and bulletin passages.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/referenceEvidence
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

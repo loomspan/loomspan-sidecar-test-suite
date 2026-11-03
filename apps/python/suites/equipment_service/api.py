@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from ...infrastructure.security import identity
+from ...infrastructure.execution_identity import ISSUER as EXECUTION_ISSUER
 from . import business
 from .workflow import submit, poll
 
@@ -21,5 +22,5 @@ async def commitment(approval:dict,who=Depends(identity)):
 
 @router.get('/service-requests/by-key/{key}')
 def recovery(key:str,who=Depends(identity)):
-    return business.recover(key,who[0])
+    return business.recover(key,who[0] | {'iss': EXECUTION_ISSUER})
 

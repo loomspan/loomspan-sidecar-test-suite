@@ -1,9 +1,10 @@
-"""Record the pinned snapshot build and verify that both packaged hosts embed its bytes."""
+"""Stage the current Sidecar and record runtime package/configuration identities."""
 import hashlib
 import argparse
 import json
 import pathlib
-import subprocess
+import shutil
+from xml.etree import ElementTree
 import zipfile
 import yaml
 
@@ -11,12 +12,30 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 SOURCE=json.loads((ROOT/'config/runtime-source.json').read_bytes())
 VERSION=SOURCE['frameworkVersion']
 
+def framework_identity(path, version):
+    prefix = 'BOOT-INF/lib/loomspan-spring-boot-starter-'
+    with zipfile.ZipFile(path) as jar:
+        names = [name for name in jar.namelist() if name.startswith(prefix) and name.endswith('.jar')]
+        if names != [prefix + version + '.jar']:
+            raise ValueError('Missing, mixed or unexpected embedded Framework coordinate')
+        return hashlib.sha256(jar.read(names[0])).hexdigest()
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--maven-repository',type=pathlib.Path,default=pathlib.Path.home()/'.m2/repository')
+    parser.add_argument('--sidecar-checkout',type=pathlib.Path,default=ROOT.parent/'loomspan-sidecar')
     args=parser.parse_args()
-    installed=args.maven_repository/'ai/loomspan/loomspan-spring-boot-starter'/VERSION/('loomspan-spring-boot-starter-'+VERSION+'.jar')
-    digest=hashlib.sha256(installed.read_bytes()).hexdigest()
+    checkout = args.sidecar_checkout.resolve()
+    pom = ElementTree.parse(checkout/'pom.xml').getroot()
+    ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+    sidecar_version = pom.findtext('m:version', namespaces=ns)
+    if pom.findtext('m:properties/m:loomspan.version', namespaces=ns) != VERSION:
+        raise ValueError('Sidecar must use the installed Framework coordinate: ' + VERSION)
+    built = checkout/'target'/('loomspan-sidecar-'+sidecar_version+'.jar')
+    framework_identity(built, VERSION)
+    staged = ROOT/'runtime-artifacts/sidecar.jar'
+    staged.parent.mkdir(exist_ok=True)
+    shutil.copyfile(built, staged)
     overlay=yaml.safe_load((ROOT/'compose.runtime.yaml').read_text())
     settings=overlay['services']['java']['environment']
     request_timeout=int(settings['LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT'].removesuffix('s'))
@@ -28,28 +47,16 @@ def main():
                     ['loomspan']['session'].get('quotas', {}).get('max-usage-units', 200000)
                     for name in ['java', 'sidecar']]
     assert usage_limits[0] == usage_limits[1], 'Equivalent hosts must use the same usage quota'
-    repo = ROOT.parent/'loomspan-framework'
-    commit = subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip()
-    if commit != SOURCE['frameworkCommit'] or subprocess.check_output(['git','-C',str(repo),'status','--porcelain'],text=True).strip():
-        raise RuntimeError('Framework source must match the clean pinned snapshot before recording its build')
-    built = repo/'target'/('loomspan-spring-boot-starter-'+VERSION+'.jar')
-    if hashlib.sha256(built.read_bytes()).hexdigest() != digest:
-        raise RuntimeError('Installed snapshot differs from the pinned source build')
-    result={'framework':VERSION,'frameworkCommit':commit,
-            'sidecar':'1.0.0-beta.3',
-            'sidecarCommit':SOURCE['sidecarCommit'],'buildMode':SOURCE['note'],
+    result={'framework':VERSION, 'sidecar':sidecar_version,
+            'buildMode':SOURCE['note'],
             'providerRequestTimeoutSeconds':request_timeout,'missionTimeoutSeconds':mission_timeout,
-            'sessionMaxUsageUnits':usage_limits[0],
-            'installedFrameworkSha256':digest,'artifacts':{},'configurationSha256':{}}
-    for name,path in [('java',ROOT/'apps/java/target/equipment-java-1.0.jar'),
-                      ('sidecar',ROOT/'.build/sidecar-1.0.0-beta.3/target/loomspan-sidecar-1.0.0-beta.3.jar')]:
-        with zipfile.ZipFile(path) as jar:
-            embedded=jar.read('BOOT-INF/lib/loomspan-spring-boot-starter-'+VERSION+'.jar')
-        if hashlib.sha256(embedded).hexdigest()!=digest: raise RuntimeError(name+' packaged a different Framework artifact')
-        result['artifacts'][name]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'frameworkSha256':digest}
+            'sessionMaxUsageUnits':usage_limits[0], 'artifacts':{},'configurationSha256':{}}
+    for name,path in [('java',ROOT/'apps/java/target/equipment-java-1.0.jar'), ('sidecar',staged)]:
+        result['artifacts'][name]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+            'frameworkSha256':framework_identity(path, VERSION)}
     for path in [ROOT/'compose.runtime.yaml',*(ROOT/'config').rglob('*.yaml')]:
         result['configurationSha256'][path.relative_to(ROOT).as_posix()]=hashlib.sha256(path.read_bytes()).hexdigest()
     (ROOT/'.runtime/build-baseline.json').write_text(json.dumps(result,indent=2))
-    print('Both packaged hosts match the pinned Framework snapshot; build baseline recorded.')
+    print('Current host packages use the configured Framework coordinate; build baseline recorded.')
 
 if __name__=='__main__':main()

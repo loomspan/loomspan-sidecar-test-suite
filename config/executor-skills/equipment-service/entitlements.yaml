@@ -1,6 +1,13 @@
-name: quoteOptions
-description: Calculate authoritative conditional amounts for checked service strategies.
-rest: true
+name: entitlements
+description: Evaluate date eligibility and documented findings; model hypotheses are
+  not findings.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/entitlements
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

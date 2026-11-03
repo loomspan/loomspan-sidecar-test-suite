@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-REFERENCE = ROOT / 'fixtures/reference'
+REFERENCE_DIRECTORY = 'fixtures/reference-namespaced'
 
 
 def sha(raw):
@@ -24,7 +24,7 @@ def contract_hash(raw):
 
 
 def load_reference(root=ROOT):
-    directory = root / 'fixtures/reference'
+    directory = root / REFERENCE_DIRECTORY
     manifest = json.loads((directory / 'manifest.json').read_bytes())
     if manifest['formatVersion'] != 1 or manifest['businessStatus'] != 'BUSINESS_PASS_WITH_MINOR_CAVEATS':
         raise ValueError('Unapproved or unsupported replay reference')

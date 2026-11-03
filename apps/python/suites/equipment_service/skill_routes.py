@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import ValidationError
-from ...infrastructure.security import identity
+from ...infrastructure.execution_identity import callback_identity
 from . import business
 from .contracts import LookupInput, ServiceRequestInput
 
 router = APIRouter()
 
 @router.post('/skills/{name}')
-async def deterministic(name:str,body:dict,who=Depends(identity)):
+async def deterministic(name:str,body:dict,who=Depends(callback_identity)):
     if name=='createServiceRequest':
         business.role(who[0], 'REQUEST_SERVICE')
         try:

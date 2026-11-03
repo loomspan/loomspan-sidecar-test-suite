@@ -14,10 +14,8 @@ def configure(config):
         "normal": app["loomspan"]["connections"]["normal"]
     }
     app["loomspan"]["models"] = {"normal": app["loomspan"]["models"]["normal"]}
+    app["loomspan"]["executor-config"] = {"default": {"http": {}}}
     app_path.write_text(yaml.safe_dump(app), encoding="utf-8")
-    (config / "routes.yaml").write_text(
-        yaml.safe_dump({"targets": {}, "routes": {}}), encoding="utf-8"
-    )
     for path in config.glob("local*.yaml"):
         if path.name != "localModel.yaml":
             path.unlink()

@@ -12,11 +12,11 @@ from .decisions import verify as verify_decision
 
 def planner_step(case):
     child = case.get('childSkill', 'tsTriageFixed')
-    plan = {'capabilityName': case['skill'], 'createdAt': '2026-10-11T00:00:00Z', 'status': 'VALID',
-            'tasks': [{'taskId': 'triage', 'title': 'Assess support contact', 'capabilityName': child,
+    plan = {'capabilityName': 'default-' + case['skill'], 'createdAt': '2026-10-11T00:00:00Z', 'status': 'VALID',
+            'tasks': [{'taskId': 'triage', 'title': 'Assess support contact', 'capabilityName': 'default-' + child,
                        'intent': 'Assess the supplied support contact', 'status': 'PENDING', 'dependsOn': [],
                        'expectedOutputs': ['judgments'], 'parallelGroup': None, 'note': ''}]}
-    return {'contains': [case['input']['context']['caseId'], case['skill']],
+    return {'contains': [case['input']['context']['caseId'], 'default-' + case['skill']],
             'systemContains': ['Create an ordered flight plan'],
             'response': {'id': 'authored-plan', 'object': 'chat.completion', 'created': 1,
                          'model': 'openai/gpt-6-luna', 'usage': {'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, 'cost': 0},

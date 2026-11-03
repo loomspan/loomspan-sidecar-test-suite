@@ -30,13 +30,49 @@ finalization or mapping fails and does not depend on Console storage or trace pe
 The same timing applies to `AdmittedSkillInvocation.invoke(observer)`; an
 explicit release racing a claimed execution cannot end root ownership early.
 
-Java, REST, and model-backed YAML roots all produce a skill mission and terminal outcome. Java and REST
-execution do not create a model interaction merely for observation. Existing
+Java and model-backed YAML roots all produce a skill mission and terminal outcome. Java
+execution does not create a model interaction merely for observation. Existing
 canonical mission-frame records project into `SKILL_STARTED` and `SKILL_FINISHED`
-events for both direct sources, so a Java- or REST-only root has a meaningful public observer
+events for direct Java execution, so a Java-only root has a meaningful public observer
 view even without model or tool events.
 
+## Captured namespace identity
+
+An invocation produces one session, canonical trace/event sequence and completed
+observer view across its captured namespaces. Semantic skill references in events,
+lookups and displays are complete `namespace-localName` strings, preserving local
+case. Do not shorten them or reinterpret model/planning operation routes as skills.
+Unknown-origin diagnostics retain their existing null/unavailable identity.
+
+Canonical `TRACE_STARTED` metadata and existing live/finalized trace metadata carry
+`entryNamespace`, entry-scoped `generationId`, and `namespaceGenerationIds`, a
+snapshot map of all admitted reachable namespaces to their captured generation IDs.
+Known record owner facts use `executingNamespace` and `executingGenerationId` where
+execution context is represented. The map and record facts describe retained
+execution, even after current publication changes or removal/recreation. They are
+same-release diagnostics, not an additional supported Java snapshot API.
+
+`AdmittedSkillInvocation.generationId()` identifies the entry generation;
+`SkillExecutorInvocation.executorConfigGenerationId()` identifies the captured executor namespace generation, which can differ from both the entry generation and the executing YAML leaf's owner. Public skill-call
+visibility grants neither observation nor configuration access. Host catalog
+metadata remains unfiltered under existing observation authorization, while
+runtime discovery enforces execution permissions.
+
+Console requires the same exact release marker for live connections and saved
+trace imports. `consoleCompatibilityVersion` comes from filtered
+`META-INF/loomspan-release.properties` using Maven `${project.version}`. A missing
+or different resolved release rejects. Matching `development` allows ordinary
+complete validation but promises no compatibility between development builds.
+There is no legacy reader, alternate counter or historical
+readability promise. See [HTTP diagnostics](../skill-authoring/observability-http.md)
+and [trace interpretation](../skill-authoring/traces-and-debugging.md).
+
 ## Execution Events
+
+The executor configuration-owner ID is present even without an annotation config
+path. It may key application-owned resources through the existing
+[retirement listener](skill-reload.md#executor-owned-application-resources), but
+neither an observation nor that ID promises resource management by Loomspan.
 
 `SkillExecutionEvent` is a current-version diagnostic value with:
 
@@ -88,7 +124,8 @@ application callback.
 | Skill is unknown, mismatched, or otherwise fails through the facade | `SkillException` or a subtype |
 | Spring Security denies access | The original `AccessDeniedException` propagates |
 | Spring authentication failure at a Java proxy | Remains a failure; never successful tool text |
-| Runtime implementation failure | Safe `SkillException` message with the original cause |
+| Designated Java `RecoverableSkillException` | Propagates as a `SkillException` subtype; exact message and optional diagnostic cause retained |
+| Runtime implementation or Java serialization failure | Safe `SkillException` message with the original cause |
 | Admitted handle already executed, released, or cut off | Safe `SkillException`; no new session or work |
 | Observer throws after success | The observer's runtime exception propagates unchanged |
 | Mapping or observer throws after execution failure | The original execution failure remains primary; the later failure is suppressed |
@@ -107,14 +144,33 @@ Catch the narrow validation exception when the application can correct or
 report caller input. Catch `SkillException` at a boundary that can add
 application context or choose a safe response. Do not collapse
 `AccessDeniedException` into an ordinary execution error. Java authorization
-denials do not receive success/task/evidence credit. Ordinary Java method
-exceptions retain their established exception-to-text behavior; REST handler failures bypass
-that adapter and reach the facade for the handling above.
+denials do not receive success/task/evidence credit. Ordinary Java method and
+serialization failures remain failures and reach the facade handling above. A
+Java application wrapper is preserved at the Java boundary; the facade may wrap
+that runtime exception in `SkillException` as described in the table.
+
+`RecoverableSkillException` accepts only a non-null, nonblank message and an
+optional diagnostic cause. The message remains exact; cause text is never fallback
+feedback. Transparent reflection/proxy, worker-future and Spring AI callback wrappers preserve its designated
+classification. An ordinary application wrapper remains terminal. Direct invocation and explicit steps still terminate. Standard tool calling permits
+failed-call feedback after failure recording; no automatic replay or explicit-step
+correction loop is added. See [Java failures](java-skills.md#designated-java-failures).
+
+Canonical error facts and their observer projection carry `classification` (`RECOVERABLE` or `TERMINAL`) and exact nullable `exceptionMessage` separately from contextual `message`. `causedByFailureId`, when present, links a distinct application wrapper to an already-recorded cause. Transparent propagation reuses identity; application wrappers retain their own terminal identity. Classification says whether standard feedback is permitted, never whether correction happened. Completion linkage is independent: a recoverable failure can terminate direct or explicit-step execution.
+
+Standard tool feedback happens after failed tool/skill recording and cannot become successful output or successful-result binding evidence. Observer history therefore retains the failure even when the standard parent ultimately succeeds. `ExplicitJavaFailureHandlingIntegrationTest` and `LoomspanSessionTest` exercise these boundaries.
 
 ## Source Anchors
 
+- `NamespaceObservationIntegrationTest` and `ConsoleTraceFixtureCorpusTest` cover
+  captured namespace generation identity and coordinated current readers.
+- `NamespaceStartupIntegrationTest` executes embedded and managed caller flows
+  through supported APIs, including one completed observer after retained admission.
+
+
 - `SkillExecutionView.java` and `SkillExecutionEvent.java` define value
   validation and immutable copying.
+- `SkillExecutorTest` and `SharedJavaDiscoveryInvocationTest` protect designated failure constructors, exact messages, shared propagation and infrastructure/application wrapper distinctions.
 - `ApplicationApiValueTest` protects record shape, immutability, detail-value
   validation, normalization, and public exception constructors.
 - `DefaultSkillTemplateTest#preservesAccessDeniedExceptionInstance` protects

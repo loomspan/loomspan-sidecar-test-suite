@@ -198,7 +198,7 @@ def trace_for(client, path, case, observer, bundle, prefix, suite=EQUIPMENT, exc
     headers = {'X-loomspan-Api-Key': observer}
     roots = []
     for item in trace_catalog(client, path, observer):
-        if item.get('entrySkill') != suite.entry_skill or item['traceId'] in exclude_ids:
+        if item.get('entrySkill') != 'default-' + suite.entry_skill or item['traceId'] in exclude_ids:
             continue
         response = client.get(base + '/traces/' + item['traceId'] + '/artifact', headers=headers)
         response.raise_for_status()
@@ -233,12 +233,13 @@ def model_assignment_matches(calls, trace, model, skill_models=None):
     if not skill_models:
         return all(e['request'].get('model') == model for e in calls)
     requests = [r for r in trace if r['recordType'] == 'MODEL_REQUEST_SENT']
+    qualified_models = {'default-' + name: value for name, value in skill_models.items()}
     if len(requests) != len(calls):
         return False
     for r in requests:
         meta = r.get('metadata', {})
         skill = meta.get('skillName')
-        if not skill or meta.get('providerModel') != skill_models.get(skill, model):
+        if not skill or meta.get('providerModel') != qualified_models.get(skill, model):
             return False
     return Counter(r['metadata']['providerModel'] for r in requests) == Counter(e['request'].get('model') for e in calls)
 

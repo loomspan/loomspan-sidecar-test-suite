@@ -52,7 +52,7 @@ Equipment hypotheses use self-contained prose with support, contrary evidence an
 
 The generator and shared contract source are `scripts/suites/equipment_service/author_workflow.py` and
 `scripts/suites/equipment_service/workflow_contracts.json`. Both hosts share `config/skills/equipment-service`; Sidecar's deterministic
-REST declarations and routes are separate. Regeneration is deliberate, not a startup
+HTTP executor declarations carry per-skill operations; named targets live in execution configuration. Regeneration is deliberate, not a startup
 prerequisite. The `reasoning` alias selects Sol; `coordination` selects Luna.
 
 ## Business boundaries
@@ -88,9 +88,8 @@ this documentation is not a worked answer injected into prompts.
 
 ## Limits
 
-Current packages use Framework 1.0.0-beta.8 and pinned Sidecar 1.0.0-beta.3 source.
+Both hosts use the installed Framework 1.0.0-beta.9-SNAPSHOT; Sidecar is built from the neighboring checkout.
 Nested bindings do not always eliminate model call envelopes; the final
 observed workflow used fifteen model calls per case. Optimizing call count is separate
 from business correctness. Mixed assignment does not guarantee reliable review.
-Phase 3 will define broader regression and release confidence. See the phase summary
-for remaining reasoning caveats; no retired trace or sample is required to start either host.
+See the phase summary for remaining reasoning caveats; no retired trace or sample is required to start either host.

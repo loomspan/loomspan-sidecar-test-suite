@@ -14,7 +14,8 @@
     "loomspan-docs": {
       "source": "../loomspan-framework/agent-skills",
       "sourceType": "local",
-      "computedHash": "ca48c2aef122055da1f5adecfecdbf6f3aa45e5ddb8616ba221b8c108de3af58"
+      "computedHash": "d3abab7b012888cf68412d8ba69c7e782560855928a85ce855aff4929746370f",
+      "installMode": "copy"
     },
     "typesafe-ai": {
       "source": "typesafe-ai/skills",

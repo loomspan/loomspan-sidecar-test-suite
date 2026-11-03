@@ -180,7 +180,7 @@ def artifact_identity(checkout):
             for name in archive.namelist()
             if (match := re.fullmatch(pattern, name))
         ]
-    if versions != ["1.0.0-beta.8"]:
+    if versions != ["1.0.0-beta.9-SNAPSHOT"]:
         raise LaneFailure("unexpected-framework-version")
     sdk = []
     for module in ("core", "spring-boot-starter"):
@@ -225,7 +225,7 @@ def preflight(checkout):
     namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
     if (
         root.findtext("m:properties/m:loomspan.version", namespaces=namespace)
-        != "1.0.0-beta.8"
+        != "1.0.0-beta.9-SNAPSHOT"
     ):
         raise LaneFailure("unexpected-framework-pin")
     maven = shutil.which("mvn")
@@ -301,49 +301,25 @@ def write_config(directory, credentials):
             yaml.safe_dump(
                 {
                     "name": name,
-                    "description": "SDK deterministic REST fixture",
-                    "rest": True,
+                    "description": "SDK deterministic HTTP fixture",
+                    "executor": "http",
+                    "config": {"target": "fixture", "method": "POST", "path": "/fail" if name == "sdkFailure" else "/effect"},
                     "input_schema": {"type": "object"},
                 }
             ),
             encoding="utf-8",
         )
-    (directory / "routes.yaml").write_text(
-        yaml.safe_dump(
-            {
-                "targets": {
-                    "fixture": {
-                        "base-url": "http://fixtures:8080",
-                        "auth": {"mode": "none"},
-                        "connect-timeout": "2s",
-                        "read-timeout": "5s",
-                        "max-response-size": "1KB",
-                    }
-                },
-                "routes": {
-                    "sdkFailure": {
-                        "target": "fixture",
-                        "method": "POST",
-                        "path": "/fail",
-                    },
-                    "sdkEffect": {
-                        "target": "fixture",
-                        "method": "POST",
-                        "path": "/effect",
-                    },
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
     config = {
         "loomspan-sidecar": {
             "configuration": {"mode": "file"},
-            "rest-routes": {"location": "file:/config/routes.yaml"},
             "trust": {"mode": "file", "file": {"jwks": "/config/jwks.json"}},
             "auth": {"jwt": {"audience": "sdk-smoke"}},
         },
         "loomspan": {
+            "executor-config": {"default": {"http": {"targets": {"fixture": {
+                "base-url": "http://fixtures:8080", "auth": {"mode": "none"},
+                "connect-timeout": "2s", "read-timeout": "5s", "max-response-size": "1KB"
+            }}}}},
             "connections": {
                 "fixture": {
                     "driver": "openai",
@@ -462,25 +438,17 @@ class Runtime:
             "input_schema": {"type": "object"},
         }
         (config / "planner.yaml").write_text(yaml.safe_dump(planner), encoding="utf-8")
-        routes = {
-            "targets": {
-                "fixture": {
-                    "base-url": "http://fixtures:8080",
-                    "auth": {"mode": "none"},
-                    "read-timeout": "20s",
-                    "connect-timeout": "2s",
-                    "max-response-size": "16KB",
-                }
-            },
-            "routes": {},
-        }
+        settings["loomspan"]["executor-config"]["default"]["http"]["targets"]["fixture"]["read-timeout"] = "20s"
+        settings["loomspan"]["executor-config"]["default"]["http"]["targets"]["fixture"]["max-response-size"] = "16KB"
+        (config / "application.yaml").write_text(yaml.safe_dump(settings), encoding="utf-8")
         for name in ("identity", "detail"):
             (config / f"{name}.yaml").write_text(
                 yaml.safe_dump(
                     {
                         "name": name + "Leaf",
                         "description": "Nested fixture",
-                        "rest": True,
+                        "executor": "http",
+                        "config": {"target": "fixture", "method": "POST", "path": "/callbacks/" + name},
                         "input_schema": {
                             "type": "object",
                             "properties": {"message": {"type": "string"}},
@@ -489,12 +457,6 @@ class Runtime:
                 ),
                 encoding="utf-8",
             )
-            routes["routes"][name + "Leaf"] = {
-                "target": "fixture",
-                "method": "POST",
-                "path": "/callbacks/" + name,
-            }
-        (config / "routes.yaml").write_text(yaml.safe_dump(routes), encoding="utf-8")
         self.fixture_request("/shutdown/reset", True)
         command(self.compose + ["up", "-d", "--force-recreate", "sidecar"], timeout=180)
         self.readiness()

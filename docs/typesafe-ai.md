@@ -9,7 +9,7 @@ Both hosts expose `POST /suites/typesafe-ai/evaluations/{skill}` and
 `GET /suites/typesafe-ai/executions/{id}` using the shared authenticated execution API.
 Java code lives in `example.suites.typesafeai`; Python code in `suites.typesafe_ai`.
 There are no deterministic callbacks or business tables for this suite, so it needs no
-REST-skill directory or route fragment. Existing equipment rows must remain unchanged.
+HTTP executor declarations or targets. Existing equipment rows must remain unchanged.
 
 Native leaves under `config/skills/typesafe-ai` use the `typesafe` driver and explicit
 model `jev-1.13.0`. Two ordinary Luna/medium parents demonstrate `output_from` forwarding

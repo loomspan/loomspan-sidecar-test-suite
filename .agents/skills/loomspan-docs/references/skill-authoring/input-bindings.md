@@ -9,10 +9,12 @@ coverage: source-verified
 
 Use `input_bindings` on a structured `allowed_skills` entry of an explicit
 `planning_mode: true` parent to transfer authoritative values into a direct child.
-Model, TypeSafe, annotation-only Java, and REST children use the same feature. The complete
+Model, TypeSafe, annotation-only Java, and executor YAML children use the same feature. The complete
 receiving input contract remains authoritative; the calling model generates only
 unbound arguments under a separate projected contract. Binding grants no access
 and does not change invocation limits or the captured configuration generation.
+
+Authored child references and binding producers MAY be local to the containing skill's namespace or explicitly qualified; local `search` in `sales` compiles to `sales-search`. Mixed spellings compare canonically and never search other namespaces. Runtime/model names remain qualified. See [canonical namespace identity](mental-model.md#canonical-namespace-identity) for grammar, limits and boundary rules. Declarations keep local `name` components.
 
 ## Automatic assigned dispatch
 
@@ -68,8 +70,8 @@ Unknown/null fields, invalid escapes, duplicate raw YAML keys and duplicate or
 overlapping destination paths are rejected. Known closed/type boundaries and
 parent input source paths are checked against the complete generation. Open or
 unconstrained source branches and undeclared producer output shapes require
-runtime validation. No output shape is inferred from a Java return type or REST
-text. Unknown, self-referencing and cyclic producers are rejected.
+runtime validation. No output shape is inferred from a Java return type or executor
+result text. Unknown, self-referencing and cyclic producers are rejected.
 
 ## Complete example
 
@@ -104,7 +106,7 @@ allowed_skills:
     input_bindings:
       /caseId: {from: input, path: /requestId}
       /context/records: {from: input, path: /records}
-      /context/assessment: {from: child_result, skill: producer, path: /data}
+      /context/assessment: {from: child_result, skill: default-producer, path: /data}
 output_from: {skill: consumer}
 ```
 
@@ -229,7 +231,7 @@ binding MUST resolve even if its receiving property is optional. Null transfers
 only when the complete receiving contract accepts it.
 
 Accepted result text is decoded once as a complete JSON value, preserving large
-integers and decimal values. JSON-quoted Java strings decode once. Plain or
+integers and decimal values. JSON-quoted result strings decode once; Java methods return their String values exactly, so plain Java text receives no automatic quoting. Plain or
 malformed JSON text stays verbatim text; selecting its nested fields fails.
 Ordinary nested JSON-looking strings remain strings. Original accepted text stays
 unchanged for diagnostics and forwarding. Arrays retain order and absent optional

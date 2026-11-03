@@ -1,6 +1,12 @@
-name: referenceEvidence
-description: Retrieve applicable manufacturer manual and bulletin passages.
-rest: true
+name: continuityOptions
+description: Check compatible loaner and replacement offers, without commitment.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/continuityOptions
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

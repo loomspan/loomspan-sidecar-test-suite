@@ -107,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/planner/chat/completions":
             responses = [
                 {
-                    "capabilityName": "shutdownPlanner",
+                    "capabilityName": "default-shutdownPlanner",
                     "createdAt": "2026-09-14T00:00:00Z",
                     "status": "VALID",
                     "tasks": [
@@ -115,7 +115,7 @@ class Handler(BaseHTTPRequestHandler):
                             "taskId": name,
                             "title": name,
                             "status": "PENDING",
-                            "capabilityName": name + "Leaf",
+                            "capabilityName": "default-" + name + "Leaf",
                             "intent": name,
                             "dependsOn": [] if name == "identity" else ["identity"],
                             "expectedOutputs": [name],
@@ -128,13 +128,13 @@ class Handler(BaseHTTPRequestHandler):
                 {
                     "stepAction": "CALL_TOOL",
                     "taskId": "identity",
-                    "toolName": "identityLeaf",
+                    "toolName": "default-identityLeaf",
                     "toolArguments": {"message": "verify"},
                 },
                 {
                     "stepAction": "CALL_TOOL",
                     "taskId": "detail",
-                    "toolName": "detailLeaf",
+                    "toolName": "default-detailLeaf",
                     "toolArguments": {"message": "detail"},
                 },
                 {"stepAction": "FINAL_RESPONSE", "finalResponse": "shutdown complete"},
@@ -423,7 +423,7 @@ class LocalHandler(Handler):
                 else "/v1/skills/localBlocker/executions"
                 if blocker
                 else "/v1/skills",
-                b"{}" if callback or blocker else None,
+                b"{}" if blocker else None,
                 {"Authorization": credential, "Content-Type": "application/json"},
             )
             response = conn.getresponse()
@@ -494,7 +494,7 @@ class LocalHandler(Handler):
                     self.respond(504, {})
                     return
                 content = {
-                    "capabilityName": "localCallbackPlanner",
+                    "capabilityName": "default-localCallbackPlanner",
                     "createdAt": "2026-10-18T00:00:00Z",
                     "status": "VALID",
                     "tasks": [
@@ -502,7 +502,7 @@ class LocalHandler(Handler):
                             "taskId": "owned",
                             "title": "owned",
                             "status": "PENDING",
-                            "capabilityName": "localExpiryOwned",
+                            "capabilityName": "default-localExpiryOwned",
                             "intent": "owned",
                             "dependsOn": [],
                             "expectedOutputs": ["identity"],
@@ -517,7 +517,7 @@ class LocalHandler(Handler):
                 content = {
                     "stepAction": "CALL_TOOL",
                     "taskId": "owned",
-                    "toolName": "localExpiryOwned",
+                    "toolName": "default-localExpiryOwned",
                     "toolArguments": {"message": "verify"},
                 }
             else:

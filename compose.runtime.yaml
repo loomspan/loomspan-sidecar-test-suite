@@ -1,4 +1,4 @@
-# Pinned release build: Sidecar beta.3 with Framework beta.8.
+# Runtime time budgets shared by both hosts.
 services:
   fixtures:
     environment:
@@ -8,7 +8,7 @@ services:
       LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 480s
       LOOMSPAN_SESSION_MISSIONTIMEOUT: 2400s
   sidecar:
-    build: .build/sidecar-1.0.0-beta.3
+    build: {context: ., dockerfile: deploy/sidecar.Dockerfile}
     environment:
       LOOMSPAN_CONNECTIONS_MODEL_REQUESTTIMEOUT: 480s
       LOOMSPAN_SESSION_MISSIONTIMEOUT: 2400s

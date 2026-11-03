@@ -150,6 +150,15 @@ def test_composition_exercises_shipped_fragments_and_separates_signer(tmp_path, 
         assert app["loomspan-sdk"]["ssl-bundle"] == "sidecar"
         assert config["server"]["ssl"]["enabled"]
         assert not any("client-auth" in str(value) for value in (app, config))
+        java_options = services["sidecar"]["environment"]["JAVA_TOOL_OPTIONS"]
+        assert "-Djavax.net.ssl.trustStore=/tls/jvm-truststore.p12" in java_options
+        assert "javax.net.ssl.keyStore=" not in java_options
+        from cryptography.hazmat.primitives.serialization import pkcs12
+        trust = pkcs12.load_pkcs12((tmp_path / "material/jvm-truststore.p12").read_bytes(), b"fixture-public-trust")
+        assert trust.key is None
+        assert [cert.certificate for cert in trust.additional_certs] == [
+            x509.load_pem_x509_certificate((tmp_path / "material/group-ca.pem").read_bytes())
+        ]
     else:
         for peer in ("app", "sidecar"):
             assert services[peer]["network_mode"] == "service:" + peer + "-proxy"
@@ -499,8 +508,8 @@ def test_outbound_only_omits_callbacks_and_preserves_recipe_invocation(
     document = yaml.safe_load((directory / "compose.yaml").read_text())
     app = yaml.safe_load((directory / "config/app.yaml").read_text())
     config = yaml.safe_load((directory / "config/sidecar/application.yaml").read_text())
-    routes = yaml.safe_load((directory / "config/sidecar/routes.yaml").read_text())
-    assert routes == {"targets": {}, "routes": {}}
+    assert not (directory / "config/sidecar/routes.yaml").exists()
+    assert config["loomspan"]["executor-config"] == {"default": {"http": {}}}
     assert config["loomspan"]["skills"]["locations"] == ["file:/config/localModel.yaml"]
     assert set(p.name for p in (directory / "config/sidecar").glob("local*.yaml")) == {
         "localModel.yaml"

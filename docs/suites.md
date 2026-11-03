@@ -10,14 +10,14 @@ one Python host and one Sidecar instance, sharing authentication and fixture tra
 | Concern | Equipment-service location |
 |---|---|
 | Shared authored skills | `config/skills/equipment-service/` |
-| Sidecar deterministic skill declarations | `config/rest-skills/equipment-service/` |
-| Sidecar callback routes | `config/routes/equipment-service.yaml` |
+| Sidecar deterministic skill declarations | `config/executor-skills/equipment-service/` |
+| Named HTTP targets | `loomspan.executor-config.default.http.targets` in `config/sidecar.yaml` |
 | Java API, workflow completion, SkillMethods and business operations | `apps/java/src/main/java/example/suites/equipmentservice/` |
 | Python API, workflow completion, callbacks, contracts and business operations | `apps/python/suites/equipment_service/` |
 | Scenario inputs, checks, authoring tool and contracts | `scripts/suites/equipment_service/` |
 | Runner registration and fixture ownership | `scripts/suites/registry.py` |
 | Independent business records and base input | `fixtures/business.json`, `fixtures/base-case.json` |
-| Frozen accepted replay | `fixtures/reference/` |
+| Frozen accepted replay | `fixtures/reference-namespaced/` |
 
 The last two rows intentionally keep their original paths. Accepted provenance and
 source hashes remain valid; directory organization does not require rewriting a frozen
@@ -36,23 +36,24 @@ suite routers and registers completion handlers; equipment workflow code validat
 persists its own completed result. Existing equipment endpoints remain available, with
 aliases under `/suites/equipment-service`. Both hosts preserve their existing generic
 `/v1` execution endpoints. Callbacks also have a prefixed Python alias; current Sidecar
-routes retain their original paths for compatibility.
+operations select the receiver paths.
 
 ## Configuration and identity
 
 Both hosts load `config/skills/*/*.yaml`; only Sidecar loads
-`config/rest-skills/*/*.yaml`. Directories are ownership boundaries, not runtime
+`config/executor-skills/*/*.yaml`. Directories are ownership boundaries, not runtime
 namespaces. Existing equipment skill identities remain unchanged. New suites must use
 distinct runtime names, including deterministic Java method names, and distinct route
 target names. Prefer a recognizable business prefix for new suite skills.
 Spring bean identities must also be distinct: a second class named `Business` needs
 an explicit suite-specific bean name, even when its Java package differs.
 
-The documented Compose helper validates YAML skill-name collisions and assembles all
-`config/routes/*.yaml` fragments into `.runtime/suite-routes.yaml`, Sidecar's single
-mounted route catalog. Duplicate route/target names and unresolved targets fail before
-startup. Do not hand-edit the generated file. Java callback names must match the
-equivalent REST declarations; the YAML collision check is not a Java source analyzer.
+The Compose helper checks duplicate skill names across model and executor trees.
+Each HTTP declaration selects `executor: http` and its own operation `config`.
+Named targets live in execution configuration. HTTP domain validation occurs when
+invoked, before dispatch; startup does not certify target operational correctness.
+Equipment POSTs use `body: {source: input}`, preserving flat lookups and nested approval.
+Java method names match equivalent executor skill names.
 
 Trial model aliases are separate from normal aliases. Overrides rewrite only the
 selected suite's temporary skill copies, preserving other suites' skill contents and
@@ -62,7 +63,7 @@ model definitions. Normal runtime remains provider-disabled.
 
 1. Define its business purpose, Loomspan capabilities exercised, scenarios and evidence
    limits. Keep both implementations equivalent; do not copy the entire applications.
-2. Add skill directories and, when callbacks are needed, REST directories and a route fragment with distinct identities. Add Java
+2. Add skill directories and, when callbacks are needed, executor declarations and a named target with distinct identities. Add Java
    suite packages, Python modules and host registrations. Use prefixed HTTP routes.
 3. Add suite-owned inputs and checks. Register a `Suite` in `scripts/suites/registry.py`
    with supported modes, entry skill, endpoint, database/table ownership, source files
@@ -106,7 +107,7 @@ not fresh model evaluation or full service-request regression.
 The [customer-support triage suite](typesafe-ai.md) owns `config/skills/typesafe-ai`,
 `fixtures/typesafe-ai`, `scripts/suites/typesafe_ai`, Java package
 `example.suites.typesafeai` and Python module `suites.typesafe_ai`. It uses no business
-tables or callbacks and therefore has no REST-skill directory. Its runtime names use
+tables or callbacks and therefore has no executor-skill directory. Its runtime names use
 the `tsTriage` prefix. Parent coordination still uses the shared local chat fixture
 transport; native leaves use a separate strict System One endpoint in `fixtures/typesafe.py`.
 

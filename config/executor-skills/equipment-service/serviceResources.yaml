@@ -1,6 +1,12 @@
-name: continuityOptions
-description: Check compatible loaner and replacement offers, without commitment.
-rest: true
+name: serviceResources
+description: Check compatible parts and qualified attendance offers, without reservation.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/serviceResources
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

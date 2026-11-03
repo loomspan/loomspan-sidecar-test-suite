@@ -56,10 +56,9 @@ def configure(directory, checkout, recipe, variant):
     fixture["server"] = sidecar["server"]
     fixture["spring"] = sidecar.get("spring", {})
     fixture["loomspan-sidecar"]["trust"] = sidecar["loomspan-sidecar"]["trust"]
-    routes = yaml.safe_load((directory / "sidecar/routes.yaml").read_text())
-    routes["targets"]["app"] = yaml.safe_load((base / "rest-routes.yaml").read_text())[
-        "targets"
-    ]["app"]
+    targets = fixture["loomspan"]["executor-config"]["default"]["http"]["targets"]
+    execution = yaml.safe_load((base / "execution.yaml").read_text())
+    targets["app"] = execution["loomspan"]["executor-config"]["default"]["http"]["targets"]["app"]
     if recipe == "standard":
         server = "wrong-ca-server" if variant == "invocation-server" else "server"
         fixture["server"]["ssl"]["certificate"] = "file:/tls/sidecar-" + server + ".pem"
@@ -83,7 +82,7 @@ def configure(directory, checkout, recipe, variant):
     if variant == "submission-loss" and recipe == "standard":
         app["loomspan-sdk"]["base-url"] = "https://sidecar:9443"
     if variant == "callback-loss" and recipe == "standard":
-        routes["targets"]["app"]["base-url"] = "https://app:9443"
+        targets["app"]["base-url"] = "https://app:9443"
     if variant == "trusted-group-rotation":
         app["loomspan-sdk"]["callbacks"] = {"overlap-jwks": "/trust/callback.json"}
         app["loomspan-sdk"]["signing"]["provided"]["jwks-export"] = "/public/app-a.json"
@@ -96,7 +95,6 @@ def configure(directory, checkout, recipe, variant):
         dump(directory / "app-b.yaml", second)
     dump(directory / "app.yaml", app)
     dump(directory / "sidecar/application.yaml", fixture)
-    dump(directory / "sidecar/routes.yaml", routes)
     if variant == "outbound-only":
         outbound.configure(directory / "sidecar")
     if recipe == "hardened":
@@ -178,6 +176,14 @@ def composition(directory, root, image, volume, recipe):
             if recipe == "standard":
                 # This harness gates on verified recipe-aware readiness itself.
                 service["healthcheck"] = {"disable": True}
+                service["environment"]["JAVA_TOOL_OPTIONS"] = (
+                    "-Djavax.net.ssl.trustStore=/tls/jvm-truststore.p12 "
+                    "-Djavax.net.ssl.trustStoreType=PKCS12 "
+                    "-Djavax.net.ssl.trustStorePassword=fixture-public-trust"
+                )
+                service["volumes"].append(
+                    f"{(material / 'jvm-truststore.p12').as_posix()}:/tls/jvm-truststore.p12:ro"
+                )
         owner = peer if recipe == "standard" else peer + "-proxy"
         if recipe == "standard":
             service["networks"] = ["remote"]

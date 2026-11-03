@@ -356,18 +356,16 @@ def main():
             output_schema=copy.deepcopy(CONTRACTS['serviceFeasibilityOutput' if source == 'serviceResources'
                                                  else 'feasibilityOutput']), output_schema_max_retries=2,
             output_bindings=output_bindings))
-    routes = {}
     for name, description in LEAVES.items():
-        save('config/rest-skills/equipment-service/' + name + '.yaml', dict(name=name, description=description,
-             rest=True, rbac_roles=['ASSESS_EQUIPMENT'], input_schema=copy.deepcopy(CONTRACTS['lookup'])))
-        routes[name] = dict(target='equipment', method='POST', path='/skills/' + name)
-    save('config/rest-skills/equipment-service/createServiceRequest.yaml', dict(name='createServiceRequest',
-         description='Record explicit authorized approval against an immutable assessment and matching quote.',
-         rest=True, rbac_roles=['REQUEST_SERVICE'], input_schema=copy.deepcopy(CONTRACTS['createServiceRequest'])))
-    routes['createServiceRequest'] = dict(target='equipment', method='POST', path='/skills/createServiceRequest')
-    save('config/routes/equipment-service.yaml', {'targets': {'equipment': {'base-url': 'http://python:8080',
-        'auth': {'mode': 'caller-passthrough'}, 'connect-timeout': '5s', 'read-timeout': '240s',
-        'max-response-size': '1MB'}}, 'routes': routes})
+        save('config/executor-skills/equipment-service/' + name + '.yaml', dict(
+            name=name, description=description, executor='http',
+            config=dict(target='equipment', method='POST', path='/skills/' + name, body={'source': 'input'}),
+            rbac_roles=['ASSESS_EQUIPMENT'], input_schema=copy.deepcopy(CONTRACTS['lookup'])))
+    save('config/executor-skills/equipment-service/createServiceRequest.yaml', dict(
+        name='createServiceRequest',
+        description='Record explicit authorized approval against an immutable assessment and matching quote.',
+        executor='http', config=dict(target='equipment', method='POST', path='/skills/createServiceRequest', body={'source': 'input'}),
+        rbac_roles=['REQUEST_SERVICE'], input_schema=copy.deepcopy(CONTRACTS['createServiceRequest'])))
 
 if __name__ == '__main__':
     main()

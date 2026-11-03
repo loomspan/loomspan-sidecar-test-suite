@@ -1,7 +1,12 @@
-name: assetContext
-description: Retrieve registered asset identity, site access and approval-routing
-  facts; directory facts never grant caller permissions.
-rest: true
+name: serviceTerms
+description: Retrieve warranty certificate, service agreement and rates.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/serviceTerms
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

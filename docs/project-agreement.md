@@ -90,7 +90,7 @@ The retained process is `equipment-service`; baseline, priority, capacity_shortf
 and later_start remain scenarios within it. This is an organization and runner change,
 not Phase 3 release acceptance or authorization to create a second business example.
 
-Keep shared skills and Sidecar REST declarations in parallel suite directories. Java
+Keep shared skills and Sidecar HTTP executor declarations in parallel suite directories. Java
 packages and Python modules separate suite APIs, Loomspan callbacks, result handling
 and business rules from shared host infrastructure. Existing skill names, model
 assignments and HTTP endpoints remain compatible; new suite routes use explicit prefixes.
@@ -113,10 +113,10 @@ direct/child invocation, forwarding, receiving output bindings and failure/fidel
 Preserve the distinction between native answer passthrough and validation by a consuming
 contract. Assessments inform application-owned decisions; they do not perform customer actions.
 
-Use the Framework `1.0.0-beta.9-SNAPSHOT` source under evaluation, record revision and
-artifact hashes, and align Java and Sidecar with the same Framework bytes. Both hosts
-have now been rebuilt and started with that snapshot. Equipment-service replay must
-continue to pass after the change; retain its original accepted fixture pack.
+Use the developer-installed Framework `1.0.0-beta.9-SNAPSHOT` and matching local
+Framework documentation. Both hosts use that coordinate; normal suite builds do not
+rebuild Framework or impose a separate source-revision/artifact-byte proof. Keep
+accepted equipment replay fixtures unchanged.
 
 Pin direct TypeSafe to `jev-1.13.0`, the current stable version listed at
 https://docs.typesafe.ai/models when checked on 2026-10-11. Do not use a moving latest
@@ -128,15 +128,13 @@ live scope before paid calls. Existing frozen equipment fixtures remain unchange
 The user authorized project-local authoring guidance. Installed copies under
 `.agents/skills` contain `loomspan`, `loomspan-docs`, `loomspan-console` from the pinned
 Framework source and the official `typesafe-ai` skill. `skills-lock.json` records their
-origins and hashes. The neighboring Sidecar skill still targets Framework beta.8, so it
-was not installed as snapshot-aligned guidance. These are authoring aids, separate from
-the runtime skill trees under `config/skills`.
+origins and hashes. Consult the matching local Framework checkout and current
+Sidecar authoring guidance for runtime contracts; previously installed skills may
+be stale. These are authoring aids, separate from `config/skills` runtime declarations.
 
-`config/runtime-source.json` pins Framework commit
-`3265354b6c4975c8ae82ac9f111eff0ffcf77b9d`. Keep Sidecar beta.3 source and rebuild it with
-an explicit Framework dependency override; this combination is under integration test,
-not an upstream Sidecar release. The initial TypeSafe suite supported mock only.
-Live/capture support and a reviewed real-provider response pack were initially deferred.
+`config/runtime-source.json` records the installed Framework coordinate. The current
+neighboring Sidecar executable is staged by `record_build.py` for Compose and portable
+packaging. Preserve operational credentials, signing keys, data and maintained packs.
 
 ## First TypeSafe live batch
 
@@ -225,7 +223,7 @@ examples, the beta.9 embedded and Python/Sidecar lane, and all maintained refere
 packs including `fixtures/reference`. Do not reconstruct discarded SDK work.
 
 Add a separate SDK lane against the actual Sidecar revision and its pinned Framework
-beta.8 dependency. Establish a small harness foundation early, then provide each
+beta.9-SNAPSHOT dependency. Establish a small harness foundation early, then provide each
 feature's necessary composed coverage with that feature. Tickets may reuse or extend
 existing scenarios; one scenario can satisfy several tickets. Keep detailed rule
 variants in component tests, adding a composed scenario only for behavior existing
@@ -294,3 +292,14 @@ recipes in Sidecar PRs 8.1.5–8.1.8. Empty recipe selectors continue to fail expl
 One root Sidecar component build remains per SDK run; no recursive smoke or suite
 invocation is introduced. Business-lane configuration/data/reference packs remain
 outside this isolated SDK lane, and no development-data reset is required.
+
+
+## Current replay identity contract
+
+The developer authorized a namespace-only update of the maintained replay contract.
+The current contract is `fixtures/reference-namespaced`; the original
+`fixtures/reference` pack stays byte-identical as its review source. Only explicit
+Framework skill/capability/tool identity positions are qualified with `default-`.
+Accepted business inputs, evidence, judgments and expected results stay unchanged.
+Keep strict semantic request matching, recorded response consumption and both-host
+replay. This authorizes no new provider calls, model tuning or business redesign.

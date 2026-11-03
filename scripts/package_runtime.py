@@ -17,11 +17,11 @@ def main():
     if out.exists():
         raise ValueError('Use a new output directory')
     names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
-    names = sorted(set(n for n in names if (ROOT / n).is_file() and not n.startswith('evidence/')))
+    names = sorted(set(n for n in names if (ROOT / n).is_file() and not n.startswith(('evidence/', 'runtime-artifacts/'))))
     build = json.loads((ROOT / '.runtime/build-baseline.json').read_bytes())
     source = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in names}
     jars = {'java': ROOT / 'apps/java/target/equipment-java-1.0.jar',
-            'sidecar': ROOT / '.build/sidecar-1.0.0-beta.3/target/loomspan-sidecar-1.0.0-beta.3.jar'}
+            'sidecar': ROOT / 'runtime-artifacts/sidecar.jar'}
     for name, path in jars.items():
         if hashlib.sha256(path.read_bytes()).hexdigest() != build['artifacts'][name]['sha256']:
             raise ValueError('Package changed: ' + name)

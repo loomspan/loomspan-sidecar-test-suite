@@ -1,7 +1,13 @@
 name: createServiceRequest
 description: Record explicit authorized approval against an immutable assessment and
   matching quote.
-rest: true
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/createServiceRequest
+  body:
+    source: input
 rbac_roles:
 - REQUEST_SERVICE
 input_schema:

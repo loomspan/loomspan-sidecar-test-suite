@@ -1,19 +1,27 @@
 loomspan-sidecar:
   configuration:
     mode: file
-  rest-routes:
-    location: file:/config/routes.yaml
+  trust:
+    mode: file
+    file:
+      jwks: /trust/execution-jwks.json
   auth:
     jwt:
-      issuer-uri: http://localhost:18080/realms/equipment
-      jwk-set-uri: http://keycloak:8080/realms/equipment/protocol/openid-connect/certs
       audience: equipment-service
-      roles-claim: roles
-      role-prefix: ROLE_
-      clock-skew: 0s
   executions:
     diagnostics: ALWAYS
 loomspan:
+  executor-config:
+    default:
+      http:
+        targets:
+          equipment:
+            base-url: http://python:8080
+            auth:
+              mode: caller-passthrough
+            connect-timeout: 5s
+            read-timeout: 240s
+            max-response-size: 1MB
   connections:
     model:
       driver: openai
@@ -77,7 +85,7 @@ loomspan:
   skills:
     locations:
     - file:/config/skills/*/*.yaml
-    - file:/config/rest-skills/*/*.yaml
+    - file:/config/executor-skills/*/*.yaml
   session:
     mission-timeout: 600s
     quotas:

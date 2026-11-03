@@ -13,22 +13,77 @@ Use this document to establish shared vocabulary and choose the broad shape of a
 
 ## Core Model
 
-Loomspan combines model-driven YAML skills, native TypeSafe evaluation leaves, application-handled YAML REST leaves, and deterministic Java `@SkillMethod` skills. Each declaration is one callable capability. An LLM-backed skill reasons about its mission and can invoke only the direct child skills exposed to it.
+Loomspan combines model-driven YAML skills, native TypeSafe evaluation leaves, and deterministic Java `@SkillMethod` skills. Each declaration is one callable capability. An LLM-backed skill reasons about its mission and can invoke only the direct child skills exposed to it.
 
 ```text
-Application code -> Java, REST, TypeSafe, or model-backed YAML entry skill
-YAML planner -> YAML specialist -> Java @SkillMethod or REST leaf
+Application code -> Java, TypeSafe, or model-backed YAML entry skill
+YAML planner -> YAML specialist -> Java @SkillMethod
 ```
 
 Not every tree needs every level. Java skills can be roots without a model; a simple reasoning skill can be one YAML declaration.
 
-## Exact shared identity
+## Canonical namespace identity
 
-A YAML manifest's `name` or a Java annotation's `name` is the single callable identity. An omitted or empty Java annotation name uses the canonical method name. Every name MUST match `^[A-Za-z_][A-Za-z0-9_]{0,63}$`: 1–64 ASCII characters, beginning with a letter or underscore. Names are case-sensitive and are never trimmed, sanitized, normalized, truncated, or aliased. Descriptive lowerCamelCase is recommended, but underscores and uppercase starts are valid.
+A declaration's `name` is a local component matching `[A-Za-z_][A-Za-z0-9_]{0,63}`.
+Startup YAML belongs to `default`; Java `@SkillMethod.namespace` defaults to
+`default`. An empty Java annotation `name` uses the canonical method name.
+Authoritative ownership constructs one callable identity: `namespace-localName`.
 
-Use the exact name in `SkillTemplate`, `allowed_skills`, plan targets, evidence expressions, provider tool definitions, metrics, and traces. Duplicate names across Java, REST, TypeSafe, and model-backed YAML fail startup and identify both declarations. Relevant lazy Java beans are discovered before the initial complete skill generation is built. Every child reference must resolve within that complete generation; authorization filtering does not make missing names valid.
+Input qualification is optional at two boundaries:
 
-Each root invocation captures one immutable, complete declaration and execution generation before input conversion or validation. Its input contracts, definitions, local child surface, models, connections, limits, and trace policy remain coherent for the full nested and parallel invocation tree. An application can prepare and publish a complete new generation through the public `SkillReloader`; publication affects only roots captured afterward, not running or admitted work. Skill YAML syntax does not change. Applications can register for safe retirement of superseded published generations to remove generation-keyed resources during normal operation; see [two-stage application updates](../java-api/skill-reload.md). There is no historical-invocation API.
+| Input | Local `search` resolves to | Explicit `shared-search` |
+| --- | --- | --- |
+| All `SkillTemplate` invocation/validation/observer and handoff overloads | `default-search`, regardless of ambient execution | `shared-search` |
+| Authored references in a document owned by `sales` | `sales-search` | `shared-search` |
+
+Authored references include `allowed_skills`, evidence leaves, `output_from.skill`
+and child-result input/output binding producers. Startup ownership is `default`;
+API validation/preparation supplies the owner for the same document. Ownership is
+never inferred from available targets. Missing `sales-search` fails even if
+`default-search` or a Public `shared-search` exists. Qualification grants no
+access: declared-child, same-namespace/foreign Public visibility and RBAC rules remain.
+Catalog lookup, runtime keys, model plan/tool selections, executor handoffs and
+observations MUST use qualified identities. Namespace case normalizes to lowercase;
+local case remains exact: `Tax-search` equals `tax-search`, while `tax-Search` differs.
+`a_b-c` and `a-b_c` differ. Local `child` and explicit owner `sales-child` are
+canonical duplicates in sales; bindings may mix these spellings.
+
+Each component starts with an ASCII letter or underscore and contains only ASCII
+letters, digits or underscores. Namespace length is at most 32; total identity
+length including its single hyphen is at most 64. Thus an N-character namespace
+leaves `63 - N` local characters (`default` leaves 56). Standalone declaration
+grammar does not waive this combined limit, including for unoffered/optional skills.
+Apply combined length after owner qualification. Whitespace, slash/colon separators, extra hyphens, encoding, imports,
+wildcards and fallback searches are invalid. Loomspan never trims or repairs input.
+
+Duplicate and binding comparisons use resolved canonical identities. Source labels,
+raw YAML, prompts and original evidence expression text remain unchanged. Renaming
+a namespace means creating another namespace, updating explicit references to it, and
+removing the old namespace; there is no identity-preserving rename or inheritance.
+
+**Implementation boundary:** Namespace parsing, startup, publication/removal, retained
+reachable admission and captured cross-namespace execution are implemented.
+Captured canonical observation metadata and existing Console consumers are implemented; see `NamespaceObservationIntegrationTest` and `ConsoleTraceFixtureCorpusTest`.
+
+Each root captures an immutable association of exactly the namespace generations reached
+by its declared child graph, before input conversion or validation. Every declared branch
+counts, including optional and role-restricted children; Java skills are leaves. Executor dependencies retain their owning namespace without traversing unrelated callables. Each
+reached whole generation is retained once, but unrelated skills are not traversed and
+unrelated namespaces are not retained. Definitions, contracts, models, connections,
+limits and captured visibility remain stable across publication, removal and recreation.
+
+Existing dependency validators check the captured graph outside the publication lock.
+Broken reachable dependencies reject before execution; unrelated broken skills do not.
+Validation uses the same checks with temporary leases and reserves no execution.
+Publication may succeed after dependency-only changes while new admission fails; catalogs
+continue describing prepared contracts. See [output contracts](output-contracts.md#effective-output-metadata).
+Retaining a reached generation can retain unused resources, and traversal can contend
+with publication. Admission constructs no runtime/client and does not make external
+systems transactional. Applications can observe retirement for generation-keyed cleanup;
+see [two-stage application updates](../java-api/skill-reload.md). There is no historical-invocation API.
+
+Evidence: `SkillGenerationManager#capture`, `SkillDependencyValidator#checkAdmission`,
+`SkillAdmissionSnapshotTest`, and `SkillReachableAdmissionTest`.
 
 Bean names, YAML source labels, and declared method signatures are diagnostic locations, never a second callable identity. File-loaded YAML has a file-derived label; application-supplied `SkillDocument` YAML has its exact arbitrary `sourceName` label, which need not resemble a path or have an extension. Neither changes manifest `name` or `allowed_skills` resolution. The inspection wire field remains named `sourcePath`. Any YAML `mapping` key, including null, empty, or scalar forms, is rejected with annotation-only guidance.
 
@@ -46,7 +101,7 @@ captured-generation boundaries still apply.
 
 ### Entry skill
 
-An entry is any registered Java, REST, TypeSafe, or model-backed YAML skill invoked through `SkillTemplate`. The facade accepts a map or an object convertible to a map, validates its effective input contract, and creates a fresh session. Callers SHOULD understand the entry contract without understanding the tree below it.
+An entry is any registered Java, TypeSafe, or model-backed YAML skill invoked through `SkillTemplate`. The facade accepts a map or an object convertible to a map, validates its effective input contract, and creates a fresh session. Callers SHOULD understand the entry contract without understanding the tree below it.
 
 ### Model-backed YAML skill
 
@@ -54,7 +109,7 @@ A YAML skill declares a configured `model`. It can declare private `prompt`, sch
 
 ### Java skill
 
-An application Spring bean's `@SkillMethod` declares one directly callable skill. The annotation owns its name and description; the method signature and `@SkillParam` own inputs. Java supplies the returned value, serialized using Jackson. No companion YAML, Java output schema, model settings, or synthetic plan is created.
+An application Spring bean's `@SkillMethod` declares one directly callable skill. The annotation owns its name and description; the method signature and `@SkillParam` own inputs. Java supplies the returned value: null/void becomes empty text, Strings remain exact, and other values use Jackson JSON. See [Java results and failures](../java-api/java-skills.md#inputs-results-and-lifecycle). No companion YAML, Java output schema, model settings, or synthetic plan is created.
 
 Distinct overloaded methods MAY have distinct explicit skill names. Same/default names collide. Spring proxy, interface, and bridge methods are canonicalized, and invocation resolves the final managed bean so configured advice runs. Methods must be invocable through that bean's proxy; relevant lazy declarations are deliberately initialized during startup.
 
@@ -73,7 +128,7 @@ Optional primitive parameters are invalid because omission binds null; use refer
 
 Java roots and children participate in the common skill mission lifecycle. Java executes without a framework model request and shares bounded mission timeout, interruption, and late-write cutoff handling. A successful child contributes its exact name at the parent tool boundary; a denial or failure contributes no success. The parent mission resumes on every exit.
 
-Console's catalog shows `YAML`, `REST`, `TYPESAFE`, or `Java` explicitly. YAML, REST, and TypeSafe details show the source label and original YAML; Java details show the bean and deterministic declared method signature. Pagination and links use only the registered name.
+Public execution kinds are `YAML`, `TYPESAFE`, and `JAVA`. Executor-backed YAML executes as Java while retaining its YAML definition. Framework and Console diagnostics use declaration ownership for original source presentation and retain the resolved executor identity and Java implementation alongside it; see [skill diagnostics](observability-http.md#skill-classification-and-declaration). Pagination and links use only the registered name.
 
 ## Root, Planner, Specialist, and Leaf Are Roles
 
@@ -89,9 +144,9 @@ A YAML skill can be a root in one tree and a nested specialist in another if its
 
 ## Visibility Is Local
 
-`allowed_skills` defines the candidate child Java, REST, TypeSafe, or model-backed YAML skills for one LLM-backed skill. It is not transitive.
+`allowed_skills` defines the candidate child Java, TypeSafe, or model-backed YAML skills for one LLM-backed skill. It is not transitive.
 
-If a root allows `investigateNetwork`, and `investigateNetwork` allows `checkDns`, the root sees `investigateNetwork`; it does not automatically see `checkDns`.
+If a root allows `network-investigate`, and that skill allows `network-checkDns`, the root sees `network-investigate`; it does not automatically see `network-checkDns`.
 
 Runtime authorization filters the declared tool surface again; see [authorization](authorization.md) for JSR-250, YAML roles, and trusted caller scope. Visibility is not authorization by itself, and authorization is enforced at execution as well as discovery.
 
@@ -108,7 +163,7 @@ When an LLM-backed YAML skill invokes another LLM-backed YAML skill:
 - the child uses its own model, prompt, allowed skills, plan, and property-level output evidence requirements;
 - the child owns an isolated plan and successful-direct-skill set, and the exact parent mission resumes after the child returns or fails;
 - the parent observes the child capability result, not the child's internal tool surface or evidence ledger.
-- every child and parallel worker uses the exact generation captured by the root, even if a newer generation becomes active.
+- every branch preserves the root's authoritative retained namespace association, caller and session; current generation follows the executing target and the exact parent binding resumes after success or failure. See [execution limits](execution-limits.md) for the entry/current settings split.
 
 This isolation is intentional. A parent contract should describe the child capability it invokes rather than coupling itself to the child's internal leaves.
 
@@ -183,8 +238,25 @@ Do not automatically treat repeated business inputs as runtime metadata. Explici
 - `YamlSkillCatalog` validates model-backed manifests and rejects legacy mappings. `SkillGenerationManager#prepare` assembles and validates a detached complete generation; `ExecutionBinding` carries that exact generation through execution.
 - `DefaultSkillVisibilityResolver` filters the local shared child surface. `CapabilityExecutionRouter` and `ExecutionCoordinator` own dispatch and common isolated mission boundaries.
 - `SupportedSurfaceIntegrationTest` demonstrates application methods called through the supported facade.
-- `DefaultRegisteredSkillCatalogTest`, `ConsoleRestFixtureCorpusTest`, and Console component tests cover all four diagnostic source variants.
+- `DefaultRegisteredSkillCatalogTest` covers declaration-source diagnostics; `ExecutorGenerationExecutionTest` covers retained executor YAML and public Java classification.
 
 ## Coverage Boundary
 
 This document does not define every manifest field or the complete behavior of planning, inputs, outputs, RBAC, attachments, retries, quotas, or traces. Consult [README.md](README.md) for current topic coverage before advising on those areas.
+
+## Namespace publication boundary
+
+Complete publications require namespace, supplied documents and ExecutionConfiguration.
+Startup namespaces are Private; foreign outgoing references require a Public target.
+Fixed Java methods remain assigned to their original namespace across replacement
+and explicit recreation; withdrawal preserves beans and retained work. There is no
+activation API or configuration inheritance. See [publication](../java-api/skill-reload.md)
+for complete signatures, sequencing and retirement. Namespace updates support preparation
+and installation, retained reachable admission and captured cross-namespace execution.
+Captured canonical observations and existing Console consumers are verified by `NamespaceObservationIntegrationTest` and `ConsoleTraceFixtureCorpusTest`.
+
+Evidence: `SkillReloaderTest`, `SkillDependencyValidatorTest`, `NamespaceStartupIntegrationTest`.
+
+Boundary evidence: `SkillReachableAdmissionTest#localDefaultReferencesMatchQualifiedAcrossAllRootOperations`, `NamespaceIdentityFoundationTest#localAndMixedAuthoredFieldsCompileWithoutRewritingContent`, and `NamespaceStartupIntegrationTest#suppliedLocalDocumentsValidateAndPrepareInEachOwnerBeforePublicationWithoutFallback`.
+
+Executor YAML leaves execute through generation-owned Java registrations and captured configuration bindings. Their public execution kind is `JAVA`; diagnostics retain their YAML declaration/source plus resolved executor identity and Java implementation. Annotated Java methods retain bean/method provenance. Execution classification and declaration provenance are separate; see [HTTP diagnostics](observability-http.md#skill-classification-and-declaration). `rest:` is unsupported manifest syntax. Read [executor leaves](executor-skills.md) for declaration rules and limitations.

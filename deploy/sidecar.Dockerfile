@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends curl \
 WORKDIR /app
 COPY runtime-artifacts/sidecar.jar /app/loomspan-sidecar.jar
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=25.0 -XX:+ExitOnOutOfMemoryError"
-EXPOSE 8080 9091
+EXPOSE 8080
 USER 10001:10001
 ENTRYPOINT ["java", "-jar", "/app/loomspan-sidecar.jar"]
-HEALTHCHECK --interval=5s --timeout=5s --start-period=60s --retries=12 CMD curl --fail http://localhost:9091/actuator/health/readiness || exit 1
+HEALTHCHECK --interval=5s --timeout=5s --start-period=60s --retries=12 CMD curl --fail http://localhost:8080/actuator/health/readiness || exit 1

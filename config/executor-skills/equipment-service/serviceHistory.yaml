@@ -1,6 +1,12 @@
 name: serviceHistory
 description: Retrieve versioned work orders, recurrence and maintenance observations.
-rest: true
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/serviceHistory
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

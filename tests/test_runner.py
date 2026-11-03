@@ -152,10 +152,10 @@ def sample():
             ownerDirectory=[{'id': 'dispatch', 'responsibility': 'Dispatch'},
                             {'id': 'review', 'responsibility': 'Coverage review'}])
     rows = {'quotes': [{'body': json.dumps(q)} for q in quotes], 'assessments': [{'body': json.dumps(value)}], 'requests': []}
-    trace = [{'recordType': 'TOOL_CALL_COMPLETED', 'route': skill, 'timestamp': i,
+    trace = [{'recordType': 'TOOL_CALL_COMPLETED', 'route': 'default-' + skill, 'timestamp': i,
               'data': {'details': {'result': json.dumps(output)}}}
              for i, (skill, output) in enumerate([('assessEquipment', value['equipmentAssessment']), ('compareOptions', value)])]
-    extra = [{'recordType': 'TOOL_CALL_STARTED', 'route': 'assessEquipment',
+    extra = [{'recordType': 'TOOL_CALL_STARTED', 'route': 'default-assessEquipment',
               'data': {'details': {'arguments': {'context': {'incident': 'Original incident'}}}}}]
     for option, output in value['optionAssessments'].items():
         skill = 'assess' + option.title() + 'Feasibility'
@@ -166,9 +166,9 @@ def sample():
         if 'ownerDirectory' in output:
             context['assetContext'] = {'contacts': copy.deepcopy(output['ownerDirectory'])}
         extra.extend([
-            {'recordType': 'TOOL_CALL_STARTED', 'route': skill,
+            {'recordType': 'TOOL_CALL_STARTED', 'route': 'default-' + skill,
              'data': {'details': {'arguments': {'context': context}}}},
-            {'recordType': 'TOOL_CALL_COMPLETED', 'route': skill,
+            {'recordType': 'TOOL_CALL_COMPLETED', 'route': 'default-' + skill,
              'data': {'details': {'result': copy.deepcopy(output)}}}])
     for record in extra:
         record['timestamp'] = 0
@@ -258,7 +258,7 @@ def test_execute_case_collects_real_shape_and_accepted_fenced_plan(monkeypatch):
     rows['quotes'] = [{'body': json.dumps(q)} for q in value['quotes']]
     rows['assessments'] = [{'body': json.dumps(value)}]
     trace[-1]['data']['details']['result'] = json.dumps(value)
-    trace.append({'recordType': 'PLAN_CREATED', 'timestamp': 2, 'data': {'capabilityName': 'resolveEquipment', 'tasks': []}})
+    trace.append({'recordType': 'PLAN_CREATED', 'timestamp': 2, 'data': {'capabilityName': 'default-resolveEquipment', 'tasks': []}})
     events = [{'event': 'model-request', 'caseId': case, 'requestId': 'r', 'request': {'model': 'test/model'}},
               {'event': 'model-response', 'caseId': case, 'requestId': 'r', 'status': 200,
                'response': {'usage': {'cost': .01, 'prompt_tokens': 100, 'completion_tokens': 10},
@@ -272,7 +272,7 @@ def test_execute_case_collects_real_shape_and_accepted_fenced_plan(monkeypatch):
             raw = b'\n'.join(json.dumps(r).encode() for r in trace)
             return httpx.Response(200, content=raw)
         if path.endswith('/traces'):
-            return httpx.Response(200, json={'items': [{'entrySkill': 'resolveEquipment', 'traceId': 'trace'}]})
+            return httpx.Response(200, json={'items': [{'entrySkill': 'default-resolveEquipment', 'traceId': 'trace'}]})
         if path == '/control/journal':
             return httpx.Response(200, json=events)
         if path == '/assessments/id':
@@ -346,7 +346,7 @@ def test_mixed_overlay_preserves_contracts_and_both_hosts(root):
 def test_mixed_routing_check_rejects_swapped_skills_even_with_same_model_counts():
     calls = [{'request': {'model': m}} for m in ['test/lower', 'test/stronger']]
     def request(skill, model):
-        return {'recordType': 'MODEL_REQUEST_SENT', 'metadata': {'skillName': skill, 'providerModel': model}}
+        return {'recordType': 'MODEL_REQUEST_SENT', 'metadata': {'skillName': 'default-' + skill, 'providerModel': model}}
     trace = [request('parent', 'test/lower'), request('expert', 'test/stronger')]
     assert runner.model_assignment_matches(calls, trace, 'test/lower', {'expert': 'test/stronger'})
     swapped = [request('parent', 'test/stronger'), request('expert', 'test/lower')]

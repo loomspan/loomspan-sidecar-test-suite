@@ -1,6 +1,13 @@
-name: serviceResources
-description: Check compatible parts and qualified attendance offers, without reservation.
-rest: true
+name: assetContext
+description: Retrieve registered asset identity, site access and approval-routing
+  facts; directory facts never grant caller permissions.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/assetContext
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:

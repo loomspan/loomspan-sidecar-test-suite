@@ -1,6 +1,12 @@
-name: serviceTerms
-description: Retrieve warranty certificate, service agreement and rates.
-rest: true
+name: quoteOptions
+description: Calculate authoritative conditional amounts for checked service strategies.
+executor: http
+config:
+  target: equipment
+  method: POST
+  path: /skills/quoteOptions
+  body:
+    source: input
 rbac_roles:
 - ASSESS_EQUIPMENT
 input_schema:
