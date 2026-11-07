@@ -125,6 +125,12 @@ def test_remote_material_has_correct_purpose_and_is_unique(tmp_path):
         (directory / "signing/signer-key.pem").read_bytes(), password=None
     )
     assert key.key_size == 2048
+    assert {p.name for p in (directory / "signing").iterdir()} == {"signer-key.pem"}
+    same = tmp_path / "same-key"
+    remote_material.signing_material(same, key)
+    assert (same / "signer-key.pem").read_bytes() == (directory / "signing/signer-key.pem").read_bytes()
+    assert remote_material.public_jwk(same / "signer-key.pem") == remote_material.public_jwk(directory / "signing/signer-key.pem")
+    assert set(remote_material.public_jwk(same / "signer-key.pem")) == {"kty", "n", "e", "kid", "use", "alg"}
     assert b"BEGIN PRIVATE KEY" in (directory / "signing/signer-key.pem").read_bytes()
 
 
@@ -140,6 +146,7 @@ def test_composition_exercises_shipped_fragments_and_separates_signer(tmp_path, 
     assert any("/signing:ro" in mount for mount in services["app"]["volumes"])
     app = yaml.safe_load((tmp_path / "config/app.yaml").read_text())
     assert app["loomspan-sdk"]["signing"]["mode"] == "provided"
+    assert set(app["loomspan-sdk"]["signing"]["provided"]) == {"key-location", "jwks-export"}
     config = yaml.safe_load((tmp_path / "config/sidecar/application.yaml").read_text())
     assert config["loomspan-sidecar"]["trust"] == {
         "mode": "file",
@@ -396,7 +403,7 @@ def test_cleanup_is_project_scoped_and_attempts_public_volume_even_after_down_fa
     assert "prune" not in str(calls)
 
 
-@pytest.mark.parametrize("invalid", ["empty", "private", "wrong-key"])
+@pytest.mark.parametrize("invalid", ["empty", "private", "wrong-key", "wrong-kid", "x5c"])
 def test_public_export_must_match_provided_signer_before_sidecar_start(
     tmp_path, invalid
 ):
@@ -412,29 +419,18 @@ def test_public_export_must_match_provided_signer_before_sidecar_start(
         runner.LaneFailure,
     )
 
-    def encoded(number):
-        import base64
-
-        return (
-            base64.urlsafe_b64encode(
-                number.to_bytes((number.bit_length() + 7) // 8, "big")
-            )
-            .rstrip(b"=")
-            .decode()
-        )
-
-    jwk = {
-        "kty": "RSA",
-        "n": encoded(runtime.signer_public.n),
-        "e": encoded(runtime.signer_public.e),
-    }
+    jwk = dict(runtime.signer_jwk)
     public = {"keys": [jwk]}
     if invalid == "empty":
         public = {"keys": []}
     elif invalid == "private":
         jwk["d"] = "private-field-sentinel"
+    elif invalid == "wrong-kid":
+        jwk["kid"] = "incorrect-thumbprint"
+    elif invalid == "x5c":
+        jwk["x5c"] = []
     else:
-        jwk["n"] = encoded(runtime.signer_public.n + 2)
+        jwk["n"] = "AQ"
     calls = []
 
     def call(args, **kwargs):
@@ -519,6 +515,7 @@ def test_outbound_only_omits_callbacks_and_preserves_recipe_invocation(
         in document["services"]["app"]["command"]
     )
     assert app["loomspan-sdk"]["signing"]["mode"] == "provided"
+    assert set(app["loomspan-sdk"]["signing"]["provided"]) == {"key-location", "jwks-export"}
     if recipe == "standard":
         assert app["loomspan-sdk"]["base-url"] == "https://sidecar:8443"
         assert app["loomspan-sdk"]["ssl-bundle"] == "sidecar"

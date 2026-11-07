@@ -1,12 +1,10 @@
 """Two bounded remote deployments. Recipe names never enter application contracts."""
 
 import copy
-import base64
 import json
 import time
 
 import yaml
-from cryptography import x509
 
 from sdk_lane import local, remote_material, outbound
 from sdk_lane.remote_contract import observations
@@ -290,21 +288,17 @@ class Runtime:
         self.image = image
         directory.mkdir()
         remote_material.generate(directory / "material")
-        self.signer_public = (
-            x509.load_pem_x509_certificate(
-                (directory / "material/signing/signer.pem").read_bytes()
-            )
-            .public_key()
-            .public_numbers()
+        self.signer_jwk = remote_material.public_jwk(
+            directory / "material/signing/signer-key.pem"
         )
         configure(directory / "config", checkout, recipe, variant)
         if variant == "trusted-group-rotation":
             trust = directory / "trust"
             trust.mkdir()
             (directory / "barrier").mkdir()
-            old = remote_material.public_jwk(directory / "material/signing/signer.pem")
+            old = self.signer_jwk
             new = remote_material.public_jwk(
-                directory / "material/replacement/signer.pem"
+                directory / "material/replacement/signer-key.pem"
             )
             for name, keys in (
                 ("sidecar", [old]),
@@ -436,17 +430,7 @@ class Runtime:
             raise self.failure("remote-public-export-invalid")
         jwk = public["keys"][0]
 
-        def number(value):
-            return int.from_bytes(
-                base64.urlsafe_b64decode(value + "=" * (-len(value) % 4)), "big"
-            )
-
-        if (
-            any(name in jwk for name in ("d", "p", "q", "dp", "dq", "qi"))
-            or jwk.get("kty") != "RSA"
-            or number(jwk["n"]) != self.signer_public.n
-            or number(jwk["e"]) != self.signer_public.e
-        ):
+        if jwk != self.signer_jwk:
             raise self.failure("remote-public-export-invalid")
         self.call(self.compose + ["up", "-d", "sidecar", "sidecar-fixture"], timeout=90)
         self.wait("sidecar-ready")
@@ -540,7 +524,6 @@ class Runtime:
                 config = yaml.safe_load(path.read_text())
                 supplied = config["loomspan-sdk"]["signing"]["provided"]
                 supplied["key-location"] = "/replacement/signer-key.pem"
-                supplied["certificate-location"] = "/replacement/signer.pem"
                 dump(path, config)
                 self.call(self.compose + ["restart", name], timeout=90)
                 self.wait(name + "-ready")

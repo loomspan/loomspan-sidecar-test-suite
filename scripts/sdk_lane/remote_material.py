@@ -127,25 +127,11 @@ def generate(directory):
             )
             save(peer + "-" + kind, private, certificate)
     for label in ("signing", "replacement"):
-        signing_material(directory / label, key(), now)
+        signing_material(directory / label, key())
 
 
-def signing_material(signing, private, now):
-    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "provided signer")])
-    certificate = (
-        x509.CertificateBuilder()
-        .subject_name(name)
-        .issuer_name(name)
-        .public_key(private.public_key())
-        .serial_number(x509.random_serial_number())
-        .not_valid_before(now - timedelta(days=1))
-        .not_valid_after(now + timedelta(days=1))
-        .sign(private, hashes.SHA256())
-    )
+def signing_material(signing, private):
     signing.mkdir()
-    (signing / "signer.pem").write_bytes(
-        certificate.public_bytes(serialization.Encoding.PEM)
-    )
     (signing / "signer-key.pem").write_bytes(
         private.private_bytes(
             serialization.Encoding.PEM,
@@ -155,9 +141,9 @@ def signing_material(signing, private, now):
     )
 
 
-def public_jwk(certificate):
+def public_jwk(private_key):
     numbers = (
-        x509.load_pem_x509_certificate(certificate.read_bytes())
+        serialization.load_pem_private_key(private_key.read_bytes(), password=None)
         .public_key()
         .public_numbers()
     )
