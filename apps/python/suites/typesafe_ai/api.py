@@ -1,29 +1,29 @@
 from fastapi import APIRouter, Depends, HTTPException
 import json
+import simplejson
 from .policy import decide, number, SUPPORTED_SKILLS
-from ...infrastructure.security import identity
-from ...infrastructure.sidecar_client import submit, poll
+from ...infrastructure.sidecar_client import ExecutionResponse, execution_caller, submit, poll
 
 router = APIRouter(prefix='/suites/typesafe-ai')
 
 
 @router.post('/evaluations/{skill}', status_code=202)
-async def evaluate(skill: str, body: dict, who=Depends(identity)):
+async def evaluate(skill: str, body: dict, caller=Depends(execution_caller)):
     if not skill.startswith('tsTriage'):
         raise HTTPException(404)
-    return await submit(skill, body, who)
+    return await submit(skill, body, caller)
 
 
 @router.get('/executions/{execution_id}')
-async def result(execution_id: str, who=Depends(identity)):
-    return await poll(execution_id, who)
+async def result(execution_id: str, caller=Depends(execution_caller)):
+    return await poll(execution_id, caller)
 
 
 @router.get('/executions/{execution_id}/impact')
-async def impact(execution_id: str, evidenceThreshold: str = '0.80', who=Depends(identity)):
-    response = await poll(execution_id, who)
+async def impact(execution_id: str, evidenceThreshold: str = '0.80', caller=Depends(execution_caller)):
+    response = await poll(execution_id, caller)
     if response.status_code != 200: return response
-    execution = json.loads(response.body)
+    execution = simplejson.loads(response.body, use_decimal=True)
     if execution.get('skillName') not in SUPPORTED_SKILLS: raise HTTPException(404)
     try:
         threshold = float(evidenceThreshold)
@@ -34,4 +34,4 @@ async def impact(execution_id: str, evidenceThreshold: str = '0.80', who=Depends
         try: answers = json.loads(execution.get('result'))
         except (ValueError, TypeError): answers = None
         execution['impactDecision'] = decide(answers, threshold)
-    return execution
+    return ExecutionResponse(execution)

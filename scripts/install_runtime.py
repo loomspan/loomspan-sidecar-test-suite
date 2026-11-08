@@ -3,16 +3,16 @@ import argparse
 import hashlib
 import json
 import sys
-import zipfile
 import configure_isolated
 import environment
 import prepare
-from record_build import framework_identity
+from record_build import framework_identity, verified_wheel
 
 
 def verify_inputs(root):
     manifest = json.loads((root / 'runtime-artifacts/manifest.json').read_bytes())
     build = manifest['buildReference']
+    verified_wheel(root, build['artifacts']['pythonSdk'])
     for name, wanted in manifest['sourceSha256'].items():
         file = (root / name).resolve()
         if not file.is_relative_to(root.resolve()) or hashlib.sha256(file.read_bytes()).hexdigest() != wanted:

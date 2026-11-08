@@ -4,7 +4,7 @@ loomspan-sidecar:
   trust:
     mode: file
     file:
-      jwks: /trust/execution-jwks.json
+      jwks: /trust/jwks.json
   auth:
     jwt:
       audience: equipment-service

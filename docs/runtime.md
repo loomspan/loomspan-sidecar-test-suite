@@ -29,19 +29,22 @@ under `.runtime`. Never print credentials or delete databases during ordinary cl
 
 ## Building from source
 
-Prerequisites: Docker, Java 21+, Maven, Python 3.13 and the developer-installed
+Prerequisites include Docker, Java 21+, Maven, Python 3.13, uv and the developer-installed
 Framework `1.0.0-beta.9-SNAPSHOT`. Use the matching local Framework documentation.
 The suite consumes the current neighboring Sidecar checkout and its tested dependency;
 ordinary builds do not rebuild Framework or compare its source revision/artifact bytes.
 
 ```powershell
 python -m venv .venv
-.venv/Scripts/python.exe -m pip install -r requirements.lock
+uv build --out-dir C:/path/to/new-sdk-dist ../loomspan-sidecar/sdks/python
+$sdkWheel = (Get-ChildItem C:/path/to/new-sdk-dist/*.whl).FullName
+.venv/Scripts/python.exe -m pip install -r requirements.lock "${sdkWheel}[fastapi]"
+.venv/Scripts/python.exe -m pip check
 .venv/Scripts/python.exe -m playwright install chromium
 .venv/Scripts/python.exe scripts/prepare.py
 mvn -B -ntp -f ../loomspan-sidecar/pom.xml verify
 mvn -B -ntp -f apps/java/pom.xml clean package
-.venv/Scripts/python.exe scripts/record_build.py --sidecar-checkout ../loomspan-sidecar
+.venv/Scripts/python.exe scripts/record_build.py --sidecar-checkout ../loomspan-sidecar --python-sdk-wheel $sdkWheel
 .venv/Scripts/python.exe scripts/start.py --build
 .venv/Scripts/python.exe scripts/smoke.py
 ```
@@ -50,31 +53,45 @@ For a fresh isolated workspace, run `scripts/configure_isolated.py --project NAM
 --port-offset OFFSET` before preparing credentials; NAME must differ from
 `equipment-acceptance` and OFFSET must be nonzero. Do not reconfigure an initialized
 workspace. Existing credentials, signing keys and databases remain in place.
-`prepare.py` creates an app-owned RSA execution key/public JWKS pair only when both
-are absent; incomplete material fails without replacing keys. Python alone receives
-the private key. Sidecar receives only the public JWKS.
+`prepare.py` provisions a local RSA execution key in a new workspace. An initialized
+workspace needs its existing PKCS#8 PEM. Python receives that PEM read-only and the
+SDK publishes public keys to `.runtime/execution-trust/jwks.json` at startup.
+Sidecar mounts the public directory read-only so it can observe atomic replacement
+of the export.
 
-Public app login remains Keycloak-owned. Python issues a short-lived execution JWT
-from verified identity and allowlisted exact business roles, bounded by the login
-credential's expiry. Sidecar forwards that original execution credential on callbacks;
-Python separately validates execution purpose/type, issuer, audience, signature and
-expiry before applying role and record authorization. Ordinary login JWTs do not
-authenticate callbacks.
+Keycloak authenticates public app requests. The SDK issues an execution JWT from
+the verified subject and allowlisted exact business roles. Its lifetime is
+independent of the public login and defaults to 900 seconds. Set the positive
+integer `EXECUTION_LIFETIME_SECONDS` in the Compose environment to override it.
+Sidecar forwards the original execution credential. The SDK verifies it across
+`/skills` before application role and record checks.
 
-The build recorder stages the current executable at `runtime-artifacts/sidecar.jar`,
-checks each host's Framework coordinate, and records package/configuration hashes.
+The build recorder stages the executable at `runtime-artifacts/sidecar.jar` and
+the wheel under `runtime-artifacts/python-sdk/`. It checks both hosts' Framework
+coordinate and records the SDK filename, version and digest with the other
+package and configuration hashes. The staging directory holds one wheel. Both Python
+images install that wheel with its FastAPI extra and check the locked dependencies.
+Smoke and evidence capture compare the wheel in each running Python container with
+the recorded digest.
+
+When refreshing the tool lock, resolve the same wheel with the suite requirements.
+Keep the wheel as a separate explicit install input so the lock works across paths.
+
+```powershell
+"${sdkWheel}[fastapi]" | uv pip compile requirements.txt - --python-version 3.13 --no-emit-package loomspan-sdk --no-annotate --no-header -o requirements.lock
+```
 Compose uses `deploy/sidecar.Dockerfile`. Current provider/mission/proxy limits are
 480/2400/510s. Normal overlays disable provider access regardless of shell keys.
 The authored pack uses six Sol/medium judgment skills and two Luna/medium coordinators.
 
 ## Portable installation
 
-`package_runtime.py --output NEW_DIRECTORY` packages the current verified JARs and
-source/configuration without credentials or local databases. On a fresh extracted
-workspace, `install_runtime.py` verifies the supplied hashes, creates an isolated
-provider-disabled configuration and generates credentials. Start with `start.py --build`
-and run `smoke.py`. Packaging/install scripts require the same local Python environment.
-These tools are retained; a new portable installation was not performed during cleanup.
+`package_runtime.py --output NEW_DIRECTORY` packages the verified JARs, SDK wheel
+and source/configuration. On a fresh extracted workspace, run
+`install_runtime.py --project NAME --port-offset OFFSET`. The installer verifies
+the supplied inputs before creating isolated runtime state and provisioning local
+credentials. Run `start.py --build` and `smoke.py` using the tooling virtual
+environment. The extracted runtime uses the supplied artifacts to build images.
 
 ## Deterministic assessment replay
 
@@ -85,6 +102,11 @@ responses. It requires no provider key and keeps provider access disabled. The m
 output. Each replay creates fresh synthetic assessment/quote rows while preserving
 existing rows. It checks runtime behavior against the accepted reference, not new
 model reasoning or the full service-request workflow. See [the runner guide](runner.md).
+
+In a disposable isolated runtime, run `scripts/verify_sdk_commitment.py --output NEW_DIRECTORY`
+to check an assessment, exact approval, owner recovery and repeated request handling.
+The check creates one `PENDING_DISPATCH` record per host and records the input
+fixture and contract hashes.
 
 ## Skill experiments
 

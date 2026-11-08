@@ -1,5 +1,33 @@
 # SDK integration lane
 
+## Installed Python reference
+
+Use the installed-wheel environment described in the [runtime guide](runtime.md)
+and a Sidecar JAR built against the local Framework snapshot. Each recipe uses a
+fresh, internal Docker network and checks the SDK wheel and Sidecar artifact
+identities before startup.
+
+```powershell
+$sidecarJar = (Resolve-Path ../loomspan-sidecar/target/loomspan-sidecar-1.0.0-beta.4-SNAPSHOT.jar).Path
+$sdkWheel = (Get-ChildItem C:/path/to/new-sdk-dist/*.whl).FullName
+.venv/Scripts/python.exe scripts/run_python_sdk.py local --sidecar-jar $sidecarJar --python-sdk-wheel $sdkWheel --output evidence/sdk/NEW_PYTHON_LOCAL
+.venv/Scripts/python.exe scripts/run_python_sdk.py standard --sidecar-jar $sidecarJar --python-sdk-wheel $sdkWheel --output evidence/sdk/NEW_PYTHON_STANDARD
+.venv/Scripts/python.exe scripts/run_python_sdk.py hardened --sidecar-jar $sidecarJar --python-sdk-wheel $sdkWheel --output evidence/sdk/NEW_PYTHON_HARDENED
+```
+
+The plain Python client submits explicitly bodyless GET and POST operations to a
+FastAPI callback app. Local checks exact roles, owner-only reads, expiry before
+dispatch and independent public trust withdrawal and restoration. It invokes
+Maven against the neighboring Sidecar checkout to issue a short-lived Java SDK
+credential for the live Python callback verifier.
+
+Standard checks both directions over verified HTTPS, certificate and hostname
+rejection, and one forward and effect when a response is lost. Hardened verifies
+paired Caddy mTLS and rejects untrusted peers and direct access to the private
+backends. Reports include artifact identities, observations and cleanup status.
+
+## Java reference
+
 This separate provider-free lane builds the actual neighboring Sidecar checkout
 against the developer-installed Framework `1.0.0-beta.9-SNAPSHOT`, locally installs
 its Java SDK reactor, and packages both plain-Java and Spring Boot consumers.

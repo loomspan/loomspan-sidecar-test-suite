@@ -107,6 +107,6 @@ def test_python_completion_dispatch_uses_one_poll(monkeypatch):
         return JSONResponse({'status': 'COMPLETED', 'skillName': 'resolveEquipment', 'result': {}})
     monkeypatch.setattr(host, 'poll_execution', poll)
     monkeypatch.setattr(host.business, 'save_assessment', lambda *args: 'saved-version')
-    result = asyncio.run(host.poll('execution', ({'sub': 'maya'}, 'Bearer test')))
+    result = asyncio.run(host.poll('execution', ({'sub': 'maya'}, None, None)))
     assert polls == ['execution']
     assert json.loads(result.body)['assessmentVersion'] == 'saved-version'

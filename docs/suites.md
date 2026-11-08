@@ -31,12 +31,13 @@ handlers implement `CompletionHandler`; equipment assessment persistence lives t
 which retains business authorization and transaction rules. Java startup and security
 configuration live in the common root `example.Application`.
 
-Python infrastructure owns JWT authentication and Sidecar transport. The host mounts
+Python infrastructure authenticates public requests with Keycloak and uses the
+installed SDK for execution issuance, Sidecar transport and callbacks. The host mounts
 suite routers and registers completion handlers; equipment workflow code validates and
 persists its own completed result. Existing equipment endpoints remain available, with
 aliases under `/suites/equipment-service`. Both hosts preserve their existing generic
-`/v1` execution endpoints. Callbacks also have a prefixed Python alias; current Sidecar
-operations select the receiver paths.
+`/v1` execution endpoints. Sidecar targets Python callbacks under the SDK-protected
+`/skills` prefix. Suite callback handlers own role and record authorization.
 
 ## Configuration and identity
 
@@ -64,7 +65,8 @@ model definitions. Normal runtime remains provider-disabled.
 1. Define its business purpose, Loomspan capabilities exercised, scenarios and evidence
    limits. Keep both implementations equivalent; do not copy the entire applications.
 2. Add skill directories and, when callbacks are needed, executor declarations and a named target with distinct identities. Add Java
-   suite packages, Python modules and host registrations. Use prefixed HTTP routes.
+   suite packages, Python modules and host registrations. Use prefixed public HTTP
+   routes and register Python callbacks under `/skills`.
 3. Add suite-owned inputs and checks. Register a `Suite` in `scripts/suites/registry.py`
    with supported modes, entry skill, endpoint, database/table ownership, source files
    and optional reference loader. Its scenario adapter supplies inputs, result decoding,

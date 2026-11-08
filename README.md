@@ -19,7 +19,7 @@ for the layout, selection and extension contract.
 - [Project agreement](docs/project-agreement.md): settled scope and boundaries.
 - [Foundation](docs/foundation.md): architecture, skill ownership and business rules.
 - [Runtime guide](docs/runtime.md): start, build, verify and package both integrations.
-- [SDK integration lane](docs/sdk-lane.md): form-login Boot consumer; Local colocated trust and callback expiry; Standard direct HTTPS and Hardened paired Caddy mTLS with provided signing, file trust, peer rejection and no-replay evidence.
+- [SDK integration lane](docs/sdk-lane.md) covers the Java consumers and the installed Python client and FastAPI callback recipes over HTTP, direct HTTPS and paired Caddy mTLS.
 - [Phase 2 summary](docs/phase2-summary.md): journey, destination and validation limits.
 - [Skill-design lessons](docs/mid-tier-skill-design.md): transferable practices and evidence limits.
 - [Business source pack](docs/equipment-service-source-pack.md): independent fictional records.
@@ -40,6 +40,12 @@ lookup operations and verifies nested approval parsing/business rejection withou
 service commitment. It verifies pricing,
 complete offers, mounted model assignments and basic permission boundaries; it adds
 isolated quote rows. These checks are not full release acceptance.
+
+The Python host uses the installed Loomspan SDK for execution and callbacks.
+The [runtime guide](docs/runtime.md) shows how to build and stage the wheel with
+the two Java runtime packages. A separate commitment check uses frozen assessment
+responses and writes one synthetic pending service request per host in a disposable
+runtime.
 
 The selected pack passed a four-case Java confirmation and one unchanged repeat:
 eight business passes with minor caveats, 216 structural checks and 120 valid JSON

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import zipfile
+from record_build import verified_wheel
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +20,7 @@ def main():
     names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
     names = sorted(set(n for n in names if (ROOT / n).is_file() and not n.startswith(('evidence/', 'runtime-artifacts/'))))
     build = json.loads((ROOT / '.runtime/build-baseline.json').read_bytes())
+    wheel = verified_wheel(ROOT, build['artifacts']['pythonSdk'])
     source = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in names}
     jars = {'java': ROOT / 'apps/java/target/equipment-java-1.0.jar',
             'sidecar': ROOT / 'runtime-artifacts/sidecar.jar'}
@@ -40,6 +42,7 @@ def main():
             archive.write(ROOT / name, name)
         for name, file in jars.items():
             archive.write(file, 'runtime-artifacts/' + name + '.jar')
+        archive.write(wheel, wheel.relative_to(ROOT).as_posix())
         archive.writestr('runtime-artifacts/manifest.json', json.dumps(manifest, indent=2))
     (out / 'manifest.json').write_text(json.dumps(manifest, indent=2))
     hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in out.iterdir() if p.is_file()}

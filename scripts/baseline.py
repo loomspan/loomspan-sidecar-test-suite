@@ -1,4 +1,4 @@
-"""Capture labels must describe the running JARs, including pinned release source builds."""
+"""Capture labels must describe the artifacts in the running containers."""
 import environment as target_env
 import json
 import pathlib
@@ -21,5 +21,11 @@ def baseline():
             if observed.returncode not in [0,1]:raise RuntimeError('Unable to verify running timeout configuration')
             if (observed.stdout.strip() or default)!=str(result[field])+'s':
                 raise RuntimeError('Running '+path+' timeout differs from recorded build baseline')
+    sdk = result['artifacts']['pythonSdk']
+    for service in ('python', 'fixtures'):
+        observed = subprocess.run(target_env.execute(service, 'sha256sum', '--', '/sdk/' + sdk['filename']),
+                                  capture_output=True, text=True)
+        if observed.returncode or observed.stdout.split()[:1] != [sdk['sha256']]:
+            raise RuntimeError(f'Running {service} SDK wheel differs from recorded build baseline. Rebuild before capture.')
     result['runtimeIdentity'] = target_env.runtime_identity()
     return result
