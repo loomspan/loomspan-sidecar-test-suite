@@ -5,9 +5,10 @@ from pathlib import Path
 from fastapi import APIRouter, FastAPI, Depends
 from jwt import PyJWKClient
 from loomspan_sdk.fastapi import CallbackMiddleware
-import simplejson
 
-from .infrastructure.sidecar_client import configure, execution_caller, submit, poll as poll_execution
+from .infrastructure.sidecar_client import (
+    configure, execution_caller, submit, read_execution, ExecutionResponse, execution_view,
+)
 from .suites.equipment_service import api, skill_routes, business, workflow
 from .suites.typesafe_ai.api import router as typesafe_router
 
@@ -55,8 +56,9 @@ async def execute(skill: str, body: dict, caller=Depends(execution_caller)):
 
 @router.get('/v1/executions/{execution_id}')
 async def poll(execution_id: str, caller=Depends(execution_caller)):
-    response = await poll_execution(execution_id, caller)
-    if response.status_code != 200:
-        return response
-    handler = COMPLETION_HANDLERS.get(simplejson.loads(response.body, use_decimal=True).get('skillName'))
-    return handler(execution_id, response, caller[0]) if handler else response
+    execution = await read_execution(execution_id, caller)
+    if isinstance(execution, ExecutionResponse):
+        return execution
+    handler = COMPLETION_HANDLERS.get(execution.skill_name)
+    outcome = handler(execution_id, execution, caller[0]) if handler else {}
+    return ExecutionResponse(execution_view(execution) | outcome)

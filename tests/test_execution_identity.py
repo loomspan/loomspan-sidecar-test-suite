@@ -307,3 +307,80 @@ def test_public_execution_projection(deployed):
             response = client.post(submit, json={}, headers=headers)
             assert response.status_code == 502 and response.json()['kind'] == 'ACCEPTANCE_UNKNOWN'
             assert len(requests) == count
+
+
+@pytest.mark.parametrize('route', ['/v1/executions/', '/assessments/', '/suites/equipment-service/assessments/'])
+def test_assessment_outcome_does_not_change_sdk_state(deployed, monkeypatch, route):
+    from apps.python.suites.equipment_service import business, workflow
+    from loomspan_sdk import ExecutionSnapshot
+
+    start, login, _, _ = deployed
+    original_complete = workflow.complete
+    captured = []
+
+    def complete(ident, snapshot, who):
+        assert isinstance(snapshot, ExecutionSnapshot)
+        before = (snapshot.status, snapshot.result, snapshot.failure)
+        outcome = original_complete(ident, snapshot, who)
+        assert (snapshot.status, snapshot.result, snapshot.failure) == before
+        captured.append(snapshot)
+        return outcome
+
+    monkeypatch.setattr(workflow, 'complete', complete)
+    from apps.python import app as host
+    monkeypatch.setitem(host.COMPLETION_HANDLERS, 'resolveEquipment', complete)
+    saves = []
+    def save(ident, result, who):
+        saves.append((ident, result, who['sub']))
+        if result == 'invalid':
+            raise ValueError('invalid evidence')
+        return 'saved-version'
+    monkeypatch.setattr(business, 'save_assessment', save)
+    base = {'id': EXECUTION_ID, 'skillName': 'resolveEquipment', 'status': 'COMPLETED',
+            'createdAt': '2026-11-07T10:00:00Z', 'completedAt': '2026-11-07T10:00:01Z', 'result': 'valid', 'failure': None}
+    failed = base | {'status': 'FAILED', 'failure': {'kind': 'SKILL_FAILURE', 'message': 'failed'}}
+    bodies = [base, base | {'result': 'invalid'}, failed]
+    replies = [(200, json.dumps(body).encode()) for body in bodies]
+    replies += [(200, b'{"invalid":true}'), (403, b'{"detail":"denied"}')]
+    with wire_peer(iter(replies)) as (url, requests), TestClient(start(url)) as client:
+        headers = login('maya', ['ASSESS_EQUIPMENT'])
+        accepted = client.get(route + EXECUTION_ID, headers=headers).json()
+        assert accepted['assessmentVersion'] == 'saved-version'
+        rejected = client.get(route + EXECUTION_ID, headers=headers).json()
+        assert rejected['status'] == 'FAILED' and rejected['frameworkStatus'] == 'COMPLETED'
+        assert rejected['failure']['kind'] == 'ASSESSMENT_VALIDATION'
+        assert rejected['result'] == 'invalid'
+        execution_failure = client.get(route + EXECUTION_ID, headers=headers).json()
+        assert execution_failure['failure']['kind'] == 'SKILL_FAILURE'
+        assert 'frameworkStatus' not in execution_failure
+        assert client.get(route + EXECUTION_ID, headers=headers).status_code == 502
+        assert client.get(route + EXECUTION_ID, headers=headers).status_code == 403
+    assert len(captured) == 3 and len(requests) == 5
+    assert saves == [(EXECUTION_ID, 'valid', 'maya'), (EXECUTION_ID, 'invalid', 'maya')]
+
+
+def test_impact_failed_execution_is_distinct_from_failed_read(deployed, monkeypatch):
+    from apps.python.suites.typesafe_ai import api
+    start, login, _, _ = deployed
+    decisions = []
+    monkeypatch.setattr(api, 'decide', lambda answers, threshold: decisions.append((answers, threshold)) or {'decision': 'checked'})
+    skill = next(iter(api.SUPPORTED_SKILLS))
+    base = {'id': EXECUTION_ID, 'skillName': skill, 'status': 'COMPLETED',
+            'createdAt': '2026-11-07T10:00:00Z', 'completedAt': '2026-11-07T10:00:01Z', 'result': '{"value":1}'}
+    bodies = [base, base | {'result': 'malformed'}, base | {'status': 'RUNNING'},
+              base | {'status': 'FAILED', 'failure': {'kind': 'SKILL_FAILURE', 'message': 'failed'}}]
+    replies = [(200, json.dumps(body).encode()) for body in bodies]
+    replies += [(200, b'{"invalid":true}'), (404, b'{"detail":"not found"}')]
+    with wire_peer(iter(replies)) as (url, requests), TestClient(start(url)) as client:
+        headers = login('maya', ['ASSESS_EQUIPMENT'])
+        route = '/suites/typesafe-ai/executions/' + EXECUTION_ID + '/impact'
+        for body in bodies:
+            response = client.get(route, headers=headers)
+            assert response.status_code == 200
+            view = response.json()
+            assert view['result'] == body['result'] and view['status'] == body['status']
+            assert ('impactDecision' in view) == (body['status'] == 'COMPLETED')
+        assert client.get(route, headers=headers).status_code == 502
+        assert client.get(route, headers=headers).status_code == 404
+    assert decisions == [({'value': 1}, .8), (None, .8)]
+    assert len(requests) == 6

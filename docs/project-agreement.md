@@ -1,6 +1,6 @@
 # Project agreement
 
-Updated 2026-10-11. Phases 1 and 2 are complete; Phase 3 remains future work.
+Updated 2026-11-07. Phases 1 and 2 are complete; Phase 3 remains future work.
 
 ## Destination
 
@@ -260,7 +260,9 @@ Relevant future tickets explicitly keep JWKS file sourcing in both file/database
 application configuration modes; do not add a database trust store or management API.
 Existing management accounts/tokens remain unchanged.
 
-The SDK client is blocking only. Each request is sent once; bounded wait polls
+The Java SDK client is blocking only. The Python SDK provides synchronous and
+asynchronous clients; the FastAPI host uses the asynchronous client with
+application-lifespan resource management. Each request is sent once; bounded wait polls
 successful status responses and stops on a failed read. Lost/unusable submission
 responses mean acceptance unknown, never automatic resubmission. Use simple attempt
 and synthetic-effect counters for response-loss/no-replay coverage. No custom futures,
@@ -303,3 +305,30 @@ Framework skill/capability/tool identity positions are qualified with `default-`
 Accepted business inputs, evidence, judgments and expected results stay unchanged.
 Keep strict semantic request matching, recorded response consumption and both-host
 replay. This authorizes no new provider calls, model tuning or business redesign.
+
+## Python SDK integration and adapter direction (2026-11-07)
+
+The Python/FastAPI host now consumes the installed Python SDK wheel for execution
+credential issuance, asynchronous Sidecar calls and callback authentication. Public
+Keycloak authentication and business role, ownership, approval and persistence checks
+remain application responsibilities. The business Java host continues to embed
+Framework; the separate SDK lane exercises Java SDK consumers. See the
+[runtime guide](runtime.md) for packaging and [SDK lane](sdk-lane.md) for recipes.
+
+The user authorized the bounded adapter refactor and provider-free verification.
+The application passes typed SDK execution snapshots to suite logic, retains one
+explicit public-response projection, and serializes only at the HTTP boundary.
+Application validation outcomes remain separate from immutable SDK execution state.
+Preserve existing endpoint contracts, error mappings, result and
+event fidelity, authorization, assessment persistence and service-request behavior.
+Java/Python equivalence means preserving business outcomes and permissions; their
+existing execution envelopes and completion timing are not identical and must not
+be silently standardized by this refactor.
+
+Keep the change local to the application adapter and its consumers. Reuse existing
+boundary tests, smoke and both-host frozen replay, adding only checks for affected
+behavior not already covered. No SDK API expansion, new execution framework, retry
+policy, business redesign or fixture replacement is part of this direction. This
+work authorizes no paid runs, commit, push or release. Both-host replay verifies
+business equivalence; SDK parity requires the separate SDK coverage. Assess and
+improve result-processing guidance without expanding the SDK API.

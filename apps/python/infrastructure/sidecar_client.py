@@ -7,7 +7,7 @@ from fastapi import Depends, Request
 from fastapi.responses import JSONResponse
 from loomspan_sdk import (
     AcceptanceUnknown, AuthenticatedIdentity, HttpFailure, IssuanceSettings,
-    LocalFailure, ProtocolFailure, ProvidedSigning,
+    LocalFailure, ProtocolFailure, ProvidedSigning, ExecutionSnapshot,
 )
 from loomspan_sdk.fastapi import Loomspan
 import simplejson
@@ -78,7 +78,8 @@ async def submit(skill, body, caller):
     return ExecutionResponse({'id': str(accepted.id)}, status_code=202)
 
 
-async def poll(execution_id, caller):
+async def read_execution(execution_id, caller) -> ExecutionSnapshot | ExecutionResponse:
+    """Return typed state, or an HTTP error for the calling endpoint to return."""
     claims, client, issuer = caller
     try:
         identifier = UUID(execution_id)
@@ -93,6 +94,11 @@ async def poll(execution_id, caller):
     except ProtocolFailure:
         return ExecutionResponse({'detail': 'Unusable Sidecar execution response'}, status_code=502)
 
+    return execution
+
+
+def execution_view(execution: ExecutionSnapshot) -> dict:
+    """Project SDK state without changing it or serializing business inputs."""
     failure = None
     if execution.failure is not None:
         failure = {'kind': execution.failure.kind, 'message': execution.failure.message}
@@ -114,4 +120,4 @@ async def poll(execution_id, caller):
              'details': event.details, 'frameId': event.frame_id, 'route': event.route}
             for event in execution.events
         ]
-    return ExecutionResponse(snapshot)
+    return snapshot

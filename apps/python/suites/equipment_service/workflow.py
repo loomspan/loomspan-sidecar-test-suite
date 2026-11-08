@@ -1,22 +1,27 @@
 from fastapi import HTTPException
-import simplejson
-from ...infrastructure.sidecar_client import ExecutionResponse, submit, poll as poll_execution
+from loomspan_sdk import ExecutionSnapshot
+from ...infrastructure.sidecar_client import ExecutionResponse, execution_view, read_execution
 from . import business
 
+
 async def poll(execution_id, caller):
-    response = await poll_execution(execution_id, caller)
-    return complete(execution_id, response, caller[0])
+    execution = await read_execution(execution_id, caller)
+    if isinstance(execution, ExecutionResponse):
+        return execution
+    outcome = complete(execution_id, execution, caller[0])
+    return ExecutionResponse(execution_view(execution) | outcome)
 
 
-def complete(execution_id, response, who):
-    if response.status_code != 200:
-        return response
-    body = simplejson.loads(response.body, use_decimal=True)
-    if body.get('status') == 'COMPLETED' and body.get('skillName') == 'resolveEquipment':
+def complete(execution_id, execution: ExecutionSnapshot, who) -> dict:
+    """Return application outcomes separately from the immutable SDK snapshot."""
+    if execution.status == 'COMPLETED' and execution.skill_name == 'resolveEquipment':
         try:
-            body['assessmentVersion'] = business.save_assessment(execution_id, body['result'], who)
+            return {'assessmentVersion': business.save_assessment(execution_id, execution.result, who)}
         except (HTTPException, ValueError, KeyError, TypeError):
-            body['status'] = 'FAILED'
-            body['failure'] = {'kind': 'ASSESSMENT_VALIDATION', 'message': 'Missing or altered authoritative evidence'}
-            body['frameworkStatus'] = 'COMPLETED'
-    return ExecutionResponse(body)
+            return {
+                'status': 'FAILED',
+                'failure': {'kind': 'ASSESSMENT_VALIDATION',
+                            'message': 'Missing or altered authoritative evidence'},
+                'frameworkStatus': execution.status,
+            }
+    return {}

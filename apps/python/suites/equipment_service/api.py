@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from ...infrastructure.security import identity
-from ...infrastructure.sidecar_client import ISSUER as EXECUTION_ISSUER, execution_caller
+from ...infrastructure.sidecar_client import ISSUER as EXECUTION_ISSUER, execution_caller, submit
 from . import business
-from .workflow import submit, poll
+from .workflow import poll
 
 router = APIRouter()
 

@@ -66,6 +66,14 @@ integer `EXECUTION_LIFETIME_SECONDS` in the Compose environment to override it.
 Sidecar forwards the original execution credential. The SDK verifies it across
 `/skills` before application role and record checks.
 
+The Python SDK provides synchronous and asynchronous execution clients. This
+FastAPI host uses the async client and issuer supplied by `Loomspan` dependencies,
+with startup and shutdown owned by `loomspan.lifespan(app)`. `CallbackMiddleware`
+authenticates the callback prefix; public Keycloak authentication and business
+authorization remain in the app. Submission acceptance uncertainty is exposed as
+`ACCEPTANCE_UNKNOWN`; the adapter does not automatically resubmit. The business
+Java host embeds Framework, while the separate SDK lane tests Java SDK clients.
+
 The build recorder stages the executable at `runtime-artifacts/sidecar.jar` and
 the wheel under `runtime-artifacts/python-sdk/`. It checks both hosts' Framework
 coordinate and records the SDK filename, version and digest with the other

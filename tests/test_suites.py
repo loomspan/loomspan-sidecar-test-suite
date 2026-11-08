@@ -100,12 +100,15 @@ def test_equipment_generator_emits_executor_operations_without_changing_models(t
 def test_python_completion_dispatch_uses_one_poll(monkeypatch):
     monkeypatch.setenv('JWKS', 'http://unused.invalid/jwks')
     from apps.python import app as host
-    from fastapi.responses import JSONResponse
+    from loomspan_sdk import ExecutionSnapshot, ExecutionStatus
+    from uuid import UUID
     polls = []
     async def poll(ident, who):
         polls.append(ident)
-        return JSONResponse({'status': 'COMPLETED', 'skillName': 'resolveEquipment', 'result': {}})
-    monkeypatch.setattr(host, 'poll_execution', poll)
+        return ExecutionSnapshot(UUID('6a0c950c-d172-4151-b629-6a5c15c7ae37'),
+                                 'resolveEquipment', ExecutionStatus.COMPLETED,
+                                 '2026-11-07T10:00:00Z', None, '{}', None, None, None)
+    monkeypatch.setattr(host, 'read_execution', poll)
     monkeypatch.setattr(host.business, 'save_assessment', lambda *args: 'saved-version')
     result = asyncio.run(host.poll('execution', ({'sub': 'maya'}, None, None)))
     assert polls == ['execution']

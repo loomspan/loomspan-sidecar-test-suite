@@ -39,6 +39,22 @@ aliases under `/suites/equipment-service`. Both hosts preserve their existing ge
 `/v1` execution endpoints. Sidecar targets Python callbacks under the SDK-protected
 `/skills` prefix. Suite callback handlers own role and record authorization.
 
+The Python host uses the SDK's asynchronous client within its FastAPI lifespan.
+Its adapter returns typed SDK snapshots to suite logic. Equipment completion
+returns application outcomes separately; TypeSafe parses the skill result and adds
+its impact decision separately. One `execution_view` projection builds the public
+execution shape, then the endpoint combines application outcomes and serializes it.
+An assessment validation failure can expose the existing application `FAILED` view
+with `frameworkStatus: COMPLETED` without changing the SDK snapshot. A failed read
+returns an HTTP error before business processing; an SDK `FAILED` snapshot is a
+successful read of a failed execution.
+
+Java and Python preserve equivalent core business functionality and permissions,
+with framework-specific execution envelopes and internal structures. Java completes
+equipment work in its worker; Python persists completed assessments during polling.
+Both-host replay checks business equivalence, while the separate SDK lane checks
+SDK behavior.
+
 ## Configuration and identity
 
 Both hosts load `config/skills/*/*.yaml`; only Sidecar loads
