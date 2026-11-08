@@ -197,7 +197,7 @@ def run(args):
     sdk = wheel_identity(wheel)
     embedded = framework_identity(jar, VERSION)
     checkout = args.sidecar_checkout.resolve()
-    project = f'pr106-python-{args.recipe}-{uuid4().hex[:10]}'
+    project = f'sdk-python-{args.recipe}-{uuid4().hex[:10]}'
     report = {'recipe': args.recipe, 'status': 'FAIL', 'project': project,
               'artifacts': {'wheel': sdk, 'sidecar': {'filename': jar.name, 'sha256': sha256(jar.read_bytes()).hexdigest(),
                                                      'framework': VERSION, 'frameworkSha256': embedded}},

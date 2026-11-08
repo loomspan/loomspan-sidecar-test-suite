@@ -74,5 +74,5 @@ def test_probe_and_cleanup_failures_are_reported(tmp_path, monkeypatch):
     assert report['status'] == report['cleanup'] == 'FAIL'
     assert report['phase'] == 'probe'
     assert report['probeFailure'] == {'type': 'AssertionError'}
-    assert report['project'].startswith('pr106-python-standard-')
+    assert report['project'].startswith('sdk-python-standard-')
     assert next(command for command in commands if 'down' in command)[3] == report['project']

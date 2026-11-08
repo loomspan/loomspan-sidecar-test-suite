@@ -1,6 +1,30 @@
 # Project agreement
 
-Updated 2026-11-07. Phases 1 and 2 are complete; Phase 3 remains future work.
+Updated 2026-11-08. Phases 1 and 2 are complete; Phase 3 remains future work.
+
+## Current QA organization (2026-11-08)
+
+This repository is a QA suite and staging ground for complex integration testing,
+organized by capabilities and integration contracts, not PR completion. The user
+approved a proportional reorganization of active entry points and documentation.
+The [coverage map](coverage.md) owns navigation across business regression, SDK
+consumers, security/lifecycle and transport recipes. Existing runners and scenarios
+remain the implementation; no new orchestration framework or coverage expansion is
+required. Fix tracking belongs in the owning product repository.
+
+Verify coherent current artifacts and distinguish selected coverage from whole-suite
+acceptance. Both-host business equivalence does not establish SDK parity: Java's
+business host embeds Framework. Preserve language-appropriate APIs and equivalent
+core behavior and permissions. Provider-free regression is authorized; paid runs,
+commit, push, release, resets and fixture replacement are not.
+
+Preserve credentials, operational data, maintained fixtures and existing evidence.
+Tests may append their documented synthetic records. Use fresh result directories;
+service-commitment checks remain restricted to disposable isolated runtimes.
+Historical decisions below record provenance and do not partition active coverage
+by ticket. This direction supersedes ticket-based ownership of the test inventory.
+
+## Prior decisions and authorization history
 
 ## Destination
 
@@ -332,3 +356,47 @@ policy, business redesign or fixture replacement is part of this direction. This
 work authorizes no paid runs, commit, push or release. Both-host replay verifies
 business equivalence; SDK parity requires the separate SDK coverage. Assess and
 improve result-processing guidance without expanding the SDK API.
+
+
+## Python SDK startup-diagnostics wheel update (2026-11-07)
+
+The user authorized rebuilding, installing and staging the Python SDK wheel with
+PR 10.7 startup diagnostics, followed by provider-free integration verification.
+Preserve existing credentials, signing identity, operational data and maintained
+fixtures. The retained workspace currently lacks its required signing PEM; do not
+create a replacement identity or restart that incomplete runtime. Verify the staged
+wheel in a fresh isolated installation using the documented package/install helpers.
+This authorization includes no paid calls, commit, push or release.
+
+
+## Retained signing-key investigation (2026-11-08)
+
+The user authorized investigation and recovery of the retained signing PEM without
+resetting credentials or data. No verified original was found in the workspace,
+available known backups, or inspected worktrees. Located execution keys belong to
+independently initialized disposable projects and must not be substituted.
+History suggests the retained runtime never provisioned the separate execution key:
+its last recorded smoke predates the change introducing execution signing. This is
+an inference, not proof of deletion or proof that no key ever existed. Both retained
+business stores have 32 assessments, 82 quotes and zero service requests.
+
+No key was generated or restored and the runtime was not restarted. If no further
+original backup is available, the proposed next step is explicitly authorized,
+one-time provisioning of an execution signing key only, preserving existing login
+credentials, databases, issuer/role configuration and Sidecar operational storage.
+Do not reset data, substitute a disposable-project key or rerun full preparation.
+Provider-disabled startup and both-host smoke follow successful provisioning.
+
+
+## Authorized retained execution-signing provisioning (2026-11-08)
+
+The user explicitly authorized creating a new execution-signing key for the
+retained runtime, preserving existing credentials and data, then starting with
+the updated SDK and running provider-free smoke on both hosts. This supersedes
+only the earlier prohibition on provisioning a key and starting the incomplete
+runtime. Provision the missing PEM exclusively; do not replace existing files or
+rerun full preparation. Preserve login credentials, business rows and Sidecar
+operational data. Smoke may add its documented synthetic quote rows but must not
+create service requests. No paid calls, commit, push or release is authorized.
+
+The user additionally authorized a backed-up retained Sidecar database repair: remove the obsolete rest_routes_yaml columns only from the empty configuration_snapshot and management_draft tables and align migration 1/3 checksums with PR 9.2. A backup rehearsal verified the current schema, unchanged application rows, integrity and foreign keys before applying the transactional repair. No database reset is authorized.

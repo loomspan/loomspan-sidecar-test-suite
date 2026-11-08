@@ -22,3 +22,7 @@ specifically authorized, not a standing instruction to reset databases.
 Model cost optimization must include authoring, review and maintenance effort. Do not
 resume tier tuning automatically. Keep claims, hypotheses and observations distinct.
 Update the project agreement when the user settles or changes direction.
+
+Organize maintained coverage by capabilities and integration contracts; consult
+docs/coverage.md for entry points and evidence limits. Fix tracking belongs in the
+owning product repository, not PR-specific suite partitions.

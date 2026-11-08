@@ -1,5 +1,8 @@
 # Running the foundation
 
+Choose checks by [capability and integration coverage](coverage.md). Business replay,
+SDK recipes and isolated commitment verification are complementary entry points.
+
 Use Docker Compose for all five services and the local Python environment for tooling.
 Always use `scripts.environment.compose()` through the provided startup script so the
 runtime, provider-disabled and optional isolated/supplied-artifact overlays are applied.
@@ -111,10 +114,12 @@ output. Each replay creates fresh synthetic assessment/quote rows while preservi
 existing rows. It checks runtime behavior against the accepted reference, not new
 model reasoning or the full service-request workflow. See [the runner guide](runner.md).
 
-In a disposable isolated runtime, run `scripts/verify_sdk_commitment.py --output NEW_DIRECTORY`
+In a disposable isolated runtime, run `scripts/verify_equipment_commitment.py --output NEW_DIRECTORY`
 to check an assessment, exact approval, owner recovery and repeated request handling.
 The check creates one `PENDING_DISPATCH` record per host and records the input
 fixture and contract hashes.
+This is business commitment coverage on the embedded Java and Python/Sidecar hosts,
+not separate Java SDK coverage. The helper was formerly named `verify_sdk_commitment.py`.
 
 ## Skill experiments
 

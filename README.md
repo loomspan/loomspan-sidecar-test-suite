@@ -1,8 +1,10 @@
 # Loomspan integration suites
 
-Phases 1 and 2 are complete. This workspace retains the working equipment-service
-example, equivalent Java/Framework and Python/Sidecar integrations, and the selected
-six-Sol/two-Luna model pack at medium reasoning. Provider access is disabled by default.
+This workspace is a QA suite and staging ground for complex Loomspan integrations.
+Coverage is organized by business capabilities, SDK contracts and deployment recipes,
+not implementation PRs. It retains equivalent Java/Framework and Python/Sidecar
+business applications and the selected six-Sol/two-Luna model pack at medium reasoning.
+Provider access is disabled by default.
 
 The process gathers technical evidence, assesses four service/continuity options,
 compares them and publishes a recommendation. Creating a service request is a separate,
@@ -16,10 +18,11 @@ for the layout, selection and extension contract.
 
 ## Start here
 
+- [Coverage map](docs/coverage.md): capabilities, verification entry points and evidence limits.
 - [Project agreement](docs/project-agreement.md): settled scope and boundaries.
 - [Foundation](docs/foundation.md): architecture, skill ownership and business rules.
 - [Runtime guide](docs/runtime.md): start, build, verify and package both integrations.
-- [SDK integration lane](docs/sdk-lane.md) covers the Java consumers and the installed Python client and FastAPI callback recipes over HTTP, direct HTTPS and paired Caddy mTLS.
+- [SDK integration coverage](docs/sdk-lane.md) covers the Java consumers and the installed Python client and FastAPI callback recipes over HTTP, direct HTTPS and paired Caddy mTLS.
 - [Phase 2 summary](docs/phase2-summary.md): journey, destination and validation limits.
 - [Skill-design lessons](docs/mid-tier-skill-design.md): transferable practices and evidence limits.
 - [Business source pack](docs/equipment-service-source-pack.md): independent fictional records.
@@ -30,10 +33,12 @@ for the layout, selection and extension contract.
 .venv/Scripts/python.exe scripts/start.py
 .venv/Scripts/python.exe scripts/smoke.py
 .venv/Scripts/python.exe -m pytest tests -q
-.venv/Scripts/python.exe scripts/run_suite.py mock
-.venv/Scripts/python.exe scripts/run_suite.py mock --suite typesafe-ai
-.venv/Scripts/python.exe scripts/run_suite.py mock --suite all
+.venv/Scripts/python.exe scripts/run_suite.py mock --suite all --output evidence/NEW_REGRESSION
 ```
+
+`--suite all` runs both business suites, not the separate SDK recipes or isolated
+commitment check. Use the coverage map to select those checks. Phases 1 and 2 are
+completed business-development history, not test-suite partitions.
 
 The smoke check uses both real integrations without model calls. It invokes all eight
 lookup operations and verifies nested approval parsing/business rejection without a

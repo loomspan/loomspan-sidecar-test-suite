@@ -1,5 +1,9 @@
 # Named integration suites
 
+These are business integration boundaries within the repository's wider
+[capability coverage](coverage.md), alongside SDK and deployment checks. A suite
+is not a fix ticket or a PR milestone.
+
 A suite is a coherent example and integration-test boundary. A scenario is a set of
 inputs within that suite; an integration is Java or Sidecar; a mode is mock, evaluate,
 live or capture. The suites are `equipment-service` and `typesafe-ai`. There is still one Java host,
@@ -110,8 +114,9 @@ See [runner](runner.md) for modes, paid authorization and retention.
 This extraction preserves the original eight-skill model assignment, business handoffs
 and frozen reference. It introduces no new reasoning method or cost-optimization claim.
 Synthetic adapter tests check grouping and isolation. TypeSafe adds a second coherent
-example with deterministic protocol coverage; real model judgment in that example
-remains unverified. Phase 3 release-confidence scope remains future work.
+example with deterministic protocol coverage. Its later recorded-response semantic
+review and limits are documented in [TypeSafe coverage](typesafe-ai.md); replay alone
+does not reassess model judgment. Phase 3 release-confidence scope remains future work.
 
 The 2026-10-11 extraction passed the Java package build, 65 provider-free tests,
 both-integration smoke and all eight frozen replay cases (240 checks). All 18 regenerated

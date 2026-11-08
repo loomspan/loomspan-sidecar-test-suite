@@ -35,7 +35,7 @@ def exercise(client, path, port, control, maya, luis, reference):
     issuer = 'equipment-app' if path == 'sidecar' else environment.issuer()
     api = environment.url(port)
     before = records(storage)
-    case_id = f'sdk-commitment-{path}-{uuid4().hex}'
+    case_id = f'equipment-commitment-{path}-{uuid4().hex}'
     key = uuid4().hex
     bound = bind_case(reference, case_id)
     registration = client.post(environment.url(18090, '/control/cases/' + case_id),

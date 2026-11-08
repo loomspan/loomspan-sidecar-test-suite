@@ -1,4 +1,11 @@
-# SDK integration lane
+# SDK integration coverage
+
+These maintained recipes verify SDK and transport capabilities against current
+artifacts, independently of the PR that introduced a behavior. See the
+[coverage map](coverage.md) for their place alongside business regression.
+The Java business host embeds Framework; passing both-host business replay alone
+does not verify Java SDK behavior. Each recipe's report covers only its own checks,
+not every scenario of the other language or full product acceptance.
 
 ## Installed Python reference
 

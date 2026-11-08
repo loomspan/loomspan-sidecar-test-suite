@@ -1,4 +1,8 @@
-# One runner, four modes
+# Business integration runner
+
+This runner owns business scenarios, not the entire repository's verification.
+See the [coverage map](coverage.md) for component checks, deployed smoke, SDK recipes
+and isolated commitment verification. Select scenarios by capability, not by PR.
 
 Use `scripts/run_suite.py`. The four modes below describe `equipment-service` (the default).
 `typesafe-ai` has separate mock and bounded native live adapters; see its section below.
