@@ -72,7 +72,7 @@ def install(app):
         harness.journal('native-request', path=path, caseId=case_id, requestId=request_id,
                         request=body, endpoint=request.url.path)
         if case.get('mode') == 'live':
-            if (body != case.get('nativeRequest') or request.url.path != '/typesafe/' + path + '/v1/systemone'
+            if (body != case.get('nativeRequest') or request.url.path != '/typesafe/' + path + '/api/v1/systemone'
                     or request.headers.get('authorization') != 'Bearer fixture-typesafe-transport'):
                 raise HTTPException(409, 'native live request mismatch')
             return await forward_live(harness, case_id, path, body, request_id)

@@ -42,7 +42,7 @@ def test_suite_results_are_grouped_and_all_run_under_one_lock(tmp_path, monkeypa
         (args.output / 'report.json').write_text(json.dumps({'status': 'REPLAY_PASS', 'runtimeRestored': True}))
         return 0
     monkeypatch.setattr(runner, 'run_selected', run)
-    monkeypatch.setenv('LOOMSPAN_OPENROUTER_API_KEY', 'test-only')
+    monkeypatch.setenv('LOOMSPAN_OPENAI_API_KEY', 'test-only')
     assert runner.main(['evaluate', '--suite', 'all', '--model', 'test/model']) == 0
     assert calls == ['equipment-service', 'other']
     summary = (tmp_path / 'evidence/latest/summary.md').read_text()

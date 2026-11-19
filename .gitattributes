@@ -2,3 +2,4 @@
 fixtures/reference/*.json text eol=lf
 fixtures/reference-namespaced/*.json text eol=lf
 fixtures/typesafe-ai/reference/*.json text eol=lf
+fixtures/reference-responses/*.json text eol=lf

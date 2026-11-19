@@ -28,11 +28,11 @@ def verify(client, api, execution, headers, terminal, case, result, bundle, pref
             result['decisionReview'] = 'CORRECT_ASSESSMENT' if lo <= decision['impactScore'] <= hi else 'INCORRECT_IMPACT'
     if case['name'] == 'reference_evidence_partial_java':
         alternate = client.get(api + '/executions/' + execution + '/impact',
-                               headers=headers, params={'evidenceThreshold': '.75'})
+                               headers=headers, params={'evidenceThreshold': '.95'})
         alternate.raise_for_status()
         result['checks']['explicit threshold override'] = alternate.json()['impactDecision'] == {
-            'status': 'ASSESSED', 'reason': 'SUFFICIENT_EVIDENCE', 'impactScore': 1.,
-            'evidenceProbability': .77, 'evidenceThreshold': .75}
+            'status': 'NEEDS_CLARIFICATION', 'reason': 'INSUFFICIENT_EVIDENCE', 'impactScore': None,
+            'evidenceProbability': case['policyExpected']['evidenceProbability'], 'evidenceThreshold': .95}
         for value in ('NaN', '-0.1', '1.1', 'not-a-number'):
             result['checks']['invalid threshold rejected: ' + value] = client.get(
                 api + '/executions/' + execution + '/impact', headers=headers,

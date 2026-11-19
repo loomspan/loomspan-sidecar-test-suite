@@ -22,6 +22,9 @@ unverified remedy. A desirable rule is not automatically a demonstrated model be
 | --- | --- |
 | Runtime binding and exact publication preserve source values and accepted results | Demonstrated for tested handoffs; preservation does not establish reasoning correctness. |
 | Inspect actual consumer requests to verify delivery | Demonstrated on both integrations; schema documentation alone did not ensure visibility. Presence is not compliance. |
+| Let the executor child build its provider request from business input | The [structured planning fixture](typesafe-ai.md#decisions-skillexecutor-replay) reproduced the complete TypeSafe payload on both hosts with child-owned JSLT. The deterministic plan verifies dispatch and formatting for this contact. Live planning quality requires separate evidence. |
+| Check the full provider result and the parent projection separately when changing executors | Demonstrated in the [TypeSafe fixture replay](typesafe-ai.md#behavior-changes-from-the-core-driver). Forwarding preserved the new envelope and explicit parent bindings preserved the summary. This establishes handling for recorded inputs, not new model judgment. |
+| Name the comparison that establishes partial impact and test it alongside cases with unknown scope | Demonstrated on the [18 reviewed contacts](partial-outage-evidence-review.md). Separating functional observations from tone recovered one normal-operation case lost by the first revision. Transfer to new contacts remains untested. |
 | Separate execution, transport and business review | Demonstrated diagnostic value in this process; automated semantic coverage remains limited. |
 | Freeze accepted responses separately from disposable run evidence | Demonstrated deterministic replay of four accepted cases on both integrations; tests runtime preservation, not fresh model judgment or broader reasoning reliability. |
 | Coherent per-option assessments with shallow generated findings | Promising; useful constraint interactions and valid handoffs were observed, but independent effects of shape and decomposition were not isolated. |
@@ -142,3 +145,49 @@ the branches it consumes. Preserve execution failure as execution failure rather
 turning it into a business assessment. Forwarding and object bindings can deliver
 the same recorded judgments to this policy without chat synthesis. Evidence for the
 current implementation and fresh semantic evaluation is recorded in the TypeSafe guide.
+
+
+## Responses reassessment (2026-11-15)
+
+**Observed, limited to four fixed equipment cases:** on beta.10 with direct OpenAI
+Responses, all-Terra completed all Java cases mechanically, but its final comparator
+introduced false corrections in two. The individual expedited assessor supplied a
+conditional arrival-plus-2-to-4-hour completion estimate; the comparator removed its
+usefulness by inventing an additional elapsed-visit distinction. The human business
+contract treats the offered work estimate as usable for conditional scheduling while
+withholding restoration guarantees. The raw field name `workEstimateHours` is less
+explicit than that contract, which limits generalization of this finding.
+
+**Observed:** all-Luna passed the same four Java cases with caveats, including one
+uncorrected arithmetic error in an option already correctly disqualified by its
+stated times. All-Terra more consistently preserved the source's missing reviewer
+for incomplete (rather than disputed) warranty findings. This is evidence about
+responsibilities and particular outputs, not a universal ranking of the models.
+
+**Additional observed host result:** the all-Luna Sidecar priority case misread
+`fullyCoveredScopeMaximum` as the amount warranty covers rather than the customer's
+maximum exposure if fully covered. Its reviewer endorsed the resulting invented
+conflict in correct $300/$0 figures. Mechanical checks retained the authoritative
+quotes exactly but could not validate that prose interpretation. All-Luna Java's
+four passing cases therefore did not establish host-independent repeatability.
+
+**Transferable lesson:** review can introduce errors as well as catch them. Preserve
+original findings and evaluate a reviewer's corrections against the business contract.
+A schema-valid execution is not semantic acceptance. Choose mixed assignments only
+when responsibility-specific evidence justifies the extra configuration and review
+burden. Compare token usage and maintenance/review effort as well as provider price.
+
+**Limits:** one observation per case, unchanged business prompts, and no controlled
+old-framework comparison. Framework, provider and possibly model revisions differ
+from Phase 2; these results cannot prove the framework caused the earlier need for
+Sol. See [the evaluation record](beta10-evaluation.md) for host confirmation, reviewed
+artifacts, token totals and remaining gates.
+
+
+**Mixed-assignment observation:** five Terra assessments, Sol comparison and two Luna
+coordinators passed all eight case/host reviews with minor caveats. Sol preserved the
+valid timing and financial interpretations and repaired several reviewer-ownership
+overstatements, though not all. One invalid Luna plan dependency was caught before
+execution and corrected by Framework's planning retry, adding a physical request.
+Keep that cost and recovery evidence visible. This supports a candidate assignment,
+not a new universal tier rule or a default promotion; no business prompts were changed.

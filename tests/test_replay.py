@@ -19,7 +19,7 @@ from replay_reference import load_reference, bind_case
 
 
 def request():
-    return {'model': 'model', 'reasoning_effort': 'medium', 'messages': [
+    return {'model': 'model', 'reasoning': {'effort': 'medium'}, 'input': [
         {'role': 'system', 'content': '--- ASSIGNED TASK ---\nID: task\nExact capability/tool: check\n\n--- COMPLETED TASK EVIDENCE ---\n' +
          json.dumps([{'taskId': 'b', 'skillName': 'quote', 'result': '{"cap":78000,"covered":false}'},
                      {'taskId': 'a', 'skillName': 'source', 'result': '{"arrival":"14:00"}'}])},
@@ -30,25 +30,25 @@ def request():
 @pytest.mark.parametrize('change', ['mission', 'evidence', 'task', 'model', 'reasoning', 'extra_message', 'missing_evidence'])
 def test_request_mismatch_rejected(change):
     body = request(); expected = request_contract(body)
-    if change == 'mission': body['messages'][1]['content'] = body['messages'][1]['content'].replace('25', '20')
-    if change == 'evidence': body['messages'][0]['content'] = body['messages'][0]['content'].replace('78000', '48000')
-    if change == 'task': body['messages'][0]['content'] = body['messages'][0]['content'].replace('ID: task', 'ID: other')
+    if change == 'mission': body['input'][1]['content'] = body['input'][1]['content'].replace('25', '20')
+    if change == 'evidence': body['input'][0]['content'] = body['input'][0]['content'].replace('78000', '48000')
+    if change == 'task': body['input'][0]['content'] = body['input'][0]['content'].replace('ID: task', 'ID: other')
     if change == 'model': body['model'] = 'other'
-    if change == 'reasoning': body['reasoning_effort'] = 'low'
-    if change == 'extra_message': body['messages'].append({'role': 'assistant', 'content': '{}'})
-    if change == 'missing_evidence': body['messages'][0]['content'] = 'No completed evidence'
+    if change == 'reasoning': body['reasoning']['effort'] = 'low'
+    if change == 'extra_message': body['input'].append({'role': 'assistant', 'content': '{}'})
+    if change == 'missing_evidence': body['input'][0]['content'] = 'No completed evidence'
     assert not request_matches(body, expected)
 
 
 def test_parallel_evidence_order_and_nested_json_encoding_do_not_change_meaning():
     body = request(); expected = request_contract(body)
-    prefix, raw = body['messages'][0]['content'].split('--- COMPLETED TASK EVIDENCE ---\n')
+    prefix, raw = body['input'][0]['content'].split('--- COMPLETED TASK EVIDENCE ---\n')
     items = json.loads(raw)[::-1]
     for item in items: item['result'] = json.loads(item['result'])
-    body['messages'][0]['content'] = prefix + '--- COMPLETED TASK EVIDENCE ---\n' + json.dumps(items, sort_keys=True)
+    body['input'][0]['content'] = prefix + '--- COMPLETED TASK EVIDENCE ---\n' + json.dumps(items, sort_keys=True)
     assert request_matches(body, expected)
     items.append(items[0])
-    body['messages'][0]['content'] = prefix + '--- COMPLETED TASK EVIDENCE ---\n' + json.dumps(items)
+    body['input'][0]['content'] = prefix + '--- COMPLETED TASK EVIDENCE ---\n' + json.dumps(items)
     assert not request_matches(body, expected)
 
 
@@ -63,11 +63,11 @@ def test_frozen_reference_integrity_unique_requests_and_identity_rebinding():
         assert bound['input']['caseId'] == bound['expected']['caseId'] == 'fresh-case'
         assert all(q['quoteId'].startswith('fresh-case-') for q in bound['expected']['quotes'])
         assert bind_case(bound, case['caseId']) == case
-        assert all(s['response']['usage']['cost'] == 0 for s in bound['steps'])
+        assert all(s['response']['usage']['total_tokens'] == 0 for s in bound['steps'])
         assert all(s['response']['usage']['total_tokens'] == 0 for s in bound['steps'])
 
 
-@pytest.mark.parametrize('file', ['fixtures/reference-namespaced/baseline.json', 'fixtures/business.json', 'config/skills/equipment-service/compareOptions.yaml'])
+@pytest.mark.parametrize('file', ['fixtures/reference-responses/baseline.json', 'fixtures/business.json', 'config/skills/equipment-service/compareOptions.yaml'])
 def test_stale_or_modified_reference_rejected(tmp_path, file):
     shutil.copytree(ROOT / 'fixtures', tmp_path / 'fixtures', ignore=shutil.ignore_patterns('__pycache__'))
     shutil.copytree(ROOT / 'config', tmp_path / 'config')
@@ -144,10 +144,11 @@ def test_fixture_consumes_once_and_never_falls_back_to_provider(tmp_path, monkey
     monkeypatch.setattr(server, 'DATA', tmp_path)
     monkeypatch.setattr(server, 'cases', {})
     monkeypatch.setenv('CONTROL_KEY', 'test-control')
-    monkeypatch.setenv('OPENROUTER_API_KEY', 'present-but-never-used')
+    monkeypatch.setenv('OPENAI_API_KEY', 'present-but-never-used')
     body = request()
     expected = request_contract(body)
-    response = {'choices': [{'message': {'content': '{"ok":true}'}}]}
+    from fixtures.responses import text_response
+    response = text_response('{"ok":true}')
     async def exercise():
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app), base_url='http://fixture') as client:
             monkeypatch.setattr(server.httpx, 'AsyncClient', lambda *a, **k: pytest.fail('Paid fallback attempted'))
@@ -155,11 +156,64 @@ def test_fixture_consumes_once_and_never_falls_back_to_provider(tmp_path, monkey
                 json={'mode': 'replay', 'path': 'java', 'steps': [{'requestContract': expected, 'response': response}]})
             assert registered.status_code == 200
             altered = copy.deepcopy(body)
-            altered['messages'][1]['content'] = altered['messages'][1]['content'].replace('25', '20')
-            assert (await client.post('/model/java/v1/chat/completions', json=altered)).status_code == 409
+            altered['input'][1]['content'] = altered['input'][1]['content'].replace('25', '20')
+            assert (await client.post('/model/java/v1/responses', json=altered)).status_code == 409
             assert server.cases['case-one']['used'] == []
-            assert (await client.post('/model/sidecar/v1/chat/completions', json=body)).status_code == 409
-            actual = await client.post('/model/java/v1/chat/completions', json=body)
+            assert (await client.post('/model/sidecar/v1/responses', json=body)).status_code == 409
+            actual = await client.post('/model/java/v1/responses', json=body)
             assert actual.status_code == 200 and actual.json() == response
-            assert (await client.post('/model/java/v1/chat/completions', json=body)).status_code == 409
+            assert (await client.post('/model/java/v1/responses', json=body)).status_code == 409
     asyncio.run(exercise())
+
+
+def test_responses_content_blocks_and_reasoning_are_matched_strictly():
+    body = request()
+    expected = request_contract(body)
+    for item in body['input']:
+        item['type'] = 'message'
+        item['content'] = [{'type': 'input_text', 'text': item['content']}]
+    assert request_matches(body, expected)
+    body['input'].append({'type': 'reasoning', 'id': 'unexpected'})
+    assert not request_matches(body, expected)
+
+
+def test_retained_recordings_import_without_business_content_changes(monkeypatch):
+    import replay_reference
+    monkeypatch.setattr(replay_reference, 'REFERENCE_DIRECTORY', 'fixtures/reference-namespaced')
+    manifest, cases = load_reference()
+    for name, current in cases.items():
+        original = json.loads((ROOT / 'fixtures/reference-namespaced' / (name + '.json')).read_bytes())
+        assert current['expected'] == original['expected']
+        assert current['input'] == original['input']
+        for old, new in zip(original['steps'], current['steps'], strict=True):
+            assert new['response']['output'][0]['content'][0]['text'] == old['response']['choices'][0]['message']['content']
+            assert new['requestContract'] == {**old['requestContract'], 'model': old['requestContract']['model'].removeprefix('openai/')}
+            assert new['response']['status'] == 'completed'
+            assert new['response']['usage']['total_tokens'] == 0
+
+
+def test_live_gateway_uses_direct_openai_responses(tmp_path, monkeypatch):
+    from fixtures import server
+    monkeypatch.setattr(server, 'DATA', tmp_path)
+    monkeypatch.setattr(server, 'cases', {'case-live': {'mode': 'live', 'path': 'java'}})
+    monkeypatch.setenv('OPENAI_API_KEY', 'private-test-key')
+    original_client = httpx.AsyncClient
+    observed = []
+    def upstream(request):
+        observed.append(request)
+        return httpx.Response(200, json={'id': 'resp_live', 'status': 'completed', 'output': [],
+                                        'usage': {'input_tokens': 4, 'output_tokens': 2}})
+    async def exercise():
+        async with original_client(transport=httpx.ASGITransport(app=server.app), base_url='http://fixture') as client:
+            monkeypatch.setattr(server.httpx, 'AsyncClient',
+                lambda **kwargs: original_client(transport=httpx.MockTransport(upstream), **kwargs))
+            response = await client.post('/model/java/v1/responses',
+                json={'model': 'gpt-6-luna', 'input': 'case-live', 'store': False})
+            assert response.status_code == 200
+    asyncio.run(exercise())
+    assert len(observed) == 1
+    assert str(observed[0].url) == 'https://api.openai.com/v1/responses'
+    assert observed[0].headers['authorization'] == 'Bearer private-test-key'
+    journal = (tmp_path / 'journal.ndjson').read_text()
+    assert 'private-test-key' not in journal
+    assert 'live OpenAI' in journal

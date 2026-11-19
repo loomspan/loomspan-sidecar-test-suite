@@ -1,6 +1,6 @@
 name: tsTriageChoice
 description: Evaluate support-contact judgments; no ticket routing or customer action.
-model: typesafeTriage
+executor: typesafe
 input_schema:
   type: object
   properties:
@@ -10,14 +10,22 @@ input_schema:
   required:
   - context
   additionalProperties: false
-typesafe:
-  state: ${/input/context}
-  questions:
-    department:
-      type: choice
-      instructions: Which support team should review this contact?
-      criteria:
-        billing: Charges, invoices and refunds
-        technical: Product failures
-        delivery: Shipment and delivery problems
-        other: None of the listed teams
+input_transform:
+  language: jslt
+  expression: |
+    {
+      "model": "jev-1.13.0",
+      "state": .context,
+      "questions": {
+        "department": {
+          "type": "choice",
+          "instructions": "Which support team should review this contact?",
+          "criteria": {
+            "billing": "Charges, invoices and refunds",
+            "technical": "Product failures",
+            "delivery": "Shipment and delivery problems",
+            "other": "None of the listed teams"
+          }
+        }
+      }
+    }

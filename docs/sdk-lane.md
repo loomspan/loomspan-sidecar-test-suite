@@ -36,7 +36,7 @@ backends. Reports include artifact identities, observations and cleanup status.
 ## Java reference
 
 This separate provider-free lane builds the actual neighboring Sidecar checkout
-against the developer-installed Framework `1.0.0-beta.9-SNAPSHOT`, locally installs
+against the developer-installed Framework `1.0.0-beta.10-SNAPSHOT`, locally installs
 its Java SDK reactor, and packages both plain-Java and Spring Boot consumers.
 It does not rebuild Framework. Business data, credentials and reference packs are
 outside the SDK projects.

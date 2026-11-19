@@ -264,7 +264,8 @@ def test_public_trust_directory_remains_readable_with_restrictive_umask(tmp_path
     assert (tmp_path / 'execution-trust').stat().st_mode & 0o777 == 0o755
 
 
-def test_public_execution_projection(deployed):
+@pytest.mark.parametrize('producing_skill', [None, 'default-tsTriageStructured'])
+def test_public_execution_projection(deployed, producing_skill):
     start, login, _, _ = deployed
     headers = login('maya', ['ASSESS_EQUIPMENT'])
     poll = '/v1/executions/' + EXECUTION_ID
@@ -279,6 +280,13 @@ def test_public_execution_projection(deployed):
     }, 'events': [{'timestamp': timestamp, 'level': 'WARN', 'type': 'reference',
                    'details': {'nested': [Decimal('1.23456789123456789e350'), {'n': None}]},
                    'frameId': None, 'route': 'default'}]}
+    if producing_skill is not None:
+        failed['failure'] = {
+            'kind': 'OUTPUT_SCHEMA', 'message': "Skill 'example' execution failed.",
+            'producingSkillName': producing_skill,
+            'issues': [{'path': '/repeatContactProbability', 'code': 'type',
+                        'message': 'null found, number expected'}],
+        }
     problems = [(400, {'type': 'about:blank', 'title': 'Bad Request', 'status': 400,
                        'detail': 'Invalid skill input', 'instance': submit, 'issues': [issue]}),
                 (403, {'type': 'about:blank', 'title': 'Forbidden', 'status': 403, 'detail': 'Access Denied'}),
@@ -359,14 +367,15 @@ def test_assessment_outcome_does_not_change_sdk_state(deployed, monkeypatch, rou
     assert saves == [(EXECUTION_ID, 'valid', 'maya'), (EXECUTION_ID, 'invalid', 'maya')]
 
 
-def test_impact_failed_execution_is_distinct_from_failed_read(deployed, monkeypatch):
+@pytest.mark.parametrize('skill', ['tsTriageEvidence', 'tsTriageEvidenceForward', 'tsTriageEvidenceSummary'])
+def test_impact_failed_execution_is_distinct_from_failed_read(deployed, monkeypatch, skill):
     from apps.python.suites.typesafe_ai import api
     start, login, _, _ = deployed
     decisions = []
     monkeypatch.setattr(api, 'decide', lambda answers, threshold: decisions.append((answers, threshold)) or {'decision': 'checked'})
-    skill = next(iter(api.SUPPORTED_SKILLS))
+    result = {'value': 1} if skill == 'tsTriageEvidenceSummary' else {'answers': {'value': 1}}
     base = {'id': EXECUTION_ID, 'skillName': skill, 'status': 'COMPLETED',
-            'createdAt': '2026-11-07T10:00:00Z', 'completedAt': '2026-11-07T10:00:01Z', 'result': '{"value":1}'}
+            'createdAt': '2026-11-07T10:00:00Z', 'completedAt': '2026-11-07T10:00:01Z', 'result': json.dumps(result)}
     bodies = [base, base | {'result': 'malformed'}, base | {'status': 'RUNNING'},
               base | {'status': 'FAILED', 'failure': {'kind': 'SKILL_FAILURE', 'message': 'failed'}}]
     replies = [(200, json.dumps(body).encode()) for body in bodies]

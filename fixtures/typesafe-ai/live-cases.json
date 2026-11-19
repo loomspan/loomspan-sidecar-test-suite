@@ -368,10 +368,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -411,10 +411,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -454,10 +454,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -501,10 +501,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -548,10 +548,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -595,10 +595,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -638,10 +638,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -685,10 +685,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -728,10 +728,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -775,10 +775,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -822,10 +822,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -869,10 +869,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -912,10 +912,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -958,10 +958,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -1012,10 +1012,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -1058,10 +1058,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -1112,10 +1112,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {
@@ -1158,10 +1158,10 @@
         "questions": {
           "impactEvidence": {
             "type": "noul",
-            "instructions": "Does the supplied contact establish the current extent of application functionality well enough to assess functional impact?",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
             "criteria": {
-              "true": "Concrete, mutually consistent current observations identify what works or fails, including an explicit statement that everything works normally or that all functionality is blocked.",
-              "false": "Only vague symptoms or urgency, no application-functionality observations, or unresolved conflicting current reports. Do not infer scope from emotion or assume that missing information means normal operation."
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
             }
           },
           "impact": {

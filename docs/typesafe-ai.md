@@ -11,10 +11,9 @@ Java code lives in `example.suites.typesafeai`; Python code in `suites.typesafe_
 There are no deterministic callbacks or business tables for this suite, so it needs no
 HTTP executor declarations or targets. Existing equipment rows must remain unchanged.
 
-Native leaves under `config/skills/typesafe-ai` use the `typesafe` driver and explicit
-model `jev-1.13.0`. Two ordinary Luna/medium parents demonstrate `output_from` forwarding
-and `output_bindings` assembly. Their local planning fixture selects the required native
-child; the child dispatch requires no second planning call or chat synthesis.
+The 13 leaves under `config/skills/typesafe-ai` use `executor: typesafe` and
+pin `jev-1.13.0`. Five Luna/medium parents exercise forwarding and assembly.
+The fixture planner selects the required child in one local planning call.
 
 For example, `tsTriageFixed` accepts this body through either host's authenticated
 evaluation endpoint:
@@ -31,6 +30,21 @@ JSON descriptions until the native declaration validates the resolved score crit
 
 ## Running and evidence
 
+### Decisions SkillExecutor replay
+
+Both hosts load `ai.loomspan:loomspan-decisions:0.1.0-SNAPSHOT`. Sidecar enables
+its packaged extension with the `typesafe` Spring profile. Each host sets its own
+prefixed fixture endpoint in namespace executor configuration.
+All 13 leaf transforms build native requests from validated business input.
+Both hosts mount the same skill declarations.
+
+Use the [build and startup helpers](runtime.md#building-from-source) with the
+installed JSLT-capable Framework and Decisions artifacts. The
+[Decisions build instructions](../../loomspan-extensions/extensions/decisions/README.md#local-build)
+identify the required JSLT dependency. To stage fresh source,
+run `scripts/stage_suite_workspace.py NEW_DIRECTORY`, then use the staged
+isolation, preparation, build-recording and startup helpers. From that workspace:
+
 ```powershell
 .venv/Scripts/python.exe scripts/run_suite.py mock --suite typesafe-ai --dry-run
 .venv/Scripts/python.exe scripts/run_suite.py mock --suite typesafe-ai
@@ -38,12 +52,11 @@ JSON descriptions until the native declaration validates the resolved score crit
 .venv/Scripts/python.exe scripts/run_suite.py mock --suite all
 ```
 
-There are 49 authored protocol cases, 34 reviewed responses, 14 derived composition
-cases, and 15 authored consumer-policy cases (112 scenarios),
+There are 49 authored protocol cases, 46 reviewed responses, 15 derived composition
+cases, and 15 authored consumer-policy cases (125 scenarios),
 each run through Java and Sidecar by default. The strict
 fixture endpoint checks exact state, questions, model, API path and dummy bearer key.
-Responses are single-use, except explicitly authored retry sequences. Mismatches stop
-the suite; there is no provider fallback. `PROTOCOL_PASS` means the local integration
+Responses are single-use, except explicitly authored retry sequences. Mismatches fail the scenario and the aggregate report; there is no provider fallback. `PROTOCOL_PASS` means the local integration
 contract passed. Reports and trace bundles go to `evidence/latest/typesafe-ai`.
 
 `fixtures/typesafe-ai/cases.json` is an independently authored protocol pack, **not a
@@ -59,15 +72,59 @@ checked on 2026-10-11; moving latest/preview aliases are not used.
 | Substitution | Typed objects/arrays, structured instructions, pointer escaping/indexing, literal escaping, missing paths and invalid embedded objects |
 | Composition | Direct entry, fully bound child dispatch, exact forwarding, assembled consumer schema, missing/invalid bound values |
 | Fidelity | Empty/extended answers, unknown fields, missing/null/non-object answers, malformed JSON, complete provider envelope in traces |
-| Usage | Exact zero and valid usage; absent, partial, fractional and negative usage precision |
-| Transport | Preserved endpoint prefix, terminal 400/401/403/422, retry recovery/exhaustion/disabled policy, read timeout |
+| Usage | Exact zero and valid usage; absent, partial, fractional and negative native usage; separate Framework totals |
+| Transport | Preserved endpoint prefix, terminal 400/401/403/422, retry recovery and exhaustion, fixed retry policy and delayed success |
 | Boundaries | Unauthenticated entry, denied role, invalid host input, no equipment data changes |
 
-Local Framework criteria rules and native answer passthrough are deliberately tested
-separately from a consuming schema. For example, singleton/null score criteria accepted
-locally are not a claim that the real service accepts them. Unknown answer fields and
-out-of-range values may pass through a native leaf; the assembled result has its own
-contract. See the pinned Framework guidance and [TypeSafe API](https://docs.typesafe.ai/api).
+The [JSLT fixture replay](../evidence/jslt-full-fixture-replay/typesafe-ai/summary.md) passed all 250 executions and all 5,208 checks through embedded Java and the public Sidecar execution API.
+
+### Behavior changes from the core driver
+
+* Direct and forwarded results contain the complete native envelope, including
+  unknown fields and usage. Summary parents bind under `/answers` and retain their
+  original public shape. The impact view consumes the appropriate shape. A missing,
+  null, array or string `answers` passes through a direct leaf unchanged. Required
+  parent bindings still reject missing or invalid values.
+* The structured child authors its question and note in JSLT. The
+  `structured_parent` fixture invokes `tsTriageStructuredForward` with context,
+  policy, candidates and parameters. The parent binds those four values and
+  forwards the child's full provider envelope. The trace and gateway checks
+  compare the complete request with the original `structured_substitution`
+  fixture, including nulls and literal `${...}` text. A non-scalar message
+  fails the child transform before transport and is reported as a failed execution.
+* Case-distinct Choice keys reach transport. The collision case uses the existing
+  terminal 400 response to verify that boundary. A null Score level fails locally at
+  `questions.impact.criteria[0]` before any request.
+* A 529 retries up to three total attempts by default. The retry-disabled case
+  uses the single original 529 on `tsTriageFixed`, which sets `config.max_attempts: 1`. The original
+  two-second delay now succeeds. It previously exceeded a 500 ms connection timeout.
+  This fixture does not exercise the extension's 30-second inactivity timeout.
+* Executor diagnostics record each physical request, decoded success, HTTP failure
+  and scheduled retry. Malformed success data remains in the fixture journal, with
+  a decoding error in the trace. Provider usage is retained exactly, including
+  invalid or missing values. Framework totals account only for the fixture planner.
+
+The authored and reviewed fixture files remain unchanged. The catalog adapter
+declares the new expected outcomes and transport sequences separately.
+
+The [full executor replay](../evidence/typesafe-executor-full-final/typesafe-ai/summary.md)
+passed all 112 scenarios on each host and all 4,592 checks. The evidence bundle
+contains the original fixture files, per-case requests, responses, traces and
+application results. The run used the Maven-verified Sidecar and local providers
+with upstream access disabled.
+
+The subsequent [live executor review](typesafe-executor-live-review.md) covers
+all 26 predeclared contacts on both hosts with the real TypeSafe API.
+The [partial-outage follow-up](partial-outage-evidence-review.md) records both
+question revisions and all 18 evidence contacts. Current evidence replays
+use the 36 responses to the final question. The original 34-response pack
+is preserved, and its 10 unaffected primitive and mixed responses remain active.
+
+
+The executor validates the resolved request locally. The fixture exercises its accepted
+and rejected criteria. Real service acceptance requires a separate evaluation.
+Unknown answer fields and out-of-range values can pass through a leaf. A consuming
+parent enforces its own schema.
 
 ## Limits and next step
 

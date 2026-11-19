@@ -3,11 +3,22 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.client import HTTPConnection
 import json
+import uuid
 import os
 import socket
 import threading
 import time
 from pathlib import Path
+
+
+def text_response(content, model="fixture", ident=None, input_tokens=1, output_tokens=1):
+    return {"id": ident or "resp_" + uuid.uuid4().hex, "object": "response",
+            "created_at": 0, "status": "completed", "model": model,
+            "output": [{"id": "msg_fixture", "type": "message", "role": "assistant",
+                        "status": "completed",
+                        "content": [{"type": "output_text", "text": content, "annotations": []}]}],
+            "usage": {"input_tokens": input_tokens, "output_tokens": output_tokens,
+                      "total_tokens": input_tokens + output_tokens}}
 
 
 class FixtureServer(ThreadingHTTPServer):
@@ -62,14 +73,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in (
-            "/v1/chat/completions",
+            "/v1/responses",
             "/fail",
             "/effect",
             "/shutdown/reset",
             "/shutdown/release",
             "/callbacks/identity",
             "/callbacks/detail",
-            "/planner/chat/completions",
+            "/planner/responses",
         ):
             self.respond(404, {"error": "unknown endpoint"})
             return
@@ -104,7 +115,7 @@ class Handler(BaseHTTPRequestHandler):
             self.server.detail.set()
             self.respond(200, {"detail": "fixture"})
             return
-        if self.path == "/planner/chat/completions":
+        if self.path == "/planner/responses":
             responses = [
                 {
                     "capabilityName": "default-shutdownPlanner",
@@ -147,27 +158,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             self.respond(
                 200,
-                {
-                    "id": "shutdown-fixture",
-                    "object": "chat.completion",
-                    "created": 0,
-                    "model": "fixture",
-                    "choices": [
-                        {
-                            "index": 0,
-                            "message": {
-                                "role": "assistant",
-                                "content": json.dumps(responses[index]),
-                            },
-                            "finish_reason": "stop",
-                        }
-                    ],
-                    "usage": {
-                        "prompt_tokens": 1,
-                        "completion_tokens": 1,
-                        "total_tokens": 2,
-                    },
-                },
+                text_response(json.dumps(responses[index]), "fixture"),
             )
             if index == 3:
                 self.server.finished.set()
@@ -184,24 +175,7 @@ class Handler(BaseHTTPRequestHandler):
             self.server.requests += 1
         self.respond(
             200,
-            {
-                "id": "sdk-fixture",
-                "object": "chat.completion",
-                "created": 0,
-                "model": "sdk-fixture",
-                "choices": [
-                    {
-                        "index": 0,
-                        "message": {"role": "assistant", "content": "fixture result"},
-                        "finish_reason": "stop",
-                    }
-                ],
-                "usage": {
-                    "prompt_tokens": 1,
-                    "completion_tokens": 1,
-                    "total_tokens": 2,
-                },
-            },
+            text_response("fixture result", "sdk-fixture"),
         )
 
 
@@ -445,9 +419,9 @@ class LocalHandler(Handler):
             self.respond(200, {})
             return
         routes = (
-            "/model/chat/completions",
-            "/block/chat/completions",
-            "/callback/chat/completions",
+            "/model/responses",
+            "/block/responses",
+            "/callback/responses",
             "/effect",
             "/release",
             "/reset",
@@ -483,7 +457,7 @@ class LocalHandler(Handler):
                 self.server.effects += 1
             self.respond(200, {"effect": "recorded"})
             return
-        if self.path == "/callback/chat/completions":
+        if self.path == "/callback/responses":
             with self.server.lock:
                 index = self.server.planner_step
                 self.server.planner_step += 1
@@ -525,32 +499,12 @@ class LocalHandler(Handler):
                 return
             self.respond(
                 200,
-                {
-                    "id": "local-callback-fixture",
-                    "object": "chat.completion",
-                    "created": 0,
-                    "model": "fixture",
-                    "choices": [
-                        {
-                            "index": 0,
-                            "message": {
-                                "role": "assistant",
-                                "content": json.dumps(content),
-                            },
-                            "finish_reason": "stop",
-                        }
-                    ],
-                    "usage": {
-                        "prompt_tokens": 1,
-                        "completion_tokens": 1,
-                        "total_tokens": 2,
-                    },
-                },
+                text_response(json.dumps(content), "fixture"),
             )
             return
         with self.server.lock:
             self.server.models += 1
-        if self.path == "/block/chat/completions":
+        if self.path == "/block/responses":
             self.server.entered.set()
             if Path("/barrier").is_dir():
                 Path("/barrier/entered").touch()
@@ -568,24 +522,7 @@ class LocalHandler(Handler):
                 return
         self.respond(
             200,
-            {
-                "id": "local-fixture",
-                "object": "chat.completion",
-                "created": 0,
-                "model": "fixture",
-                "choices": [
-                    {
-                        "index": 0,
-                        "message": {"role": "assistant", "content": "fixture result"},
-                        "finish_reason": "stop",
-                    }
-                ],
-                "usage": {
-                    "prompt_tokens": 1,
-                    "completion_tokens": 1,
-                    "total_tokens": 2,
-                },
-            },
+            text_response("fixture result", "fixture"),
         )
 
 

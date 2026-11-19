@@ -12,7 +12,7 @@ authenticated action requiring explicit approval; assessment never books service
 
 The workspace hosts named integration suites in one Java app and one Python/Sidecar
 app. `equipment-service` retains the accepted business example; `typesafe-ai` exercises
-native Choice, Noul and Score through customer-support triage. See [TypeSafe coverage](docs/typesafe-ai.md)
+the Decisions TypeSafe SkillExecutor for Choice, Noul and Score through customer-support triage. See [TypeSafe coverage](docs/typesafe-ai.md)
 and [suite boundaries](docs/suites.md)
 for the layout, selection and extension contract.
 
@@ -52,24 +52,28 @@ the two Java runtime packages. A separate commitment check uses frozen assessmen
 responses and writes one synthetic pending service request per host in a disposable
 runtime.
 
-The selected pack passed a four-case Java confirmation and one unchanged repeat:
+In the historical Phase 2 evaluation, the selected pack passed a four-case Java
+confirmation and one unchanged repeat:
 eight business passes with minor caveats, 216 structural checks and 120 valid JSON
 responses without schema corrections. Combined reported cost was $1.437386975.
 This is bounded evidence for the reference process, not broad production reliability.
-Paid Sidecar and full service-request regression remain outside that validation.
+Paid Sidecar and full service-request regression were outside that historical validation.
+The [beta.10 evaluation record](docs/beta10-evaluation.md) covers the subsequent direct
+OpenAI Responses migration, fresh Java/Sidecar model comparisons and remaining gates.
 
 Historical results, traces, diagnostic skills and one-off experiment helpers have
 been retired after an external verified recovery snapshot. Ordinary operation does
 not depend on them. Phase 3 and additional mid-level examples require separate scope.
 
 The final accepted Sol/Luna responses are retained separately as maintained
-[deterministic fixtures](fixtures/reference-namespaced/README.md). `mock` runs all four cases on
+[deterministic fixtures](fixtures/reference-responses/README.md). `mock` runs all four cases on
 both real integrations, with zero paid calls, and checks the published results against
 the frozen reference. This verifies runtime regression behavior, not new model judgment.
 
-The TypeSafe suite uses 49 authored protocol fixtures and a separate
-[reviewed pack of 34 real responses](fixtures/typesafe-ai/reference/README.md), pinned
-`jev-1.13.0`, and Framework `1.0.0-beta.9-SNAPSHOT` in both hosts. Its mock results test
+The TypeSafe suite uses 49 authored protocol fixtures, 10 primitive and mixed
+responses from the [original reviewed pack](fixtures/typesafe-ai/reference/README.md),
+and 36 [reviewed evidence responses](docs/partial-outage-evidence-review.md), pinned
+`jev-1.13.0`, and Framework `1.0.0-beta.10-SNAPSHOT` in both hosts. Its mock results test
 integration fidelity; the linked review records semantic acceptance and limits.
 The example also exposes an [application impact policy](docs/typesafe-ai.md#application-impact-policy)
 that requests clarification when evidence is insufficient, plus parent-composition tests

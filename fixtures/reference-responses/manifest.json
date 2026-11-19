@@ -1,0 +1,56 @@
+{
+  "formatVersion": 2,
+  "sourceRunId": "81f098ee28ca48e394996c78043c0fad",
+  "sourceIntegration": "java",
+  "sourceBundleSha256": "4bb5522877014289c6a6f398ee2a06a97d2623ed52cba5758d25eece7eb1c9d2",
+  "sourceReportSha256": "38cc63fda4ca059f5f3a6b668a9a9ff63757724db0fbb29538dea036407f11c5",
+  "businessStatus": "BUSINESS_PASS_WITH_MINOR_CAVEATS",
+  "reasoning": "medium",
+  "acceptanceBasis": "Assistant review of complete published assessments and option findings against the unchanged synthetic business facts and predeclared rubric.",
+  "nonBlockingCaveats": [
+    "Incomplete-but-undisputed warranty reviewer ownership remains a source gap.",
+    "Conservative hedge recommendations with unspecified risk preference.",
+    "Java capacity-shortfall primary ranking differs from reference, but shortfall and conditional acceptance are explicit."
+  ],
+  "limits": [
+    "One observation per host/scenario, not a reliability estimate.",
+    "Provider and framework changed together; no causal attribution.",
+    "Accepted historical fixtures remain unchanged."
+  ],
+  "scenarios": [
+    "baseline",
+    "priority",
+    "capacity_shortfall",
+    "later_start"
+  ],
+  "skillModels": {
+    "assessEquipment": "gpt-6-sol",
+    "assessExpeditedFeasibility": "gpt-6-sol",
+    "assessLoanerFeasibility": "gpt-6-sol",
+    "assessReplacementFeasibility": "gpt-6-sol",
+    "assessStandardFeasibility": "gpt-6-sol",
+    "compareOptions": "gpt-6-sol",
+    "planResolution": "gpt-6-luna",
+    "resolveEquipment": "gpt-6-luna"
+  },
+  "skillContracts": {
+    "assessEquipment": "14b0548b75ea33bce5f530884b44dd90914a67c48f1eb99b713e55b183bb0903",
+    "assessExpeditedFeasibility": "85280eaef73f27f1173d4342eb2f294bcf1527897f9557a4230ec2b6451ba6fd",
+    "assessLoanerFeasibility": "14c50d3c462beb581338f964e94281f20c47a8f2dd416271e6354a83203128d0",
+    "assessReplacementFeasibility": "d4e0b73aa5d384423150c0456ed487d1d0b85ee7cbce352d5b6c85c3f5dec382",
+    "assessStandardFeasibility": "f4970eb57b71a5f1d2d6ae405e337fdd5c9ebe96671cc6996851438359834262",
+    "compareOptions": "5dcb33998366ee3b1c72dccb476c910cef049e20e5f161076ef425e5c293615a",
+    "planResolution": "9c8bbfe8f801afb177f93a4d6f1c98b3ef920dc60dde8eea0e70ab012c5ae2fc",
+    "resolveEquipment": "84b237c576783e9d27f7bfe0fe9fd723077f576d785afb43157cf082a19a35af"
+  },
+  "sourceHashes": {
+    "fixtures/base-case.json": "7d1f50eddbd751861a7fa4bda5d023a1e147c1d50677849ce057938805a7bdb9",
+    "fixtures/business.json": "65539841473b81c9ef7a1a32aca64e894b5e6070aaa8e635d189e39b0fd7597c"
+  },
+  "files": {
+    "baseline.json": "58e2a3f60c242b82a22987a07629e397f7f47c4b476af7a481dbad16a2d0242e",
+    "priority.json": "51dc6fcb7ff03e55494fe85d9c18502b705ab92b71c0324e85476899b8f49720",
+    "capacity_shortfall.json": "0673546c7858b104143fd743e2dffbd8a2d4f58a66516ca6ac21c07fb94aa1c1",
+    "later_start.json": "b818dfcd6488806244a5a917d01d0ed0b88a5f59400f1a2af47018062ba82c1d"
+  }
+}

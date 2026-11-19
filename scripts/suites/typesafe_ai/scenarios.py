@@ -20,24 +20,55 @@ def load_protocol(root=ROOT):
     return {'scenarios': [c['name'] for c in cases], 'fixtureOrigin': pack['origin']}, cases
 
 
+def reviewed_pack(directory):
+    review = json.loads((directory / 'review.json').read_bytes())
+    raw = (directory / 'cases.json').read_bytes()
+    if (review['status'] != 'ACCEPTED_BY_DELEGATED_REVIEW'
+            or hashlib.sha256(raw).hexdigest() != review['casesSha256']):
+        raise ValueError('TypeSafe accepted reference review/checksum mismatch')
+    pack = json.loads(raw)
+    if pack['model'] != 'jev-1.13.0' or pack['origin'] != 'reviewed-live-typesafe':
+        raise ValueError('Unexpected accepted TypeSafe provenance/model')
+    accepted = pack['cases']
+    if not accepted or {c['name'] for c in accepted} != set(review['accepted']):
+        raise ValueError('Unreviewed TypeSafe reference case')
+    return accepted, review
+
+
 def load(root=ROOT):
     manifest, cases = load_protocol(root)
+    # The recorded wire payloads stay independent of the executor declarations.
+    # Version-specific expectations use the original responses, including errors.
+    bad_request = next(c['responses'] for c in cases if c['name'] == 'http_400')
+    for case in cases:
+        name = case['name']
+        if name == 'boundary_singleton_null':
+            case['outcome'] = 'FAILED'
+            case['responses'] = []
+        elif name == 'case_collision':
+            # Case-distinct keys now reach the provider. Use the pack's terminal 400.
+            case['responses'] = copy.deepcopy(bad_request)
+        elif name in {'missing_answers', 'null_answers', 'array_answers', 'string_answers', 'read_timeout'}:
+            case['outcome'] = 'COMPLETED'
+            case['expected'] = case['responses'][0]['body'].get('answers')
+    structured = copy.deepcopy(next(c for c in cases if c['name'] == 'structured_substitution'))
+    structured.update(name='structured_parent', skill='tsTriageStructuredForward',
+                      childSkill='tsTriageStructured', parent=True)
+    structured['coverage'].append('planning-structured-transform')
+    cases.append(structured)
+    manifest['scenarios'].append(structured['name'])
     directory = root / 'fixtures/typesafe-ai/reference'
     if directory.exists():
-        review = json.loads((directory / 'review.json').read_bytes())
-        raw = (directory / 'cases.json').read_bytes()
-        if (review['status'] != 'ACCEPTED_BY_DELEGATED_REVIEW'
-                or hashlib.sha256(raw).hexdigest() != review['casesSha256']):
-            raise ValueError('TypeSafe accepted reference review/checksum mismatch')
-        pack = json.loads(raw)
-        if pack['model'] != 'jev-1.13.0' or pack['origin'] != 'reviewed-live-typesafe':
-            raise ValueError('Unexpected accepted TypeSafe provenance/model')
-        accepted = pack['cases']
-        if not accepted or {c['name'] for c in accepted} != set(review['accepted']):
-            raise ValueError('Unreviewed TypeSafe reference case')
-        expectations = json.loads((root / 'fixtures/typesafe-ai/policy-reference-expectations.json').read_bytes())
-        for c in accepted:
-            if c['name'] in expectations: c['policyExpected'] = expectations[c['name']]
+        previous, _ = reviewed_pack(directory)
+        revised, review = reviewed_pack(directory.parent / 'reference-partial-outage')
+        accepted = [c for c in previous if c['skill'] != 'tsTriageEvidence']
+        for c in revised:
+            if c['skill'] != 'tsTriageEvidence':
+                raise ValueError('Expected a scoped evidence replay case')
+            c['policyExpected'] = review['accepted'][c['name']]['policyExpected']
+        if not {c['name'] for c in previous if c['skill'] == 'tsTriageEvidence'} <= {c['name'] for c in revised}:
+            raise ValueError('Missing evidence regression case after question revision')
+        accepted += revised
         cases += accepted
         # Derived scenarios keep the accepted pack immutable. Expected assembly is
         # an explicit test contract; planner replies are still authored locally.

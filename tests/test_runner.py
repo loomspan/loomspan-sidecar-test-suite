@@ -31,7 +31,7 @@ def root(tmp_path, monkeypatch):
 
 def test_mock_and_preview_never_touch_runtime(monkeypatch, capsys):
     monkeypatch.setattr(runner, 'ready', lambda: pytest.fail('Must not access runtime'))
-    monkeypatch.delenv('LOOMSPAN_OPENROUTER_API_KEY', raising=False)
+    monkeypatch.delenv('LOOMSPAN_OPENAI_API_KEY', raising=False)
     assert runner.main(['mock', '--dry-run']) == 0
     preview = json.loads(capsys.readouterr().out)
     assert preview['paidCalls'] == 0 and len(preview['scenarios']) == 4
@@ -43,7 +43,7 @@ def test_mock_and_preview_never_touch_runtime(monkeypatch, capsys):
 
 
 def test_preflight_requires_model_key_and_evaluate_only_path(root, monkeypatch):
-    monkeypatch.delenv('LOOMSPAN_OPENROUTER_API_KEY', raising=False)
+    monkeypatch.delenv('LOOMSPAN_OPENAI_API_KEY', raising=False)
     for args in [['evaluate'], ['evaluate', '--model', 'test/model'], ['live', '--path', 'java', '--model', 'test/model']]:
         with pytest.raises(SystemExit) as error:
             runner.main(args)
@@ -57,7 +57,7 @@ def test_overlay_changes_only_model_settings_and_never_authored_files(root, reas
     directory.mkdir()
     file = runner.make_overlay(directory, ['java', 'sidecar'], 'test/model', reasoning)
     overlay = yaml.safe_load(file.read_bytes())
-    assert '${LOOMSPAN_OPENROUTER_API_KEY' in overlay['services']['fixtures']['environment']['OPENROUTER_API_KEY']
+    assert '${LOOMSPAN_OPENAI_API_KEY' in overlay['services']['fixtures']['environment']['OPENAI_API_KEY']
     for name in ['java', 'sidecar']:
         current = yaml.safe_load((directory / (name + '.yaml')).read_bytes())
         original = yaml.safe_load(before[root / 'config' / (name + '.yaml')])
@@ -294,7 +294,7 @@ def test_cli_publishes_report_and_restores_without_external_services(root, monke
         (root / name).parent.mkdir(parents=True, exist_ok=True)
         (root / name).write_text('{}')
     (root / '.runtime/secrets.json').write_text(json.dumps({'control': 'private-control-value', 'observer': 'private-observer-value'}))
-    monkeypatch.setenv('LOOMSPAN_OPENROUTER_API_KEY', 'private-provider-value')
+    monkeypatch.setenv('LOOMSPAN_OPENAI_API_KEY', 'private-provider-value')
     monkeypatch.setattr(runner, 'ready', lambda: None)
     monkeypatch.setattr(runner, 'require_offline_provider', lambda: True)
     monkeypatch.setattr(runner, 'verify_mounted', lambda *a: None)
@@ -372,3 +372,33 @@ def test_trial_overrides_replace_selected_pack_aliases(root):
     config = yaml.safe_load((directory / 'java.yaml').read_bytes())
     assert config['loomspan']['models'][generated['model']]['provider-model'] == 'test/whole-tree'
     assert yaml.safe_load(skill.read_bytes())['model'] == 'coordination'
+
+
+def test_responses_usage_preserves_unknown_cost_and_token_totals():
+    events = [{'event': 'model-request'}, {'event': 'model-response', 'response': {
+        'usage': {'input_tokens': 23, 'output_tokens': 17,
+                  'output_tokens_details': {'reasoning_tokens': 11}}}}]
+    observed = runner.usage(events, [])
+    assert observed['input_tokens'] == 23
+    assert observed['output_tokens'] == 17
+    assert observed['reasoningTokens'] == 11
+    assert observed['cachedInputTokens'] is None
+    assert observed['reportedCost'] is None
+
+
+def test_mounted_configuration_reads_expected_files_in_one_call(monkeypatch):
+    import io
+    import tarfile
+    import model_profile
+    data = io.BytesIO()
+    with tarfile.open(fileobj=data, mode='w') as archive:
+        for name, content in [('runtime.yaml', b'loomspan: {}'), ('skills/example/a.yaml', b'name: a')]:
+            info = tarfile.TarInfo(name)
+            info.size = len(content)
+            archive.addfile(info, io.BytesIO(content))
+    calls = []
+    monkeypatch.setattr(model_profile.target_env, 'execute', lambda *args: list(args))
+    monkeypatch.setattr(model_profile.subprocess, 'check_output', lambda args: calls.append(args) or data.getvalue())
+    assert model_profile.mounted_configuration('java') == {
+        'runtime.yaml': b'loomspan: {}', 'skills/example/a.yaml': b'name: a'}
+    assert len(calls) == 1

@@ -1,6 +1,6 @@
 name: tsTriageStructuredLive
 description: Evaluate support-contact judgments; no ticket routing or customer action.
-model: typesafeTriage
+executor: typesafe
 input_schema:
   type: object
   properties:
@@ -22,26 +22,22 @@ input_schema:
   - candidates
   - parameters
   additionalProperties: false
-typesafe:
-  state: ${/input/context}
-  questions:
-    department:
-      type: choice
-      instructions:
-        question: Which support team should review this contact?
-        policy: ${/input/policy}
-      criteria: ${/input/candidates}
-    repeat:
-      type: noul
-      instructions:
-      - Does the contact describe a previous support attempt?
-      - Consider only the supplied contact and its history.
-      criteria:
-        'true': Previous support attempt is described
-        'false': No previous attempt is described
-    impact:
-      type: score
-      instructions:
-        question: Rate the reported loss of functionality.
-        guidance: Do not infer detailed symptoms absent from the contact.
-      criteria: ${/input/parameters/levels}
+input_transform:
+  language: jslt
+  expression: |
+    {
+      "model": "jev-1.13.0",
+      "state": .context,
+      "questions": {
+        "department": {"type": "choice", "instructions": {
+          "question": "Which support team should review this contact?", "policy": .policy
+        }, "criteria": .candidates},
+        "repeat": {"type": "noul", "instructions": [
+          "Does the contact describe a previous support attempt?", "Consider only the supplied contact and its history."
+        ], "criteria": {"true": "Previous support attempt is described", "false": "No previous attempt is described"}},
+        "impact": {"type": "score", "instructions": {
+          "question": "Rate the reported loss of functionality.",
+          "guidance": "Do not infer detailed symptoms absent from the contact."
+        }, "criteria": .parameters.levels}
+      }
+    }

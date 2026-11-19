@@ -45,6 +45,8 @@ public class TypeSafeApi {
             Object answers;
             try { answers = JsonMapper.builder().build().readValue((String)execution.get("result"), Object.class); }
             catch (Exception e) { answers = null; }
+            if (!"tsTriageEvidenceSummary".equals(execution.get("skillName")))
+                answers = answers instanceof Map<?, ?> envelope ? envelope.get("answers") : null;
             view.put("impactDecision", ImpactPolicy.decide(answers, threshold));
         }
         return view;

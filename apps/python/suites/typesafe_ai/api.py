@@ -38,5 +38,7 @@ async def impact(execution_id: str, evidenceThreshold: str = '0.80', caller=Depe
     if execution.status == 'COMPLETED':
         try: answers = json.loads(execution.result)
         except (ValueError, TypeError): answers = None
+        if execution.skill_name != 'tsTriageEvidenceSummary':
+            answers = answers.get('answers') if isinstance(answers, dict) else None
         outcome['impactDecision'] = decide(answers, threshold)
     return ExecutionResponse(execution_view(execution) | outcome)

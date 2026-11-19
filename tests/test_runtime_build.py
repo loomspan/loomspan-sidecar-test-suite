@@ -15,7 +15,7 @@ from install_runtime import verify_inputs
 import baseline as runtime_baseline
 import record_build
 
-VERSION = '1.0.0-beta.9-SNAPSHOT'
+VERSION = '1.0.0-beta.10-SNAPSHOT'
 WHEEL = 'loomspan_sdk-0.1.0.dev0-py3-none-any.whl'
 
 

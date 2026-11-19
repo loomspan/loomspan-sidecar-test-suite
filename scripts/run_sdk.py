@@ -180,7 +180,7 @@ def artifact_identity(checkout):
             for name in archive.namelist()
             if (match := re.fullmatch(pattern, name))
         ]
-    if versions != ["1.0.0-beta.9-SNAPSHOT"]:
+    if versions != ["1.0.0-beta.10-SNAPSHOT"]:
         raise LaneFailure("unexpected-framework-version")
     sdk = []
     for module in ("core", "spring-boot-starter"):
@@ -225,7 +225,7 @@ def preflight(checkout):
     namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
     if (
         root.findtext("m:properties/m:loomspan.version", namespaces=namespace)
-        != "1.0.0-beta.9-SNAPSHOT"
+        != "1.0.0-beta.10-SNAPSHOT"
     ):
         raise LaneFailure("unexpected-framework-pin")
     maven = shutil.which("mvn")

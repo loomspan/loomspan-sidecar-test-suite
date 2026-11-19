@@ -15,7 +15,7 @@ from smoke import ROOT, records, require_offline_provider, wait_outcome
 
 
 def fixture_hashes():
-    roots = ['fixtures/reference', 'fixtures/reference-namespaced', 'fixtures/typesafe-ai',
+    roots = ['fixtures/reference-responses', 'fixtures/reference', 'fixtures/reference-namespaced', 'fixtures/typesafe-ai',
              'config/skills', 'config/executor-skills']
     files = [ROOT / 'fixtures/business.json']
     for directory in roots:

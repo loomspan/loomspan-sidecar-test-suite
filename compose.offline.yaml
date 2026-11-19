@@ -2,6 +2,6 @@
 services:
   fixtures:
     environment:
-      OPENROUTER_API_KEY: ""
+      OPENAI_API_KEY: ""
       LOOMSPAN_TYPESAFE_API_KEY: ""
       TYPESAFE_LIVE_RUN: ""

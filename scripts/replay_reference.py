@@ -3,9 +3,12 @@ import hashlib
 import json
 from pathlib import Path
 import yaml
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fixtures.responses import text_response
 
 ROOT = Path(__file__).resolve().parents[1]
-REFERENCE_DIRECTORY = 'fixtures/reference-namespaced'
+REFERENCE_DIRECTORY = 'fixtures/reference-responses'
 
 
 def sha(raw):
@@ -26,7 +29,7 @@ def contract_hash(raw):
 def load_reference(root=ROOT):
     directory = root / REFERENCE_DIRECTORY
     manifest = json.loads((directory / 'manifest.json').read_bytes())
-    if manifest['formatVersion'] != 1 or manifest['businessStatus'] != 'BUSINESS_PASS_WITH_MINOR_CAVEATS':
+    if manifest['formatVersion'] not in (1, 2) or manifest['businessStatus'] != 'BUSINESS_PASS_WITH_MINOR_CAVEATS':
         raise ValueError('Unapproved or unsupported replay reference')
     for name, expected in manifest['files'].items():
         file = directory / name
@@ -42,9 +45,23 @@ def load_reference(root=ROOT):
         models = yaml.safe_load((root / 'config' / (host + '.yaml')).read_bytes())['loomspan']['models']
         for name, expected in manifest['skillModels'].items():
             skill = yaml.safe_load((root / 'config/skills/equipment-service' / (name + '.yaml')).read_bytes())
-            if models[skill['model']]['provider-model'] != expected or skill.get('thinking_level') != manifest['reasoning']:
+            if models[skill['model']]['provider-model'] != expected.removeprefix('openai/') or skill.get('thinking_level') != manifest['reasoning']:
                 raise ValueError('Reference model assignment changed: ' + host + '/' + name)
-    return manifest, {name: json.loads((directory / (name + '.json')).read_bytes()) for name in manifest['scenarios']}
+
+    # Import the accepted historical wire recording without changing its files,
+    # business JSON content, request evidence, or expected final result.
+    references = {}
+    for name in manifest['scenarios']:
+        reference = json.loads((directory / (name + '.json')).read_bytes())
+        for step in reference['steps']:
+            step['requestContract']['model'] = step['requestContract']['model'].removeprefix('openai/')
+            old = step['response']
+            if manifest['formatVersion'] == 1:
+                step['response'] = text_response(old['choices'][0]['message']['content'],
+                    old['model'].removeprefix('openai/'), old['id'])
+        references[name] = reference
+    manifest = {**manifest, 'skillModels': {k: v.removeprefix('openai/') for k,v in manifest['skillModels'].items()}}
+    return manifest, references
 
 
 def bind_case(reference, case_id):

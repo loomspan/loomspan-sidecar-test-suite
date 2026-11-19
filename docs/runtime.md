@@ -33,7 +33,7 @@ under `.runtime`. Never print credentials or delete databases during ordinary cl
 ## Building from source
 
 Prerequisites include Docker, Java 21+, Maven, Python 3.13, uv and the developer-installed
-Framework `1.0.0-beta.9-SNAPSHOT`. Use the matching local Framework documentation.
+Framework `1.0.0-beta.10-SNAPSHOT` and Decisions `0.1.0-SNAPSHOT`. Use the matching local Framework documentation.
 The suite consumes the current neighboring Sidecar checkout and its tested dependency;
 ordinary builds do not rebuild Framework or compare its source revision/artifact bytes.
 
@@ -123,13 +123,11 @@ not separate Java SDK coverage. The helper was formerly named `verify_sdk_commit
 
 ## Skill experiments
 
-The `typesafe-ai` suite uses native TypeSafe declarations under `config/skills/typesafe-ai`,
-with pinned model `jev-1.13.0`. All four native connection aliases point to the local
-fixture server; the timeout/retry aliases exercise transport policy. These connections
-have a dummy local transport key. Normal startup disables provider forwarding even when
-the shell has `LOOMSPAN_TYPESAFE_API_KEY`. The explicit native live adapter temporarily
-enables a gateway that requires a durable, one-use permit for every exact request,
-then restores offline operation. See [TypeSafe coverage and live scope](typesafe-ai.md).
+The `typesafe-ai` suite uses the developer-installed Decisions extension
+`ai.loomspan:loomspan-decisions:0.1.0-SNAPSHOT` and the packaged Sidecar
+`typesafe` Spring profile. Both host configurations use local fixture endpoints
+and a dummy key. Normal startup disables upstream provider access. See
+[TypeSafe coverage](typesafe-ai.md) for the offline replay and executor changes.
 
 Project-local authoring guidance lives under `.agents/skills`; `skills-lock.json`
 records its sources. The Framework documentation copy is refreshed from the matching

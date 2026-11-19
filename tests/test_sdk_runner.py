@@ -32,7 +32,7 @@ def checkout(tmp_path):
     root.mkdir()
     (root / "pom.xml").write_text(
         '<project xmlns="http://maven.apache.org/POM/4.0.0"><properties>'
-        "<loomspan.version>1.0.0-beta.9-SNAPSHOT</loomspan.version></properties></project>"
+        "<loomspan.version>1.0.0-beta.10-SNAPSHOT</loomspan.version></properties></project>"
     )
     (root / "Dockerfile").touch()
     (root / "sdks/java").mkdir(parents=True)
@@ -48,7 +48,7 @@ def checkout(tmp_path):
     target.mkdir()
     with zipfile.ZipFile(target / "sidecar.jar", "w") as archive:
         archive.writestr(
-            "BOOT-INF/lib/loomspan-spring-boot-starter-1.0.0-beta.9-SNAPSHOT.jar", b"fixture"
+            "BOOT-INF/lib/loomspan-spring-boot-starter-1.0.0-beta.10-SNAPSHOT.jar", b"fixture"
         )
     for module, artifact in (
         ("core", "loomspan-sdk-core"),
@@ -361,7 +361,7 @@ def test_local_queue_fixture_has_bounded_barrier_and_independent_effect_count(ca
             with httpx.Client(trust_env=False, timeout=4) as client:
                 assert (
                     client.post(
-                        base + "/block/chat/completions", content=SENTINELS[2]
+                        base + "/block/responses", content=SENTINELS[2]
                     ).status_code
                     == 200
                 )
@@ -593,7 +593,7 @@ def test_local_builds_actual_checkout_and_records_readiness_and_shutdown(
         < fake_lane.index("cleanup")
     )
     assert report["source"] == {"revision": "a" * 40, "dirty": True}
-    assert report["frameworkVersion"] == "1.0.0-beta.9-SNAPSHOT"
+    assert report["frameworkVersion"] == "1.0.0-beta.10-SNAPSHOT"
     assert (
         report["sidecarJarSha256"]
         == hashlib.sha256((checkout / "target/sidecar.jar").read_bytes()).hexdigest()
@@ -708,7 +708,7 @@ def test_missing_checkout_and_tools_are_reported(tmp_path, checkout, monkeypatch
 
 
 @pytest.mark.parametrize(
-    "versions", [[], ["1.0.0-beta.9"], ["1.0.0-beta.9-SNAPSHOT", "1.0.0-beta.9"]]
+    "versions", [[], ["1.0.0-beta.9"], ["1.0.0-beta.10-SNAPSHOT", "1.0.0-beta.9"]]
 )
 def test_packaged_framework_identity_is_validated(checkout, versions):
     with zipfile.ZipFile(checkout / "target/sidecar.jar", "w") as archive:
@@ -732,7 +732,7 @@ def test_missing_sdk_artifact_fails_with_report(checkout, tmp_path, fake_lane):
 def test_command_suppresses_raw_diagnostics_and_environment(
     monkeypatch, capsys, failure
 ):
-    monkeypatch.setenv("LOOMSPAN_OPENROUTER_API_KEY", SENTINELS[0])
+    monkeypatch.setenv("LOOMSPAN_OPENAI_API_KEY", SENTINELS[0])
     monkeypatch.setenv("JAVA_TOOL_OPTIONS", SENTINELS[1])
     monkeypatch.setenv("PROGRAMFILES", "C:/Program Files")
     monkeypatch.setenv("SYSTEMDRIVE", "C:")
@@ -887,12 +887,12 @@ def test_fixture_is_fixed_counts_requests_and_logs_no_input(capsys):
                 "forwardAttempts": 0,
             }
             response = client.post(
-                base + "/v1/chat/completions",
+                base + "/v1/responses",
                 content=SENTINELS[2],
                 headers={"Authorization": SENTINELS[0]},
             )
             assert (
-                response.json()["choices"][0]["message"]["content"] == "fixture result"
+                response.json()["output"][0]["content"][0]["text"] == "fixture result"
             )
             assert client.get(base + "/counts").json()["modelRequests"] == 1
             assert (
@@ -1076,7 +1076,7 @@ def test_shutdown_fixture_latch_sequences_nested_effects():
             client.post(base + "/callbacks/detail", json={})
             for _ in range(4):
                 assert (
-                    client.post(base + "/planner/chat/completions", json={}).status_code
+                    client.post(base + "/planner/responses", json={}).status_code
                     == 200
                 )
             assert client.get(base + "/shutdown/status").json() == {
@@ -1224,7 +1224,7 @@ def test_callback_fixture_requires_admitted_model_barrier_then_emits_fixed_tool(
             with httpx.Client(trust_env=False, timeout=4) as client:
                 results.append(
                     client.post(
-                        base + "/callback/chat/completions", content=SENTINELS[2]
+                        base + "/callback/responses", content=SENTINELS[2]
                     )
                 )
         except BaseException as error:
@@ -1244,12 +1244,12 @@ def test_callback_fixture_requires_admitted_model_barrier_then_emits_fixed_tool(
             client.post(base + "/release", json={})
             worker.join(timeout=3)
             assert not worker.is_alive() and not errors
-            plan = json.loads(results[0].json()["choices"][0]["message"]["content"])
+            plan = json.loads(results[0].json()["output"][0]["content"][0]["text"])
             assert [task["capabilityName"] for task in plan["tasks"]] == [
                 "default-localExpiryOwned"
             ]
-            response = client.post(base + "/callback/chat/completions", json={})
-            action = json.loads(response.json()["choices"][0]["message"]["content"])
+            response = client.post(base + "/callback/responses", json={})
+            action = json.loads(response.json()["output"][0]["content"][0]["text"])
             assert action == {
                 "stepAction": "CALL_TOOL",
                 "taskId": "owned",
@@ -1259,7 +1259,7 @@ def test_callback_fixture_requires_admitted_model_barrier_then_emits_fixed_tool(
             assert client.get(base + "/status").json()["toolIssued"] is True
             # Extra turns cannot fabricate a successful response after child failure.
             assert (
-                client.post(base + "/callback/chat/completions", json={}).status_code
+                client.post(base + "/callback/responses", json={}).status_code
                 == 500
             )
             assert client.get(base + "/status").json()["effects"] == 0
@@ -1287,7 +1287,7 @@ def test_callback_fixture_barrier_has_deadline(monkeypatch):
     try:
         with httpx.Client(trust_env=False, timeout=3) as client:
             response = client.post(
-                f"http://127.0.0.1:{fixture.server_port}/callback/chat/completions",
+                f"http://127.0.0.1:{fixture.server_port}/callback/responses",
                 json={},
             )
             assert response.status_code == 504 and deadlines == [30]

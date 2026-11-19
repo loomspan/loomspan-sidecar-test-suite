@@ -1,6 +1,6 @@
 name: tsTriageStructured
 description: Evaluate support-contact judgments; no ticket routing or customer action.
-model: typesafeTriage
+executor: typesafe
 input_schema:
   type: object
   properties:
@@ -22,27 +22,27 @@ input_schema:
   - candidates
   - parameters
   additionalProperties: false
-typesafe:
-  state:
-    contact: ${/input/context}
-    slash: ${/input/context/a~1b}
-    tilde: ${/input/context/a~0b}
-    literal: $${/input/notResolved}
-    note: Repeat=${/input/context/repeat}; count=${/input/context/count}
-  questions:
-    department:
-      type: choice
-      instructions:
-        question: Which team should review ${/input/context/message}?
-        policy: ${/input/policy}
-      criteria: ${/input/candidates}
-    repeat:
-      type: noul
-      instructions:
-      - Check contact history.
-      - ${/input/context/history/0}
-      criteria:
-        'true': null
-    impact:
-      type: score
-      criteria: ${/input/parameters/levels}
+input_transform:
+  language: jslt
+  expression: |
+    def scalar(value, field)
+      if (is-string($value) or is-number($value) or is-boolean($value)) string($value)
+      else error("Expected text, number or boolean for " + $field)
+
+    {
+      "model": "jev-1.13.0",
+      "state": {
+        "contact": .context, "slash": .context."a/b", "tilde": .context."a~b",
+        "literal": "${/input/notResolved}",
+        "note": "Repeat=" + scalar(.context.repeat, "repeat") + "; count=" + scalar(.context.count, "count")
+      },
+      "questions": {
+        "department": {"type": "choice", "criteria": .candidates, "instructions": {
+          "question": "Which team should review " + scalar(.context.message, "message") + "?",
+          "policy": .policy
+        }},
+        "repeat": {"type": "noul", "instructions": ["Check contact history.", .context.history[0]],
+                   "criteria": {"true": null}},
+        "impact": {"type": "score", "criteria": .parameters.levels}
+      }
+    }

@@ -1,0 +1,7 @@
+{
+  "authorizedBy": "User: promote the sol/luna to mock",
+  "date": "2026-11-15",
+  "replayApproved": true,
+  "sourceRunId": "81f098ee28ca48e394996c78043c0fad",
+  "selection": "All four Java cases; identical reference replay on both hosts. Original live Sidecar cases remain corroborating evidence, not alternative mock answers."
+}

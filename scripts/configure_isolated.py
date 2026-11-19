@@ -28,7 +28,7 @@ def main():
             lines += [f'    command: [start-dev, --import-realm, "--hostname=http://localhost:{environment.port(18080)}"]']
         elif name != 'sidecar':
             key = {'java': 'EQUIPMENT_ISSUER', 'python': 'ISSUER',
-                   'fixtures': 'OPENROUTER_API_KEY'}[name]
+                   'fixtures': 'OPENAI_API_KEY'}[name]
             setting = value if name != 'fixtures' else ''
             lines += ['    environment:', f'      {key}: {json.dumps(setting)}']
     (runtime / 'compose.isolated.yaml').write_text('\n'.join(lines) + '\n')

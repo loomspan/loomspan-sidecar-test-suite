@@ -1,3 +1,6 @@
+spring:
+  profiles:
+    active: typesafe
 loomspan-sidecar:
   configuration:
     mode: file
@@ -13,6 +16,9 @@ loomspan-sidecar:
 loomspan:
   executor-config:
     default:
+      typesafe:
+        base_url: http://fixtures:8080/typesafe/sidecar/api
+        api_key: fixture-typesafe-transport
       http:
         targets:
           equipment:
@@ -27,61 +33,19 @@ loomspan:
       driver: openai
       base-url: http://fixtures:8080/model/sidecar/v1
       api-key: fixture-transport-not-a-provider-secret
-      openai:
-        compatibility-profile: openrouter
-      provider-retry:
-        max-attempts: 1
-    typesafeTriage:
-      driver: typesafe
-      base-url: http://fixtures:8080/typesafe/sidecar
-      api-key: fixture-typesafe-transport
-      request-timeout: 5s
-      provider-retry:
-        max-attempts: 1
-    typesafeTriageRouter:
-      driver: typesafe
-      base-url: http://fixtures:8080/typesafe/sidecar/api
-      api-key: fixture-typesafe-transport
-      request-timeout: 5s
-      provider-retry:
-        max-attempts: 1
-    typesafeTriageRetry:
-      driver: typesafe
-      base-url: http://fixtures:8080/typesafe/sidecar
-      api-key: fixture-typesafe-transport
-      request-timeout: 5s
-      provider-retry:
-        max-attempts: 3
-    typesafeTriageTimeout:
-      driver: typesafe
-      base-url: http://fixtures:8080/typesafe/sidecar
-      api-key: fixture-typesafe-transport
-      request-timeout: 500ms
       provider-retry:
         max-attempts: 1
   models:
     reasoning:
       connection: model
-      provider-model: openai/gpt-6-sol
+      provider-model: gpt-6-sol
       thinking-levels:
       - medium
     coordination:
       connection: model
-      provider-model: openai/gpt-6-luna
+      provider-model: gpt-6-luna
       thinking-levels:
       - medium
-    typesafeTriage:
-      connection: typesafeTriage
-      provider-model: jev-1.13.0
-    typesafeTriageRouter:
-      connection: typesafeTriageRouter
-      provider-model: jev-1.13.0
-    typesafeTriageRetry:
-      connection: typesafeTriageRetry
-      provider-model: jev-1.13.0
-    typesafeTriageTimeout:
-      connection: typesafeTriageTimeout
-      provider-model: jev-1.13.0
   skills:
     locations:
     - file:/config/skills/*/*.yaml

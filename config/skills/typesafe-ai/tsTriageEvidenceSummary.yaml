@@ -40,8 +40,8 @@ output_bindings:
   /impactEvidence:
     from: child_result
     skill: tsTriageEvidence
-    path: /impactEvidence
+    path: /answers/impactEvidence
   /impact:
     from: child_result
     skill: tsTriageEvidence
-    path: /impact
+    path: /answers/impact

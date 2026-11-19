@@ -88,7 +88,7 @@ this documentation is not a worked answer injected into prompts.
 
 ## Limits
 
-Both hosts use the installed Framework 1.0.0-beta.9-SNAPSHOT; Sidecar is built from the neighboring checkout.
+Both hosts use the installed Framework 1.0.0-beta.10-SNAPSHOT; Sidecar is built from the neighboring checkout.
 Nested bindings do not always eliminate model call envelopes; the final
 observed workflow used fifteen model calls per case. Optimizing call count is separate
 from business correctness. Mixed assignment does not guarantee reliable review.

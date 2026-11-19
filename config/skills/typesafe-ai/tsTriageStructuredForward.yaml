@@ -1,0 +1,47 @@
+name: tsTriageStructuredForward
+description: Forward the structured contact judgments.
+model: coordination
+thinking_level: medium
+planning_mode: true
+max_steps: 1
+prompt: Have tsTriageStructured assess the supplied contact.
+input_schema:
+  type: object
+  properties:
+    context:
+      type: object
+      additionalProperties: true
+    policy:
+      type: object
+      additionalProperties: true
+    candidates:
+      type: object
+      additionalProperties: true
+    parameters:
+      type: object
+      additionalProperties: true
+  required:
+  - context
+  - policy
+  - candidates
+  - parameters
+  additionalProperties: false
+allowed_skills:
+- name: tsTriageStructured
+  required: true
+  max_tasks: 1
+  input_bindings:
+    /context:
+      from: input
+      path: /context
+    /policy:
+      from: input
+      path: /policy
+    /candidates:
+      from: input
+      path: /candidates
+    /parameters:
+      from: input
+      path: /parameters
+output_from:
+  skill: tsTriageStructured

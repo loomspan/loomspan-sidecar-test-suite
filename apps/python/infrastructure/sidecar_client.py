@@ -102,6 +102,8 @@ def execution_view(execution: ExecutionSnapshot) -> dict:
     failure = None
     if execution.failure is not None:
         failure = {'kind': execution.failure.kind, 'message': execution.failure.message}
+        if execution.failure.producing_skill_name is not None:
+            failure['producingSkillName'] = execution.failure.producing_skill_name
         if execution.failure.issues:
             failure['issues'] = [
                 {'path': issue.path, 'code': issue.code, 'message': issue.message}

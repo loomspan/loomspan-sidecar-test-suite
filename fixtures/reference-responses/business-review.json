@@ -1,0 +1,101 @@
+{
+  "accepted": true,
+  "status": "BUSINESS_PASS_WITH_MINOR_CAVEATS",
+  "replayApproved": false,
+  "runId": "81f098ee28ca48e394996c78043c0fad",
+  "bundleSha256": "4bb5522877014289c6a6f398ee2a06a97d2623ed52cba5758d25eece7eb1c9d2",
+  "reportSha256": "38cc63fda4ca059f5f3a6b668a9a9ff63757724db0fbb29538dea036407f11c5",
+  "acceptanceBasis": "Assistant review of complete published assessments and option findings against the unchanged synthetic business facts and predeclared rubric.",
+  "caseReviews": {
+    "baseline/java": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Core technical chronology and uncertainty, timing arithmetic, caps, conditional repair charges and separate procurement boundaries are sound. Conditional loaner hedge is justified by shipment exposure despite unspecified risk preference."
+      ],
+      "caveats": [
+        "Incomplete-but-undisputed findings assigned to CONTACT-WARRANTY, whose supplied responsibility names disputed findings; retained historical caveat.",
+        "Replacement lead-time argument adds a no-earlier-than-current-date assumption; no concrete invented delivery date or inappropriate commitment results."
+      ]
+    },
+    "baseline/sidecar": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Core decision and boundaries sound; explicitly acknowledges unspecified risk preference and contingent combined exposure. Final review clarifies arrival versus setup and included setup charges."
+      ],
+      "caveats": [
+        "Same incomplete-findings warranty-owner caveat.",
+        "Review wording overstates the original loaner assessor's conditional setup ambiguity, but final published interpretation is accurate."
+      ]
+    },
+    "priority/java": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Loaner-first with expedited investigation matches continuity priority; capacity, deadline, approvals, caps, diagnosis, and access conditions are coherent."
+      ],
+      "caveats": [
+        "Repeated incomplete-findings warranty-owner caveat.",
+        "Loaner assessor asks whether an explicitly arrival-labelled window guarantees setup; comparison correctly treats setup completion as unconfirmed, so no false readiness claim results."
+      ]
+    },
+    "priority/sidecar": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Loaner-first parallel expedited portfolio matches continuity preference; technical hypotheses remain qualified, charges and access arithmetic are correct, and service/procurement authorities remain separate."
+      ],
+      "caveats": [
+        "Repeated incomplete-findings warranty-owner caveat.",
+        "Loaner window wording requests clarification of an already explicit arrival label, while correctly withholding setup-readiness claims."
+      ]
+    },
+    "capacity_shortfall/java": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Explicitly states 20 versus 25 capacity, forbids assuming additive capacity, and requires operations to accept the shortfall before commitment. Maintains expedited investigation, conditional charges and approvals. Corrects loaner arrival/setup interpretation."
+      ],
+      "caveats": [
+        "Selects loaner as primary partial hedge, unlike the accepted reference's expedited primary. This ranking is debatable but explicitly conditional and consistent with the request to urgently escalate loaner approval; it is not represented as satisfying the hard minimum.",
+        "Repeated incomplete-findings warranty-owner caveat."
+      ]
+    },
+    "capacity_shortfall/sidecar": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Expedited-first with explicitly partial loaner fallback; correct 20/25 capacity, no additive-capacity claim, accurate time/charge/approval constraints."
+      ],
+      "caveats": [
+        "Repeated incomplete-findings warranty-owner caveat.",
+        "Chronology combines the dated cleaning entry and undated current report in one bullet, but separately asks for their timing relationship."
+      ]
+    },
+    "later_start/java": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Correctly moves production and delay endpoints to 16:00/18:00 and acknowledges standard arrival precedes both without inventing a completion duration. Expedited plus conditional loaner is conservative but explicitly cost/risk qualified."
+      ],
+      "caveats": [
+        "Repeated incomplete-findings warranty-owner caveat.",
+        "Expensive hedge under unspecified risk preference; explicitly identifies willingness to accept shipment risk as the decision that could change the portfolio."
+      ]
+    },
+    "later_start/sidecar": {
+      "verdict": "PASS_WITH_CAVEATS",
+      "findings": [
+        "Correct later-start timing, conservative cost/risk-qualified hedge, and substantive final review correcting the deferred replacement tax uncertainty using S-6 and the loaner arrival/setup wording."
+      ],
+      "caveats": [
+        "Repeated incomplete-findings warranty-owner caveat.",
+        "Higher-cost hedge remains conditional on unspecified risk preference."
+      ]
+    }
+  },
+  "limits": [
+    "One observation per host/scenario, not a reliability estimate.",
+    "Provider and framework changed together; no causal attribution.",
+    "Accepted historical fixtures remain unchanged."
+  ],
+  "nonBlockingCaveats": [
+    "Incomplete-but-undisputed warranty reviewer ownership remains a source gap.",
+    "Conservative hedge recommendations with unspecified risk preference.",
+    "Java capacity-shortfall primary ranking differs from reference, but shortfall and conditional acceptance are explicit."
+  ]
+}

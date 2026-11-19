@@ -10,6 +10,7 @@ from replay_reference import ROOT, sha, source_hash, contract_hash
 
 sys.path.insert(0, str(ROOT))
 from fixtures.replay import request_contract
+from fixtures.responses import text_response
 
 
 def freeze(bundle_raw, report_raw, review, output):
@@ -20,8 +21,13 @@ def freeze(bundle_raw, report_raw, review, output):
             and review['runId'] == report['runId'] and review['bundleSha256'] == sha(bundle_raw)
             and review['reportSha256'] == sha(report_raw)):
         raise ValueError('Capture requires its matching accepted business review')
+    selected = [case for case in report['cases'] if case['path'] == 'java']
+    if (len(selected) != len(report['scenarios'])
+            or {case['scenario'] for case in selected} != set(report['scenarios'])
+            or any(not case['checks'] or not all(case['checks'].values()) for case in selected)):
+        raise ValueError('Expected one complete accepted Java case per scenario')
     files = {}
-    manifest = {'formatVersion': 1, 'sourceRunId': report['runId'], 'sourceIntegration': 'java',
+    manifest = {'formatVersion': 2, 'sourceRunId': report['runId'], 'sourceIntegration': 'java',
                 'sourceBundleSha256': sha(bundle_raw), 'sourceReportSha256': sha(report_raw),
                 'businessStatus': review['status'], 'reasoning': report['reasoning'],
                 'acceptanceBasis': review['acceptanceBasis'], 'nonBlockingCaveats': review['nonBlockingCaveats'],
@@ -45,9 +51,7 @@ def freeze(bundle_raw, report_raw, review, output):
             if source_hash(original) != source_hash((ROOT / name).read_bytes()):
                 raise ValueError('Business source differs from accepted capture: ' + name)
             manifest['sourceHashes'][name] = source_hash(original)
-        for case in report['cases']:
-            if case['path'] != 'java' or not all(case['checks'].values()):
-                raise ValueError('Expected complete accepted Java cases')
+        for case in selected:
             name = case['scenario']; prefix = name + '/java/'
             journal = json.loads(z.read(prefix + 'journal.json'))
             requests = [e for e in journal if e['event'] == 'model-request']
@@ -57,7 +61,12 @@ def freeze(bundle_raw, report_raw, review, output):
             steps = []
             for event in requests:
                 response = responses[event['requestId']]['response']
-                content = response['choices'][0]['message']['content']
+                if response.get('status') != 'completed':
+                    raise ValueError('Only completed Responses results may be frozen')
+                messages = [item for item in response['output'] if item['type'] == 'message']
+                if len(messages) != 1 or any(p['type'] != 'output_text' for p in messages[0]['content']):
+                    raise ValueError('Expected one text result')
+                content = ''.join(p['text'] for p in messages[0]['content'])
                 json.loads(content)  # The selected run needs no fence/schema correction accommodations.
                 contract = request_contract(event['request'])
                 if any(s['requestContract'] == contract for s in steps):
@@ -65,12 +74,8 @@ def freeze(bundle_raw, report_raw, review, output):
                 steps.append({'requestContract': contract, 'sourceRequestId': event['requestId'],
                               'sourceResponseSha256': sha(json.dumps(response, sort_keys=True).encode()),
                               'provenance': 'accepted-reference:' + report['runId'],
-                              'response': {'id': 'replay-' + event['requestId'], 'object': 'chat.completion',
-                                           'model': event['request']['model'],
-                                           'choices': [{'index': 0, 'finish_reason': 'stop',
-                                                        'message': {'role': 'assistant', 'content': content}}],
-                                           'usage': {'cost': 0, 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0},
-                                           'created': 0}})
+                              'response': text_response(content, event['request']['model'],
+                                                        'replay-' + event['requestId'])})
             terminal = json.loads(z.read(prefix + 'terminal.json'))
             if terminal['status'] != 'COMPLETED':
                 raise ValueError('Incomplete accepted case')

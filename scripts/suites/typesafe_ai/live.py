@@ -1,4 +1,4 @@
-"""Bounded native live evaluation. No chat calls, retries, fallback or auto-promotion."""
+"""Bounded native live evaluation. One physical upstream send per gateway permit."""
 import base64
 from contextlib import contextmanager
 from dataclasses import replace
@@ -12,7 +12,7 @@ import zipfile
 import httpx
 import yaml
 from .scenarios import bind
-from trace_payload import payload
+from .runner import check_executor_trace
 from .decisions import verify as verify_decision, summarize as summarize_decisions
 
 
@@ -35,16 +35,14 @@ def runtime(core, directory, paths, report):
     if os.getenv('LOOMSPAN_RUN_OVERLAY') or os.getenv('LOOMSPAN_MODEL_CONFIG_DIRECTORY'):
         raise RuntimeError('Native live requires normal provider-disabled runtime')
     core.require_offline_provider()
-    services = {'fixtures': {'environment': {'OPENROUTER_API_KEY': '',
+    services = {'fixtures': {'environment': {'OPENAI_API_KEY': '',
         'LOOMSPAN_TYPESAFE_API_KEY': '${LOOMSPAN_TYPESAFE_API_KEY:?TypeSafe key required}',
         'TYPESAFE_LIVE_RUN': report['runId']}}}
     for path in paths:
         config = yaml.safe_load((core.ROOT / 'config' / (path + '.yaml')).read_bytes())
-        native = config['loomspan']['connections']['typesafeTriage']
-        if native['base-url'] != 'http://fixtures:8080/typesafe/' + path:
-            raise ValueError('Native live requires the bounded fixture gateway')
-        native['request-timeout'] = '60s'
-        native['provider-retry'] = {'enabled': False, 'max-attempts': 1}
+        native = config['loomspan']['executor-config']['default']['typesafe']
+        if native != {'base_url': 'http://fixtures:8080/typesafe/' + path + '/api', 'api_key': 'fixture-typesafe-transport'}:
+            raise ValueError('TypeSafe live requires the bounded fixture gateway')
         target = directory / (path + '.yaml')
         target.write_text(yaml.safe_dump(config, sort_keys=False), encoding='utf-8')
         services[path] = {'volumes': [target.as_posix() + ':/config/runtime.yaml:ro']}
@@ -212,18 +210,13 @@ def execute(core, client, case, path, token, secrets, suite, bundle):
             result['answers'] = answers
             checks['pinned served model'] = envelope_object.get('model') == 'jev-1.13.0'
             checks['typed answer contract'] = answer_contract(answers, case['request']['questions'])
-            checks['exact answer passthrough'] = terminal.get('result') is not None and json.loads(terminal['result']) == answers
-            request_records = [payload(r, trace) for r in trace if r['recordType'] == 'MODEL_REQUEST_SENT']
-            response_records = [r for r in trace if r['recordType'] == 'MODEL_RESPONSE_RECEIVED']
-            checks['traced request fidelity'] = len(request_records) == 1 and request_records[0].get('request') == case['request']
-            checks['traced envelope fidelity'] = len(response_records) == 1 and payload(response_records[0], trace).get('envelope') == envelope
+            checks['complete executor result'] = terminal.get('result') is not None and json.loads(terminal['result']) == envelope
+            check_executor_trace(checks, trace, case | {'outcome': 'COMPLETED', 'responses': [{'body': envelope}]}, path)
             usage = envelope_object.get('usage', {})
             usage = usage if isinstance(usage, dict) else {}
             result['usage']['nativeUsage'] = usage
             valid_usage = all(type(usage.get(k)) is int and usage[k] >= 0 for k in ('input_tokens', 'output_tokens'))
-            checks['exact usage accounting'] = valid_usage and len(response_records) == 1 and response_records[0]['metadata'].get('usage') == {
-                'precision': 'EXACT', 'promptUnits': usage.get('input_tokens'), 'completionUnits': usage.get('output_tokens'),
-                'totalUnits': usage.get('input_tokens', 0) + usage.get('output_tokens', 0)}
+            checks['provider reports exact token counts'] = valid_usage
             if checks['typed answer contract']:
                 result['reviewFlags'] = review_flags(case, answers)
         if trace:
@@ -241,12 +234,12 @@ def run(args, parser, suite, core):
         if getattr(args, 'resume_capture', None):
             previous, _, _, pending = resume_capture(core, args.resume_capture, cases, paths, core.Bundle([]))
             print(json.dumps({'suite': suite.name, 'mode': args.mode, 'model': args.model,
-                'originalRunId': previous['runId'], 'maximumPaidCalls': len(pending), 'retries': False,
+                'originalRunId': previous['runId'], 'maximumPaidCalls': len(pending), 'maxUpstreamSendsPerPermit': 1,
                 'requests': [{'scenario': c['name'], 'path': path} for c, path in pending]}, indent=2))
             return 0
         print(json.dumps({'suite': suite.name, 'mode': args.mode, 'model': args.model,
             'scenarios': [c['name'] for c in cases], 'paths': paths, 'maximumPaidCalls': len(cases)*len(paths),
-            'retries': False, 'chatCalls': 0}, indent=2))
+            'maxUpstreamSendsPerPermit': 1, 'chatCalls': 0}, indent=2))
         return 0
     if not os.getenv('LOOMSPAN_TYPESAFE_API_KEY'):
         parser.error('LOOMSPAN_TYPESAFE_API_KEY is required; no runtime changes made')

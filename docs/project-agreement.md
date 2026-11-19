@@ -314,7 +314,7 @@ The same SDK runner also owns `deployment-transport-baseline`,
 `shutdown-completion` and `shutdown-cutoff`; see [SDK lane](sdk-lane.md) for evidence
 and limits. No certificate-lifecycle tests are moved here. These baselines do not
 complete the future form-login/reference-app callback or full Standard/Hardened
-recipes in Sidecar PRs 8.1.5–8.1.8. Empty recipe selectors continue to fail explicitly.
+recipes in Sidecar PRs 8.1.5â€“8.1.8. Empty recipe selectors continue to fail explicitly.
 One root Sidecar component build remains per SDK run; no recursive smoke or suite
 invocation is introduced. Business-lane configuration/data/reference packs remain
 outside this isolated SDK lane, and no development-data reset is required.
@@ -400,3 +400,118 @@ operational data. Smoke may add its documented synthetic quote rows but must not
 create service requests. No paid calls, commit, push or release is authorized.
 
 The user additionally authorized a backed-up retained Sidecar database repair: remove the obsolete rest_routes_yaml columns only from the empty configuration_snapshot and management_draft tables and align migration 1/3 checksums with PR 9.2. A backup rehearsal verified the current schema, unchanged application rows, integrity and foreign keys before applying the transactional repair. No database reset is authorized.
+
+
+## Framework migration acceptance sequencing (2026-11-11)
+
+The user agreed to implement Framework migration first, then create and execute
+suite implementation tickets in this project. The root-level
+[migration acceptance roadmap](../MIGRATION-ACCEPTANCE-ROADMAP.md) owns the preserved
+suite requirements and acceptance gates; Framework documents link to it rather than
+duplicate that plan. Framework implementation completion is distinct from overall
+migration acceptance, which remains pending until required deployed and live gates pass.
+This documentation decision creates no tickets and authorizes no paid calls or runtime
+changes. Product fixes remain owned by their respective repositories.
+
+
+## Direct OpenAI migration and model reassessment (2026-11-15)
+
+The user authorized migration to installed Framework beta.10-SNAPSHOT and the
+current Sidecar, provider-free verification, then direct OpenAI Responses evaluations
+using LOOMSPAN_OPENAI_API_KEY. Remove OpenRouter from live acceptance; defer other
+provider acceptance. Preserve business contracts, operational data and accepted packs.
+
+Establish the existing six-Sol/two-Luna medium baseline across four equipment cases
+on both hosts. Then evaluate all-Terra and all-Luna at medium, primarily on Java,
+confirming promising configurations on Sidecar. Mixed Sol/Terra/Luna trials and
+focused follow-ups may follow evidence. Semantic acceptance is delegated to the
+assistant, with caveats recorded for subsequent user review.
+
+The user authorizes reasonable paid evaluation batches without a fixed dollar ceiling
+and will inspect actual OpenAI Console spend. Diagnose failures before repeating;
+track physical sends, tokens, available costs and incomplete evidence. Do not sample
+until a pass or overwrite accepted fixtures. This supersedes earlier per-batch approval
+and the compact matrix's USD 5 ceiling for this agreed work. No commit, push, release
+or business-data reset is authorized. Framework-caused model impairment remains a
+hypothesis; changing provider and framework together limits causal attribution.
+
+
+Evaluation outcome: the authorized beta.10/direct-OpenAI round is complete; see
+[the evaluation record](beta10-evaluation.md). The original Sol/Luna assignment passed
+8/8 reviewed cases with caveats; all-Terra passed 2/4 on Java, and all-Luna passed
+4/4 on Java and 2/4 on Sidecar. The evidence-directed five-Terra/one-Sol/two-Luna mix
+passed 8/8 with caveats and one recovered planning retry. These are single-case
+observations, not reliability estimates. The authored default and immutable references
+remain unchanged. The assistant recommends reviewing spend and the mixed candidate
+before a promotion decision or another paid round; no continuing tuning is scheduled.
+
+
+## Sol/Luna mock promotion and experiment cleanup (2026-11-15)
+
+The user explicitly authorized promotion of the accepted beta.10 Sol/Luna run to
+mock and deletion (without archive) of the other model experiment captures. Active
+mock now uses `fixtures/reference-responses`: all four accepted Java cases replayed
+on both hosts, with original caveats and checksum provenance. Existing historical
+reference packs remain unchanged. No new API calls or model-default changes are needed.
+Keep the Sol/Luna source capture and concise evaluation/design findings. The confirmed
+cleanup covers the four all-Terra, all-Luna and mixed live evidence directories;
+operational databases, credentials and other regression evidence remain untouched.
+Model tuning is deferred while the test suite changes. The user reported $4 total
+spend for the evaluation round; this is user-reported console spend, not API metadata.
+
+
+Cleanup completed on November 15, 2026: after tool-policy restrictions blocked the
+assistant's deletion attempts, the user deleted all four experiment directories.
+Their absence was verified locally. No archive was created. This confirmation covers
+the evidence directories, not a purge of scratch files or operational logs.
+
+## TypeSafe executor migration pilot (2026-11-17)
+
+The agreed first conversion covers the existing `mixed_fixed` and `summary`
+fixtures on embedded Java and Python/Sidecar. Verify the pinned wire request,
+full executor response, parent bindings, trace evidence and accounting with
+providers disabled. The [isolated pilot](../evidence/decisions-sidecar-maven-verify/typesafe-ai/summary.md)
+keeps the wider native suite available during this migration.
+
+The user authorized updating the Sidecar repository to the versioned invocation
+API and verifying its packaged Decisions extension. The pilot enables the
+`typesafe` Spring profile in file mode. The Maven-verified Sidecar and embedded
+Java host passed both scenarios against the existing fixtures with providers disabled.
+
+## Full TypeSafe executor migration (2026-11-17)
+
+The user extended the conversion to the full TypeSafe catalog and deferred actual
+API calls. Both hosts now use the Decisions executor for all 13 leaves and four
+parent compositions. Preserve the authored protocol fixtures and reviewed response
+pack. Record executor-specific outcomes separately, including changed validation,
+transport, envelope and accounting behavior. The [full replay](typesafe-ai.md#behavior-changes-from-the-core-driver)
+ran on an isolated provider-disabled deployment. A live evaluation is a separate step.
+
+The user subsequently authorized live TypeSafe calls on both hosts with
+`jev-1.13.0`. All 26 predeclared cases ran once per host across five bounded
+batches. The [live review](typesafe-executor-live-review.md) records 52 sends,
+provider usage, impact-policy decisions and the limits of the evidence. The
+captures are separate from the maintained fixtures.
+
+On November 17 the user retained the 0.80 evidence threshold and authorized
+further live TypeSafe calls that day to refine partial-outage handling. Two
+evidence wordings were compared on both hosts at the pinned model. The
+[review](partial-outage-evidence-review.md) records the final wording, warranted
+clarifications and provisional range misses. The Score and threshold remain
+fixed. A separate reviewed pack supplies exact responses for the new evidence
+request while preserving the original pack. Today's authorization covers these
+TypeSafe evaluations and does not schedule future paid runs.
+
+For the fresh-contact evaluation, the user fixed both the adopted question wording
+and the 0.80 threshold. Twelve new contacts had their expected decisions recorded
+before the live Java and Sidecar calls. All 24 decisions matched, although ten
+clarification probabilities exceeded the provisional 0.20 band. [Case review](../evidence/typesafe-fresh-holdout/review.md).
+
+On November 18 the maintained TypeSafe leaves moved to child-owned JSLT request
+construction. The structured planning parent passes only the four business inputs.
+The full offline replay passed 125 TypeSafe cases per host and all four equipment
+scenarios per host. [Both-host replay](../evidence/jslt-full-fixture-replay/summary.md).
+
+TypeSafe retry limits belong to the Decisions leaf. The maintained retry-disabled
+fixture uses one total attempt and the recovery and exhaustion fixtures exercise
+the default limit of three on both hosts.

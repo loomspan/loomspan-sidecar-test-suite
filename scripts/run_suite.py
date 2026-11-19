@@ -96,7 +96,7 @@ def make_overlay(directory, paths, model, reasoning, skill_models=None, suite=EQ
         target = skills / source.relative_to(ROOT / 'config/skills')
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text, encoding='utf-8')
-    services = {'fixtures': {'environment': {'OPENROUTER_API_KEY': '${LOOMSPAN_OPENROUTER_API_KEY:?Provider key required}'}}}
+    services = {'fixtures': {'environment': {'OPENAI_API_KEY': '${LOOMSPAN_OPENAI_API_KEY:?Provider key required}'}}}
     for path in paths:
         config = yaml.safe_load((ROOT / 'config' / (path + '.yaml')).read_text(encoding='utf-8'))
         alias = 'trial-' + suite.name
@@ -119,11 +119,14 @@ def make_overlay(directory, paths, model, reasoning, skill_models=None, suite=EQ
 
 
 def verify_mounted(directory, paths):
+    from model_profile import mounted_configuration
     for path in paths:
+        mounted_files = mounted_configuration(path)
         pairs = [(directory / (path + '.yaml'), '/config/runtime.yaml')]
-        pairs += [(f, '/config/skills/' + f.relative_to(directory / 'skills').as_posix()) for f in (directory / 'skills').rglob('*.yaml')]
+        pairs += [(f, '/config/skills/' + f.relative_to(directory / 'skills').as_posix())
+                  for f in (directory / 'skills').rglob('*.yaml')]
         for source, mounted in pairs:
-            actual = subprocess.check_output(environment.execute(path, 'cat', mounted))
+            actual = mounted_files[mounted.removeprefix('/config/')]
             if yaml.safe_load(actual) != yaml.safe_load(source.read_bytes()):
                 raise ValueError('Mounted configuration mismatch: ' + path + '/' + source.name)
 
@@ -221,9 +224,15 @@ def usage(events, trace):
               'rejectedActions': sum(r['recordType'] == 'STEP_ACTION_REJECTED' for r in trace),
               'failedModelAttempts': sum(r['recordType'] == 'MODEL_ATTEMPT_FAILED' for r in trace),
               'planRetries': sum(r['recordType'] == 'PLAN_RETRY_REQUESTED' for r in trace),
+              'schemaCorrections': sum(r['recordType'] == 'ADVISOR_REQUEST_MUTATION_RECORDED'
+                  and r.get('metadata', {}).get('kind') == 'retry_requested' for r in trace),
               'traceSeconds': max(r['timestamp'] for r in trace) - min(r['timestamp'] for r in trace) if trace else None}
-    for field in ['prompt_tokens', 'completion_tokens']:
+    for field in ['input_tokens', 'output_tokens']:
         result[field] = sum(v[field] for v in values) if values and all(field in v for v in values) else None
+    for label, detail, field in [('reasoningTokens', 'output_tokens_details', 'reasoning_tokens'),
+                                  ('cachedInputTokens', 'input_tokens_details', 'cached_tokens')]:
+        result[label] = (sum(v[detail][field] for v in values)
+                         if values and all(field in v.get(detail, {}) for v in values) else None)
     return result
 
 
@@ -314,7 +323,8 @@ def execute_case(client, name, path, token, secrets, bundle, timeout, model, ski
             result['checks']['published result matches frozen reference'] = (
                 terminal.get('status') == 'COMPLETED' and scenarios.decoded(terminal['result']) == reference['expected'])
             result['businessReview'] = 'FROZEN_ACCEPTED_REFERENCE_NOT_NEW_MODEL_REVIEW'
-            result['usage']['paidModelCalls'] = sum(e.get('provenance') == 'live OpenRouter' for e in responses)
+            result['usage']['reportedCost'] = 0
+            result['usage']['paidModelCalls'] = sum(e.get('provenance') == 'live OpenAI' for e in responses)
         result['status'] = 'CHECKS_PASS_REVIEW_REQUIRED' if result['checks'] and all(result['checks'].values()) and not any(k.endswith('Error') for k in result) else 'FAIL'
         if reference is not None and result['status'] != 'FAIL':
             result['status'] = 'REPLAY_PASS'
@@ -332,11 +342,16 @@ def write_report(report, bundle, output):
     if report.get('fixtureOrigin') == 'authored-protocol-and-reviewed-live-typesafe':
         note = 'Authored protocol fixtures plus separately reviewed real TypeSafe responses. Offline replay checks integration fidelity; it does not re-evaluate model quality.'
     lines = ['# Run result', '', f"Mode: {report['mode']}; status: **{report['status']}**.",
-             '', note, '',
-             '| Scenario | Path | Checks | Calls | Reported cost | Trace seconds |', '|---|---|---|---|---|---|']
-    for case in report['cases']:
-        checks = case['checks']
-        lines.append(f"| {case['scenario']} | {case['path']} | {sum(checks.values())}/{len(checks)} | {case['usage']['modelCalls']} | {case['usage']['reportedCost']} | {case['usage'].get('traceSeconds')} |")
+             '', note, '']
+    if report.get('suite') == 'typesafe-ai':
+        from suites.typesafe_ai.report import usage_table
+        lines.extend(usage_table(report, bundle))
+    else:
+        lines.extend(['| Scenario | Path | Checks | Calls | Input tokens | Output tokens | Reported cost | Trace seconds |',
+                      '|---|---|---|---|---|---|---|---|'])
+        for case in report['cases']:
+            checks = case['checks']
+            lines.append(f"| {case['scenario']} | {case['path']} | {sum(checks.values())}/{len(checks)} | {case['usage']['modelCalls']} | {case['usage'].get('input_tokens')} | {case['usage'].get('output_tokens')} | {case['usage']['reportedCost']} | {case['usage'].get('traceSeconds')} |")
     failures = [f"- {c['scenario']}/{c['path']}: {name}" for c in report['cases'] for name, ok in c['checks'].items() if not ok]
     failures += [f"- {c['scenario']}/{c['path']}: {value}" for c in report['cases'] for key, value in c.items() if key.endswith('Error')]
     if failures:
@@ -395,7 +410,7 @@ def mock_main(args, p, suite=EQUIPMENT):
     if args.output and output.exists() and not getattr(args, 'grouped', False):
         p.error('--output must be a new directory; accepted results are never overwritten')
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
-    bundle = Bundle([*secrets.values(), os.getenv('LOOMSPAN_OPENROUTER_API_KEY')])
+    bundle = Bundle([*secrets.values(), os.getenv('LOOMSPAN_OPENAI_API_KEY')])
     report = {'runId': uuid.uuid4().hex, 'mode': 'mock', 'cases': [], 'status': 'FAIL',
               'paths': paths, 'scenarios': selected, 'runtimeRestored': False,
               'sourceRunId': manifest['sourceRunId'], 'referenceFiles': manifest['files'],
@@ -418,7 +433,7 @@ def mock_main(args, p, suite=EQUIPMENT):
                         token = login('maya')
                         bundle.secrets.append(token)
                         case = execute_case(client, name, path, token, secrets, bundle, 180,
-                                            'openai/gpt-6-sol', manifest['skillModels'], references[name], suite)
+                                            'gpt-6-sol', manifest['skillModels'], references[name], suite)
                         report['cases'].append(case)
                         print(case['status'], flush=True)
                         if case['status'] != 'REPLAY_PASS':
@@ -465,13 +480,13 @@ def run_selected(args, p, suite):
         print(json.dumps({'suite': suite.name, 'mode': args.mode, 'paths': paths, 'scenarios': selected,
                           'model': args.model, 'skillModels': skill_models, 'reasoning': args.reasoning, 'paidCalls': 0}, indent=2))
         return 0
-    if not os.getenv('LOOMSPAN_OPENROUTER_API_KEY'):
-        p.error('LOOMSPAN_OPENROUTER_API_KEY is required; no runtime changes made')
+    if not os.getenv('LOOMSPAN_OPENAI_API_KEY'):
+        p.error('LOOMSPAN_OPENAI_API_KEY is required; no runtime changes made')
     output = args.output.resolve() if args.output else ROOT / 'evidence/latest'
     if args.output and output.exists() and not getattr(args, 'grouped', False):
         p.error('--output must be a new directory; accepted results are never overwritten')
     secrets = json.loads((ROOT / '.runtime/secrets.json').read_bytes())
-    bundle = Bundle([*secrets.values(), os.environ['LOOMSPAN_OPENROUTER_API_KEY']])
+    bundle = Bundle([*secrets.values(), os.environ['LOOMSPAN_OPENAI_API_KEY']])
     report = {'runId': uuid.uuid4().hex, 'mode': args.mode, 'model': args.model, 'reasoning': args.reasoning,
               'skillModels': skill_models, 'paths': paths, 'scenarios': selected, 'cases': [], 'status': 'FAIL', 'runtimeRestored': None,
               'suite': suite.name, 'scope': suite.scope, 'reviewAreas': scenarios.REVIEW_AREAS,
@@ -485,7 +500,7 @@ def run_selected(args, p, suite):
             report['build'] = baseline()
             report['gitCommit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
             files = [*(ROOT / 'config').rglob('*.yaml'), *(ROOT / 'apps').rglob('*.py'), *(ROOT / 'apps').rglob('*.java'),
-                     *(ROOT / name for name in suite.source_files), *(ROOT / 'scripts').rglob('*.py'),
+                     *(ROOT / name for name in suite.source_files), *(ROOT / 'scripts').rglob('*.py'), *(ROOT / 'fixtures').glob('*.py'),
                      *(ROOT / 'scripts/suites').rglob('*.json')]
             files = sorted(set(files))
             report['sourceSha256'] = {f.relative_to(ROOT).as_posix(): digest(f.read_bytes()) for f in files}
@@ -506,8 +521,8 @@ def run_selected(args, p, suite):
                                                     report['build']['missionTimeoutSeconds'] + 60, args.model, skill_models, None, suite)
                                 report['cases'].append(case)
                                 print(case['status'], flush=True)
-                                if case.get('executionError'):
-                                    raise RuntimeError('Execution interrupted or unreachable; stopping further scenarios and restoring runtime')
+                                if case['status'] != 'CHECKS_PASS_REVIEW_REQUIRED':
+                                    raise RuntimeError('Case failed; stopping further paid scenarios for diagnosis and restoring runtime')
             if all(c['status'] == 'CHECKS_PASS_REVIEW_REQUIRED' for c in report['cases']):
                 report['status'] = 'CHECKS_PASS_REVIEW_REQUIRED'
         except (Exception, KeyboardInterrupt) as error:

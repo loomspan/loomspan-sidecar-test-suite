@@ -1,6 +1,6 @@
 name: tsTriageScore
 description: Evaluate support-contact judgments; no ticket routing or customer action.
-model: typesafeTriage
+executor: typesafe
 input_schema:
   type: object
   properties:
@@ -10,13 +10,21 @@ input_schema:
   required:
   - context
   additionalProperties: false
-typesafe:
-  state: ${/input/context}
-  questions:
-    impact:
-      type: score
-      instructions: Rate the reported loss of functionality.
-      criteria:
-      - No loss of functionality
-      - Some functions impaired
-      - Core operation blocked
+input_transform:
+  language: jslt
+  expression: |
+    {
+      "model": "jev-1.13.0",
+      "state": .context,
+      "questions": {
+        "impact": {
+          "type": "score",
+          "instructions": "Rate the reported loss of functionality.",
+          "criteria": [
+            "No loss of functionality",
+            "Some functions impaired",
+            "Core operation blocked"
+          ]
+        }
+      }
+    }

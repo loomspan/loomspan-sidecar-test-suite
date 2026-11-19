@@ -1,6 +1,7 @@
 """Strict semantic request matching for the frozen reference assessment responses."""
 import json
 import re
+from fixtures.responses import input_messages
 
 
 def structured(value):
@@ -18,7 +19,7 @@ def structured(value):
 
 
 def request_contract(body):
-    messages = body['messages']
+    messages = input_messages(body)
     users = [m['content'] for m in messages if m['role'] == 'user']
     systems = [m['content'] for m in messages if m['role'] == 'system']
     if len(users) != 1 or len(systems) != 1 or len(messages) != 2:
@@ -39,7 +40,7 @@ def request_contract(body):
         completed.sort(key=lambda t: t['taskId'])
         if len({t['taskId'] for t in completed}) != len(completed):
             raise ValueError('Duplicate completed task evidence')
-    return {'skill': skill[1], 'model': body['model'], 'reasoning': body.get('reasoning_effort'),
+    return {'skill': skill[1], 'model': body['model'], 'reasoning': body.get('reasoning', {}).get('effort'),
             'mission': structured(mission), 'assignedTask': task, 'completedEvidence': completed}
 
 

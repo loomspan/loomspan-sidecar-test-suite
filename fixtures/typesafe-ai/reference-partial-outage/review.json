@@ -1,0 +1,497 @@
+{
+  "status": "ACCEPTED_BY_DELEGATED_REVIEW",
+  "model": "jev-1.13.0",
+  "scope": "Response fidelity for the revised evidence question. Accept impact only when current evidence is sufficient and the impact is in the predeclared semantic range. Retain calibration-range misses explicitly.",
+  "sources": {
+    "typesafe-partial-tone-1": {
+      "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+    },
+    "typesafe-partial-tone-2": {
+      "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+    },
+    "typesafe-partial-tone-3": {
+      "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+    }
+  },
+  "accepted": {
+    "reference_evidence_sparse_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.2
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 1.48,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_sparse_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.21
+      },
+      "judgment": "correct clarification",
+      "flags": [
+        "impactEvidence: outside the predeclared expectation [0, 0.2]"
+      ],
+      "rawImpact": 1.63,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_urgent_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.09
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.45,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_urgent_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.09
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.49,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_normal_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.96
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_normal_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.96
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_partial_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.0,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_partial_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.0,
+        "evidenceProbability": 0.91
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_outage_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 2.0,
+        "evidenceProbability": 0.9
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 2.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_outage_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 2.0,
+        "evidenceProbability": 0.88
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 2.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_conflict_java": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.22
+      },
+      "judgment": "correct clarification",
+      "flags": [
+        "impactEvidence: outside the predeclared expectation [0, 0.2]"
+      ],
+      "rawImpact": 1.52,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_conflict_sidecar": {
+      "source": "typesafe-partial-tone-1",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.23
+      },
+      "judgment": "correct clarification",
+      "flags": [
+        "impactEvidence: outside the predeclared expectation [0, 0.2]"
+      ],
+      "rawImpact": 1.58,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_resolved_history_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.94
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_resolved_history_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.94
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_billing_unknown_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.19
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.66,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_billing_unknown_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.17
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.39,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_calm_outage_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 2.0,
+        "evidenceProbability": 0.91
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 2.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_calm_outage_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 2.0,
+        "evidenceProbability": 0.91
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 2.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_emotional_normal_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.95
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_emotional_normal_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.95
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_partial_checkout_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.0,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_partial_checkout_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.0,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_evidence_detailed_nonfunctional_java": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.16
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.55,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_evidence_detailed_nonfunctional_sidecar": {
+      "source": "typesafe-partial-tone-2",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.17
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 0.4,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_partial_unknown_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.24
+      },
+      "judgment": "correct clarification",
+      "flags": [
+        "impactEvidence: outside the predeclared expectation [0, 0.2]"
+      ],
+      "rawImpact": 1.0,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_partial_unknown_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.21
+      },
+      "judgment": "correct clarification",
+      "flags": [
+        "impactEvidence: outside the predeclared expectation [0, 0.2]"
+      ],
+      "rawImpact": 1.0,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_history_current_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.94
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_policy_history_current_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 0.0,
+        "evidenceProbability": 0.94
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 0.0,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_policy_conflict_current_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.19
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 1.42,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_conflict_current_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.18
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 1.46,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_regional_partial_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.23,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.23,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_policy_regional_partial_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.18,
+        "evidenceProbability": 0.93
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.18,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_policy_recovery_unverified_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.11
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 1.01,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_recovery_unverified_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "NEEDS_CLARIFICATION",
+        "reason": "INSUFFICIENT_EVIDENCE",
+        "impactScore": null,
+        "evidenceProbability": 0.12
+      },
+      "judgment": "correct clarification",
+      "flags": [],
+      "rawImpact": 1.02,
+      "impactAcceptance": "fidelity only; unknown functional extent"
+    },
+    "reference_policy_complete_calm_java": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 1.99,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 1.99,
+      "impactAcceptance": "within predeclared range"
+    },
+    "reference_policy_complete_calm_sidecar": {
+      "source": "typesafe-partial-tone-3",
+      "policyExpected": {
+        "status": "ASSESSED",
+        "reason": "SUFFICIENT_EVIDENCE",
+        "impactScore": 2.0,
+        "evidenceProbability": 0.92
+      },
+      "judgment": "correct assessment",
+      "flags": [],
+      "rawImpact": 2.0,
+      "impactAcceptance": "within predeclared range"
+    }
+  },
+  "casesSha256": "97912138f64abe6537c2060ef2f5344bc1f37e3310a0bccd507783b4616b47ee"
+}

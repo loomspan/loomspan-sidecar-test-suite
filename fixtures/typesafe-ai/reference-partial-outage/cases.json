@@ -1,0 +1,4034 @@
+{
+  "model": "jev-1.13.0",
+  "origin": "reviewed-live-typesafe",
+  "cases": [
+    {
+      "name": "reference_evidence_sparse_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unspecified referent and no functional scope; do not interpret the raw impact score."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.2
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.48,
+          "confidence": 0.25,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.01,
+            "1": 0.5,
+            "2": 0.49
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.2
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.48,
+                "confidence": 0.25,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.01,
+                  "1": 0.5,
+                  "2": 0.49
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 554,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-cd93155f0fb44acfa644369d3eef15be",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_sparse_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "It doesn't work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unspecified referent and no functional scope; do not interpret the raw impact score."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.63,
+          "confidence": 0.46,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.36,
+            "2": 0.64
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.21
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.63,
+                "confidence": 0.46,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.36,
+                  "2": 0.64
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 558,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-4b6ac7a5611848adb4ba1850b8d508bf",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_urgent_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Emotion alone supplies no functionality evidence."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.45,
+          "confidence": 0.34,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.7,
+            "1": 0.16,
+            "2": 0.14
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.09
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.45,
+                "confidence": 0.34,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.7,
+                  "1": 0.16,
+                  "2": 0.14
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 567,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-2e00b5c79e264fe09a9ec2cf393f6500",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_urgent_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "URGENT! This is an absolute disaster. Fix it right now!"
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Emotion alone supplies no functionality evidence."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.09
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.49,
+          "confidence": 0.28,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.66,
+            "1": 0.2,
+            "2": 0.14
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.09
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.49,
+                "confidence": 0.28,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.66,
+                  "1": 0.2,
+                  "2": 0.14
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 568,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-6c4d8ff3cc474d51bd398bb0536e6a5e",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_normal_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Billing issue with explicitly normal application operation.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.96
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 569,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-c50f9c8ccb654f4f86797154468f1a2f",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_normal_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "My invoice was charged twice. All application functions work normally; nothing is broken."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Billing issue with explicitly normal application operation.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.96
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.96
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 569,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-ab7c8dbf336b4644a3fc396ca6d8e55d",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_partial_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Concrete partial impairment, not complete outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 1.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 1.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 571,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-1743453fadbb47e4840c85052cfb8d81",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_partial_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Export to CSV fails with an error. Browsing, editing and saving all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Concrete partial impairment, not complete outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 1.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.91
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 1.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 573,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-8533f73c3ecb4fea93dc814e120a1331",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_outage_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit total functional outage.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.9
+        },
+        "impact": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.9
+              },
+              "impact": {
+                "type": "score",
+                "score": 2.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 567,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-f66855dbc3ef4b2daa072db7727e31af",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_outage_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The application will not open for any user. No function is accessible; all work is blocked."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit total functional outage.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.88
+        },
+        "impact": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.88
+              },
+              "impact": {
+                "type": "score",
+                "score": 2.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 570,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-d2aa94ed80114aaca4aa52f4143111aa",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_conflict_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved current contradiction; a numerical compromise is not an established impact."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.22
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.52,
+          "confidence": 0.26,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.05,
+            "1": 0.39,
+            "2": 0.56
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.22
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.52,
+                "confidence": 0.26,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.05,
+                  "1": 0.39,
+                  "2": 0.56
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 590,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "java",
+        "caseId": "typesafe-java-3ae9b01269624d6392700f6ac7ae9719",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_conflict_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two equally credible reports concern the same application right now. One says every function works normally. The other says no function is accessible to anyone. There is no way to resolve the disagreement."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved current contradiction; a numerical compromise is not an established impact."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.23
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.58,
+          "confidence": 0.36,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.04,
+            "1": 0.35,
+            "2": 0.61
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.23
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.58,
+                "confidence": 0.36,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.04,
+                  "1": 0.35,
+                  "2": 0.61
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 591,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "9ce706513ee54dadb15d2d18e63584cf",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-a90d6da01c594c5987c725431182bddf",
+        "bundleSha256": "dbf5c8d54edcef9e9d4a57689e54ac5ac49c901ccdda254eebb6949c4f05b76e"
+      }
+    },
+    {
+      "name": "reference_evidence_resolved_history_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit current recovery overrides a resolved historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.94
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.94
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 570,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-eb83112ec7d1446fb3fa6352fb196229",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_resolved_history_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Yesterday no function was accessible. That incident is fully resolved. Right now every application function works normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Explicit current recovery overrides a resolved historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.94
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.94
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 574,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-849a0f49f6e148efba2163634f4a3ffa",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_billing_unknown_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A billing complaint alone does not establish whether application functions work."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.19
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.66,
+          "confidence": 0.49,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.34,
+            "1": 0.66,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.19
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.66,
+                "confidence": 0.49,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.34,
+                  "1": 0.66,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 569,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-1aef229e6c3546e492533176f567f70d",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_billing_unknown_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 was charged twice. Please refund the duplicate payment."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A billing complaint alone does not establish whether application functions work."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.39,
+          "confidence": 0.41,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.61,
+            "1": 0.39,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.17
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.39,
+                "confidence": 0.41,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.61,
+                  "1": 0.39,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 563,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-0d9147d93bed4ea6aaddd8ef291daeed",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_calm_outage_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Low emotional urgency does not reduce explicitly total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "impact": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.91
+              },
+              "impact": {
+                "type": "score",
+                "score": 2.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 575,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-e9c0bfb8c00f495391e68996bcd6199b",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_calm_outage_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "No hurry, we can wait until tomorrow. Right now nobody can open the application and every function is inaccessible."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Low emotional urgency does not reduce explicitly total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.91
+        },
+        "impact": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.91
+              },
+              "impact": {
+                "type": "score",
+                "score": 2.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 575,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-d448d776fb8a4ce280f20fe5090518bd",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_emotional_normal_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Emotion does not establish functional loss when normal operation is explicit.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.95
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.95
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 578,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-037b0b6e47a34b46980edd3243fc10b0",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_emotional_normal_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "I am furious about this duplicate charge! Fix my invoice immediately. Every application function works normally; there is no functional problem."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Emotion does not establish functional loss when normal operation is explicit.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.95
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.95
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 582,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-2a059ae5305b404d9232556f6e45278b",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_partial_checkout_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Checkout is important but this scale measures functional extent, not business criticality; several functions still work.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 1.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 1.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 571,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-7353ebeaa27d4ad893297c4ae2cd85ad",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_partial_checkout_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Checkout fails on every attempt. Browsing, searching, editing the cart and saving preferences all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Checkout is important but this scale measures functional extent, not business criticality; several functions still work.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 1.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 1.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 577,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-abb8cfa5777a45528c0e5f9602856a33",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_detailed_nonfunctional_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Specific financial and delivery facts still supply no application-functionality evidence."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.16
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.55,
+          "confidence": 0.32,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.45,
+            "1": 0.55,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.16
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.55,
+                "confidence": 0.32,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.45,
+                  "1": 0.55,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 593,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "java",
+        "caseId": "typesafe-java-12cb5fee6e8c4a068a203e4404df823f",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_evidence_detailed_nonfunctional_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Invoice 42 dated October 8 lists two identical charges of 25 dollars. The parcel arrived on October 9. The promised refund is missing from my statement. Please investigate the extra charge."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Specific financial and delivery facts still supply no application-functionality evidence."
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.17
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.4,
+          "confidence": 0.4,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.6,
+            "1": 0.4,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.17
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.4,
+                "confidence": 0.4,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.4,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 598,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "58b82537875e4b2681f2ca64d1c228f2",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-73c930c5a9c24d058843b5d0ab52e922",
+        "bundleSha256": "7deadf5ddc7d3f28c72bb7a4ec7501f52b073f380ef4b45b649b1ec95c8051ce"
+      }
+    },
+    {
+      "name": "reference_policy_partial_unknown_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A failed function is known, but partial versus total loss is not established."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.24
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 0.98,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.99,
+            "2": 0.01
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.24
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 0.98,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.99,
+                  "2": 0.01
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 570,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-f011d1acf1d94db4ba62bb47a23abca5",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_partial_unknown_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "CSV export shows an error. I have not tried any other application function and do not know whether they work."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "A failed function is known, but partial versus total loss is not established."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.21
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 1.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.21
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 1.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 578,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-1fd2af3b546545e88260a967e6797268",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_history_current_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Current explicit recovery supersedes a historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.94
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.94
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 578,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-9bf69d0fe3614b08a2e251fea930387d",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_history_current_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "The old ticket says the application was completely unavailable yesterday. After the repair, I tested every application function today and all work normally."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Current explicit recovery supersedes a historical outage.",
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0,
+          0.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.94
+        },
+        "impact": {
+          "type": "score",
+          "score": 0.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 1.0,
+            "1": 0.0,
+            "2": 0.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.94
+              },
+              "impact": {
+                "type": "score",
+                "score": 0.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 1.0,
+                  "1": 0.0,
+                  "2": 0.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 578,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-e952dc16e8914c6db95ead3a289d0bd5",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_conflict_current_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved equally credible conflict cannot establish current functional extent."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.19
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.42,
+          "confidence": 0.3,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.03,
+            "1": 0.53,
+            "2": 0.44
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.19
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.42,
+                "confidence": 0.3,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.03,
+                  "1": 0.53,
+                  "2": 0.44
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 590,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-a87fc2bdc7fc4d4e8d94055f7b9e3ef7",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_conflict_current_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Two operators tested the same application at the same time today. One reports that every function works; the other reports that every function is inaccessible. Neither report has been verified and neither is more authoritative."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "Unresolved equally credible conflict cannot establish current functional extent."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.18
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.46,
+          "confidence": 0.25,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.02,
+            "1": 0.5,
+            "2": 0.48
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.18
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.46,
+                "confidence": 0.25,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.02,
+                  "1": 0.5,
+                  "2": 0.48
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 596,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-29f70e981ca741b08a9355e7450b9368",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_regional_partial_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Functionality is impaired for one group while explicitly available to another; not a total application outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.23,
+          "confidence": 0.64,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.76,
+            "2": 0.24
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.23,
+                "confidence": 0.64,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.76,
+                  "2": 0.24
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 581,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-e875217c28eb4e4ebb7099fd7022fa57",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_regional_partial_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Users at the east office cannot log in. Users at the west office are using every application function normally right now. The east office problem is still unresolved."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Functionality is impaired for one group while explicitly available to another; not a total application outage.",
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          0.7,
+          1.3
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.93
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.18,
+          "confidence": 0.72,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.81,
+            "2": 0.19
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.93
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.18,
+                "confidence": 0.72,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.81,
+                  "2": 0.19
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 586,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-d521e171a8fd411e9f5eab9c36e155c3",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_recovery_unverified_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday’s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday’s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "An administrative status is not a current observation of functionality."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.11
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.01,
+          "confidence": 0.36,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.21,
+            "1": 0.57,
+            "2": 0.22
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.11
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.01,
+                "confidence": 0.36,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.21,
+                  "1": 0.57,
+                  "2": 0.22
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 574,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-63153f8855f04c7096dec9ae8432ff25",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_recovery_unverified_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday’s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "Support marked yesterday’s outage ticket resolved, but nobody has tested the application since. Its current functionality is unknown."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0,
+          0.2
+        ],
+        "reason": "An administrative status is not a current observation of functionality."
+      },
+      "decisionRubric": {
+        "sufficient": false
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.12
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.02,
+          "confidence": 0.31,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.22,
+            "1": 0.54,
+            "2": 0.24
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.12
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.02,
+                "confidence": 0.31,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.22,
+                  "1": 0.54,
+                  "2": 0.24
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 578,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-37a1a38b192f4f7a93ea10d02ae54570",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_complete_calm_java",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Calm wording does not reduce observed total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 1.99,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 1.99,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 573,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "java",
+        "caseId": "typesafe-java-a9c5eb24551f4acfa51ad92b28ac253c",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    },
+    {
+      "name": "reference_policy_complete_calm_sidecar",
+      "skill": "tsTriageEvidence",
+      "input": {
+        "context": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        }
+      },
+      "request": {
+        "model": "jev-1.13.0",
+        "state": {
+          "caseId": "__CASE__",
+          "message": "This can wait until our next shift. We tested all application functions just now: none are accessible to any user."
+        },
+        "questions": {
+          "impactEvidence": {
+            "type": "noul",
+            "instructions": "What do the current observations establish about application functionality across the people and functions described? Answer yes if they identify normal operation, partial impairment, or total loss. Judge functional evidence independently of the tone or subject of the complaint.",
+            "criteria": {
+              "true": "An explicit current statement that every function works establishes normal operation, even during an angry complaint about another issue. Explicit loss of all access establishes total loss. For partial impairment, a current failure and a current working function or unaffected group suffice, including across different sites. No complete inventory is needed.",
+              "false": "The functional extent is unknown: the rest is untested after a failure, or equally credible reports contradict each other about the same scope and time. Urgency or detailed billing or delivery facts without a functional observation, a vague symptom, or a resolved ticket without a current check cannot establish the category."
+            }
+          },
+          "impact": {
+            "type": "score",
+            "instructions": "Rate the current reported loss of application functionality. Ignore resolved past incidents and emotional urgency.",
+            "criteria": [
+              "All application functions work normally",
+              "Some application functions fail while others work",
+              "All application functionality is blocked"
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "impactEvidence": [
+          0.8,
+          1
+        ],
+        "reason": "Calm wording does not reduce observed total functional loss.",
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "decisionRubric": {
+        "sufficient": true,
+        "impact": [
+          1.7,
+          2
+        ]
+      },
+      "outcome": "COMPLETED",
+      "expected": {
+        "impactEvidence": {
+          "type": "noul",
+          "noul": 0.92
+        },
+        "impact": {
+          "type": "score",
+          "score": 2.0,
+          "confidence": 1.0,
+          "legend": {
+            "0": "All application functions work normally",
+            "1": "Some application functions fail while others work",
+            "2": "All application functionality is blocked"
+          },
+          "probabilities": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 1.0
+          }
+        }
+      },
+      "usagePrecision": "EXACT",
+      "coverage": [
+        "reviewed-live-replay"
+      ],
+      "provenance": "reviewed-live-typesafe",
+      "responses": [
+        {
+          "body": {
+            "model": "jev-1.13.0",
+            "answers": {
+              "impactEvidence": {
+                "type": "noul",
+                "noul": 0.92
+              },
+              "impact": {
+                "type": "score",
+                "score": 2.0,
+                "confidence": 1.0,
+                "legend": {
+                  "0": "All application functions work normally",
+                  "1": "Some application functions fail while others work",
+                  "2": "All application functionality is blocked"
+                },
+                "probabilities": {
+                  "0": 0.0,
+                  "1": 0.0,
+                  "2": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 575,
+              "output_tokens": 37
+            }
+          }
+        }
+      ],
+      "source": {
+        "runId": "6ee69818f7db49a7b12ac7569b2f3189",
+        "host": "sidecar",
+        "caseId": "typesafe-sidecar-d2f7aa518a4f4a748dea7fd9ee209b69",
+        "bundleSha256": "22826c781f51e9e0722f04b1537e5a8ebd765ac76f25d680c18dbaa9529e10cb"
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import httpx
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fixtures.replay import request_matches
+from fixtures.responses import input_messages, text_response
 app=FastAPI()
 from fixtures.typesafe import install as install_typesafe
 install_typesafe(app)
@@ -17,7 +18,7 @@ def mission_input_matches(body, step):
     if 'missionInputEquals' not in step:
         return True
     try:
-        message=next(m['content'] for m in body.get('messages',[]) if m.get('role')=='user'
+        message=next(m['content'] for m in input_messages(body) if m.get('role')=='user'
                      and m.get('content','').startswith('Mission objective:'))
         actual=json.JSONDecoder().raw_decode(message.split('Canonical mission input:\n',1)[1].lstrip())[0]
         return actual == step['missionInputEquals']
@@ -27,7 +28,7 @@ def mission_input_matches(body, step):
 def completed_task_response(body, selector):
     """Controlled offline envelope copying actual Framework task evidence unchanged."""
     try:
-        system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
+        system='\n'.join(m.get('content','') for m in input_messages(body) if m.get('role')=='system')
         block=system.split('--- COMPLETED TASK EVIDENCE ---\n',1)[1]
         tasks=json.JSONDecoder().raw_decode(block[block.index('['):])[0]
         matches=[t for t in tasks if t.get('taskId')==selector['taskId'] and t.get('skillName')==selector['skillName']]
@@ -37,10 +38,9 @@ def completed_task_response(body, selector):
         else: result=json.dumps(result)
     except (KeyError,IndexError,ValueError,TypeError):
         raise HTTPException(409,'missing or ambiguous completed task evidence')
-    return {'id':'controlled-echo-'+uuid.uuid4().hex,'object':'chat.completion','created':1790924400,
-            'model':body.get('model','meta/muse-spark-1.3-contributor'),
-            'choices':[{'index':0,'finish_reason':'stop','message':{'role':'assistant',
-              'content':json.dumps({'stepAction':'FINAL_RESPONSE','finalResponse':result})}}]}
+    return text_response(json.dumps({'stepAction':'FINAL_RESPONSE','finalResponse':result}),
+                         body.get('model', 'fixture'))
+
 def control(key):
     if not key or key != os.environ['CONTROL_KEY']: raise HTTPException(403)
 @app.get('/health')
@@ -110,7 +110,7 @@ async def records(case_id:str,kind:str):
     result={'caseId':case_id,'revision':'1','kind':kind,'data':source[kind]}
     journal('returned',caseId=case_id,kind=kind,result=result)
     return result
-@app.post('/model/{path}/v1/chat/completions')
+@app.post('/model/{path}/v1/responses')
 async def model(path:str,request:Request):
     body=await request.json(); serialized=json.dumps(body)
     matches=[k for k in cases if k in serialized]
@@ -127,7 +127,7 @@ async def model(path:str,request:Request):
     if case.get('mode')!='live':
         async with lock:
             candidates=[]
-            system='\n'.join(m.get('content','') for m in body.get('messages',[]) if m.get('role')=='system')
+            system='\n'.join(m.get('content','') for m in input_messages(body) if m.get('role')=='system')
             for n,item in enumerate(case.get('steps',[])):
                 if n in case['used']: continue
                 if 'requestContract' in item:
@@ -143,11 +143,11 @@ async def model(path:str,request:Request):
                 raise HTTPException(409,'unexpected or ambiguous replay stage')
             i,step=candidates[0];case['used'].append(i)
     if case.get('mode')=='live' or (case.get('mode')=='controlled-live' and step.get('live')):
-        key=os.getenv('OPENROUTER_API_KEY')
+        key=os.getenv('OPENAI_API_KEY')
         if not key: raise HTTPException(503,'provider credential unavailable')
         client=httpx.AsyncClient(timeout=float(os.getenv('MODEL_UPSTREAM_TIMEOUT_SECONDS', '510')))
         try:
-            upstream=client.build_request('POST','https://openrouter.ai/api/v1/chat/completions',json=body,headers={'Authorization':'Bearer '+key})
+            upstream=client.build_request('POST','https://api.openai.com/v1/responses',json=body,headers={'Authorization':'Bearer '+key})
             response=await client.send(upstream,stream=True)
         except (httpx.HTTPError,ValueError) as error:
             await client.aclose()
@@ -160,7 +160,7 @@ async def model(path:str,request:Request):
                     chunks.append(chunk)
                     yield chunk
                 result=json.loads(b''.join(chunks))
-                journal('model-response',path=path,caseId=case_id,requestId=request_id,status=response.status_code,response=result,provenance='live OpenRouter',stage=i)
+                journal('model-response',path=path,caseId=case_id,requestId=request_id,status=response.status_code,response=result,provenance='live OpenAI',stage=i)
             except (httpx.HTTPError,ValueError) as error:
                 journal('provider-transport-failure',path=path,caseId=case_id,requestId=request_id,errorType=type(error).__name__)
                 raise
@@ -168,7 +168,7 @@ async def model(path:str,request:Request):
                 await response.aclose()
                 await client.aclose()
         # Forward upstream headers/body promptly, including any provider whitespace
-        # keepalives. This is still one non-streaming Chat Completions JSON response.
+        # keepalives. This is still one non-streaming Responses JSON response.
         return StreamingResponse(relay(),status_code=response.status_code,media_type=response.headers.get('content-type','application/json'))
     result=(completed_task_response(body,step['responseFromCompletedTask'])
             if 'responseFromCompletedTask' in step else step['response'])

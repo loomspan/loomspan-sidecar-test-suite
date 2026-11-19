@@ -21,7 +21,7 @@ one Python host and one Sidecar instance, sharing authentication and fixture tra
 | Scenario inputs, checks, authoring tool and contracts | `scripts/suites/equipment_service/` |
 | Runner registration and fixture ownership | `scripts/suites/registry.py` |
 | Independent business records and base input | `fixtures/business.json`, `fixtures/base-case.json` |
-| Frozen accepted replay | `fixtures/reference-namespaced/` |
+| Frozen accepted replay | `fixtures/reference-responses/` |
 
 The last two rows intentionally keep their original paths. Accepted provenance and
 source hashes remain valid; directory organization does not require rewriting a frozen

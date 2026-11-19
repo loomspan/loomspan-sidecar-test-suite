@@ -46,12 +46,12 @@ output_bindings:
   /department:
     from: child_result
     skill: tsTriageFixed
-    path: /department/choice
+    path: /answers/department/choice
   /repeatProbability:
     from: child_result
     skill: tsTriageFixed
-    path: /repeat/noul
+    path: /answers/repeat/noul
   /impact:
     from: child_result
     skill: tsTriageFixed
-    path: /impact/score
+    path: /answers/impact/score
